@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Escalas - Ministério Infantil</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 15px;
+            padding-bottom: 30px;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+            padding: 10px 0;
+        }
+
+        h1 {
+            font-size: 1.8em;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1em;
+            opacity: 0.95;
+        }
+
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            margin-bottom: 20px;
+        }
+
+        .filter-title {
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .date-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .date-btn {
+            padding: 16px 10px;
+            border: 3px solid #e0e0e0;
+            background: white;
+            border-radius: 12px;
+            font-size: 0.95em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #333;
+            text-align: center;
+            touch-action: manipulation;
+        }
+
+        .date-btn:active {
+            transform: scale(0.95);
+        }
+
+        .date-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .room-buttons {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .room-btn {
+            padding: 18px 15px;
+            border: 3px solid #e0e0e0;
+            background: white;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 12px;
+            touch-action: manipulation;
+        }
+
+        .room-btn:active {
+            transform: scale(0.98);
+        }
+
+        .room-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .room-icon-btn {
+            font-size: 1.8em;
+        }
+
+        .room-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            flex: 1;
+        }
+
+        .room-age {
+            font-size: 0.85em;
+            opacity: 0.8;
+            font-weight: 500;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 16px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.05em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            touch-action: manipulation;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-reset {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-export {
+            background: #10b981;
+            color: white;
+        }
+
+        .results-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        }
+
+        .results-header {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            line-height: 1.4;
+        }
+
+        .schedule-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .schedule-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 18px;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .schedule-header {
+            margin-bottom: 15px;
+        }
+
+        .room-name {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .room-name-icon {
+            font-size: 1.2em;
+        }
+
+        .room-age-display {
+            font-size: 0.85em;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .date-info {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .schedule-date {
+            background: #667eea;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.95em;
+        }
+
+        .lesson-badge {
+            background: #10b981;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.95em;
+        }
+
+        .teachers-section {
+            margin-top: 15px;
+        }
+
+        .teachers-label {
+            font-weight: 700;
+            color: #555;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        .teachers-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .teacher-card {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            color: #333;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1em;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .empty-state p {
+            font-size: 1em;
+            color: #666;
+        }
+
+        /* Estilos específicos para telas muito pequenas */
+        @media (max-width: 360px) {
+            h1 {
+                font-size: 1.5em;
+            }
+            
+            .date-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .room-name {
+                font-size: 1.1em;
+            }
+        }
+
+        /* Scroll suave */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Remove outline azul ao tocar */
+        button:focus {
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 Ministério Infantil</h1>
+            <p class="subtitle">Escalas - Novembro 2025</p>
+        </header>
+
+        <div class="filter-section">
+            <div class="filter-title">📅 Escolha a Data</div>
+            <div class="date-buttons" id="dateButtons"></div>
+
+            <div class="filter-title">🏫 Escolha a Sala</div>
+            <div class="room-buttons" id="roomButtons"></div>
+
+            <div class="action-buttons">
+                <button class="btn btn-reset" onclick="resetFilters()">🔄 Mostrar Todas</button>
+                <button class="btn btn-export" onclick="exportToCSV()">📥 Exportar CSV</button>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <div class="results-header">
+                📋 <span id="resultsTitle">Todas as Escalas</span>
+            </div>
+            <div class="schedule-grid" id="scheduleGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        const scheduleData = {
+            berçario: {
+                name: "Berçário",
+                age: "0-2 anos",
+                icon: "👶",
+                schedules: [
+                    { date: "02/11/2025", lesson: "13°", teachers: ["ELIANE", "WAGNA", "ANA RAFAELA"] },
+                    { date: "09/11/2025", lesson: "14°", teachers: ["JUSCILENE", "ERICA", "LUIZA"] },
+                    { date: "16/11/2025", lesson: "15°", teachers: ["LEIDIANE", "ADRIANA", "SARAH"] },
+                    { date: "23/11/2025", lesson: "16°", teachers: ["MAIARA", "JUSSIMERE", "KEMELLY"] },
+                    { date: "30/11/2025", lesson: "17°", teachers: ["ELIANE", "INGRID", "DUDA"] }
+                ]
+            },
+            alfa: {
+                name: "Alfa",
+                age: "3-4 anos",
+                icon: "🧸",
+                schedules: [
+                    { date: "02/11/2025", lesson: "13°", teachers: ["PH", "IANDRA", "KETTLEY"] },
+                    { date: "09/11/2025", lesson: "14°", teachers: ["ROSE JADYVYSKY", "ESTER", "ANA VITORIA"] },
+                    { date: "16/11/2025", lesson: "15°", teachers: ["ROSE PIMENTA", "STEFANI", "RYAN"] },
+                    { date: "23/11/2025", lesson: "16°", teachers: ["MARILENE", "AMANDA", "KETTLEY"] },
+                    { date: "30/11/2025", lesson: "17°", teachers: ["ARTHUR", "IANDRA", "RYAN"] }
+                ]
+            },
+            beta: {
+                name: "Beta",
+                age: "5-6 anos",
+                icon: "🎨",
+                schedules: [
+                    { date: "02/11/2025", lesson: "13°", teachers: ["NUBIA", "MARCIA", "DOUGLAS"] },
+                    { date: "09/11/2025", lesson: "14°", teachers: ["ANA CRISTINA", "ELAINE", "SOPHIA"] },
+                    { date: "16/11/2025", lesson: "15°", teachers: ["ANA PAULA", "MAX", "JEAN"] },
+                    { date: "23/11/2025", lesson: "16°", teachers: ["MARCIA", "MIRIAM", "HELOISA"] },
+                    { date: "30/11/2025", lesson: "17°", teachers: ["NUBIA", "ANA PAULA", "JEAN"] }
+                ]
+            },
+            gama: {
+                name: "Gama",
+                age: "7-8 anos",
+                icon: "⚽",
+                schedules: [
+                    { date: "02/11/2025", lesson: "13°", teachers: ["RAMOM", "ANA CLARA"] },
+                    { date: "09/11/2025", lesson: "14°", teachers: ["LUCAS", "LIBHYA"] },
+                    { date: "16/11/2025", lesson: "15°", teachers: ["ALBERTO", "MIKAELI"] },
+                    { date: "23/11/2025", lesson: "16°", teachers: ["ARTHUR", "ANA BEATRIZ", "ALEX"] },
+                    { date: "30/11/2025", lesson: "17°", teachers: ["PH", "LIBHYA", "STEFANI"] }
+                ]
+            },
+            ômega: {
+                name: "Ômega",
+                age: "9-11 anos",
+                icon: "📚",
+                schedules: [
+                    { date: "02/11/2025", lesson: "13°", teachers: ["KAUAN", "BRUNARA"] },
+                    { date: "09/11/2025", lesson: "14°", teachers: ["BRENDA", "JOICE"] },
+                    { date: "16/11/2025", lesson: "15°", teachers: ["DIEGO", "RAYARA"] },
+                    { date: "23/11/2025", lesson: "16°", teachers: ["JACKSON", "LUIZ FELIPE"] },
+                    { date: "30/11/2025", lesson: "17°", teachers: ["KAUAN", "BRUNARA"] }
+                ]
+            }
+        };
+
+        let selectedDate = null;
+        let selectedRoom = null;
+
+        const allDates = ["02/11/2025", "09/11/2025", "16/11/2025", "23/11/2025", "30/11/2025"];
+
+        function initializeDateButtons() {
+            const container = document.getElementById('dateButtons');
+            container.innerHTML = '';
+            
+            allDates.forEach(date => {
+                const btn = document.createElement('button');
+                btn.className = 'date-btn';
+                btn.textContent = date;
+                btn.onclick = () => selectDate(date, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function initializeRoomButtons() {
+            const container = document.getElementById('roomButtons');
+            container.innerHTML = '';
+            
+            Object.keys(scheduleData).forEach(roomKey => {
+                const room = scheduleData[roomKey];
+                const btn = document.createElement('button');
+                btn.className = 'room-btn';
+                btn.innerHTML = `
+                    <span class="room-icon-btn">${room.icon}</span>
+                    <div class="room-text">
+                        <div>${room.name}</div>
+                        <div class="room-age">${room.age}</div>
+                    </div>
+                `;
+                btn.onclick = () => selectRoom(roomKey, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function selectDate(date, btn) {
+            document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('active'));
+            
+            if (selectedDate === date) {
+                selectedDate = null;
+            } else {
+                selectedDate = date;
+                btn.classList.add('active');
+            }
+            
+            renderSchedules();
+        }
+
+        function selectRoom(roomKey, btn) {
+            document.querySelectorAll('.room-btn').forEach(b => b.classList.remove('active'));
+            
+            if (selectedRoom === roomKey) {
+                selectedRoom = null;
+            } else {
+                selectedRoom = roomKey;
+                btn.classList.add('active');
+            }
+            
+            renderSchedules();
+        }
+
+        function renderSchedules() {
+            const container = document.getElementById('scheduleGrid');
+            const resultsTitle = document.getElementById('resultsTitle');
+            container.innerHTML = '';
+
+            const rooms = selectedRoom ? [selectedRoom] : Object.keys(scheduleData);
+            let scheduleCount = 0;
+
+            rooms.forEach(roomKey => {
+                const room = scheduleData[roomKey];
+                let schedules = room.schedules;
+
+                if (selectedDate) {
+                    schedules = schedules.filter(s => s.date === selectedDate);
+                }
+
+                schedules.forEach(schedule => {
+                    scheduleCount++;
+                    const card = document.createElement('div');
+                    card.className = 'schedule-card';
+                    card.innerHTML = `
+                        <div class="schedule-header">
+                            <div class="room-name">
+                                <span class="room-name-icon">${room.icon}</span>
+                                Sala ${room.name}
+                            </div>
+                            <div class="room-age-display">${room.age}</div>
+                            <div class="date-info">
+                                <div class="schedule-date">📅 ${schedule.date}</div>
+                                <div class="lesson-badge">Lição ${schedule.lesson}</div>
+                            </div>
+                        </div>
+                        <div class="teachers-section">
+                            <div class="teachers-label">👥 Professores:</div>
+                            <div class="teachers-list">
+                                ${schedule.teachers.filter(t => t && t.trim() !== '').map(teacher => 
+                                    `<div class="teacher-card">👤 ${teacher}</div>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            });
+
+            if (scheduleCount === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <h3>Nenhuma escala encontrada</h3>
+                        <p>Selecione outra data ou sala</p>
+                    </div>
+                `;
+            }
+
+            let titleText = 'Todas as Escalas';
+            if (selectedDate && selectedRoom) {
+                titleText = `${selectedDate} - ${scheduleData[selectedRoom].name}`;
+            } else if (selectedDate) {
+                titleText = `Escalas de ${selectedDate}`;
+            } else if (selectedRoom) {
+                titleText = `Sala ${scheduleData[selectedRoom].name}`;
+            }
+            resultsTitle.textContent = titleText;
+        }
+
+        function resetFilters() {
+            selectedDate = null;
+            selectedRoom = null;
+            document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.room-btn').forEach(b => b.classList.remove('active'));
+            renderSchedules();
+        }
+
+        function exportToCSV() {
+            let csv = 'Sala,Idade,Data,Lição,Professor 1,Professor 2,Professor 3\n';
+            
+            Object.keys(scheduleData).forEach(roomKey => {
+                const room = scheduleData[roomKey];
+                room.schedules.forEach(schedule => {
+                    const teachers = schedule.teachers.filter(t => t && t.trim() !== '');
+                    csv += `${room.name},${room.age},${schedule.date},${schedule.lesson},${teachers.join(',')}\n`;
+                });
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'escalas_ministerio_infantil.csv';
+            link.click();
+        }
+
+        initializeDateButtons();
+        initializeRoomButtons();
+        renderSchedules();
+    </script>
+</body>
+</html>
