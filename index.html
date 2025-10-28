@@ -50,6 +50,7 @@
             box-shadow: 0 8px 32px rgba(0,0,0,0.15);
             margin-bottom: 20px;
         }
+        
 
         .filter-title {
             font-size: 1.1em;
@@ -207,10 +208,10 @@
             border-left: 5px solid #667eea;
         }
         
-        /* NOVO: Estilos para o destaque de Santa Ceia */
+        /* Estilos para o destaque de Santa Ceia */
         .schedule-card.santa-ceia-highlight {
             border-left: 5px solid #dc3545; /* Cor de destaque vermelha */
-            background: linear-gradient(135deg, #fcebeb 0%, #f8d7da 100%); /* Fundo mais claro para Santa Ceia */
+            background: linear-gradient(135deg, #fcebeb 0%, #f7636f 100%); /* Fundo mais claro para Santa Ceia */
         }
 
         .schedule-card.santa-ceia-highlight .room-name {
@@ -276,6 +277,20 @@
         .teachers-section {
             margin-top: 15px;
         }
+        /* Estilo para o campo de pesquisa */
+        .teacher-search {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 25px; 
+            border: 2px solid #ccc;
+            border-radius: 12px;
+            font-size: 1em;
+            transition: border-color 0.2s ease;
+        }
+        .teacher-search:focus {
+            border-color: #667eea;
+            outline: none;
+        }
 
         .teachers-label {
             font-weight: 700;
@@ -301,6 +316,8 @@
             align-items: center;
             gap: 10px;
             font-size: 1em;
+            border: 2px solid transparent; /* Adicionado para destaque do filtro */
+            transition: all 0.2s ease;
         }
 
         .empty-state {
@@ -359,6 +376,9 @@
         </header>
 
         <div class="filter-section">
+            <div class="filter-title">🔎 Buscar por Professor</div>
+            <input type="text" id="teacherSearchInput" class="teacher-search" placeholder="Digite o nome do professor" oninput="filterByTeacher(this.value)">
+            
             <div class="filter-title">📅 Escolha a Data</div>
             <div class="date-buttons" id="dateButtons"></div>
 
@@ -445,9 +465,31 @@
 
         let selectedDate = null;
         let selectedRoom = null;
+        let searchTerm = ''; // Variável global para o termo de pesquisa
 
         const allDates = ["02/11/2025", "09/11/2025", "16/11/2025", "23/11/2025", "30/11/2025"];
 
+        // Função auxiliar para resetar os botões de data e sala
+        function resetDateAndRoomFilters() {
+            selectedDate = null;
+            selectedRoom = null;
+            document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.room-btn').forEach(b => b.classList.remove('active'));
+        }
+        
+        // NOVO: Função para o filtro por professor
+        function filterByTeacher(term) {
+            searchTerm = term.toUpperCase().trim();
+            
+            // Se o usuário está buscando, removemos os filtros de data e sala para uma busca global
+            if (searchTerm.length > 0) {
+                resetDateAndRoomFilters(); 
+            }
+            
+            renderSchedules();
+        }
+
+        // Função para renderizar os botões de data
         function initializeDateButtons() {
             const container = document.getElementById('dateButtons');
             container.innerHTML = '';
@@ -461,6 +503,7 @@
             });
         }
 
+        // Função para renderizar os botões de sala
         function initializeRoomButtons() {
             const container = document.getElementById('roomButtons');
             container.innerHTML = '';
@@ -481,9 +524,12 @@
             });
         }
 
+        // Função de seleção de data (ajustada para limpar a busca por nome)
         function selectDate(date, btn) {
             document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('active'));
-            
+            document.querySelectorAll('.room-btn').forEach(b => b.classList.remove('active'));
+            selectedRoom = null; // Limpa filtro de sala
+
             if (selectedDate === date) {
                 selectedDate = null;
             } else {
@@ -491,12 +537,17 @@
                 btn.classList.add('active');
             }
             
+            searchTerm = ''; // Limpa o termo de busca
+            document.getElementById('teacherSearchInput').value = ''; 
             renderSchedules();
         }
 
+        // Função de seleção de sala (ajustada para limpar a busca por nome)
         function selectRoom(roomKey, btn) {
             document.querySelectorAll('.room-btn').forEach(b => b.classList.remove('active'));
-            
+            document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('active'));
+            selectedDate = null; // Limpa filtro de data
+
             if (selectedRoom === roomKey) {
                 selectedRoom = null;
             } else {
@@ -504,74 +555,101 @@
                 btn.classList.add('active');
             }
             
+            searchTerm = ''; // Limpa o termo de busca
+            document.getElementById('teacherSearchInput').value = '';
             renderSchedules();
         }
 
+        // CORRIGIDO: Função principal de renderização com lógica de filtro unificada
         function renderSchedules() {
             const container = document.getElementById('scheduleGrid');
             const resultsTitle = document.getElementById('resultsTitle');
             container.innerHTML = '';
 
-            const rooms = selectedRoom ? [selectedRoom] : Object.keys(scheduleData);
-            let scheduleCount = 0;
-
-            rooms.forEach(roomKey => {
+            // 1. Cria uma lista plana de TODAS as escalas, com as informações da sala
+            let allSchedules = [];
+            Object.keys(scheduleData).forEach(roomKey => {
                 const room = scheduleData[roomKey];
-                let schedules = room.schedules;
-
-                if (selectedDate) {
-                    schedules = schedules.filter(s => s.date === selectedDate);
-                }
-
-                schedules.forEach(schedule => {
-                    scheduleCount++;
-                    const isSantaCeia = schedule.date === '09/11/2025'; // NOVO: Checa a data para Santa Ceia
-
-                    const card = document.createElement('div');
-                    card.className = 'schedule-card';
-                    
-                    // NOVO: Adiciona a classe de destaque se for Santa Ceia
-                    if (isSantaCeia) {
-                        card.classList.add('santa-ceia-highlight');
-                    }
-                    
-                    card.innerHTML = `
-                        <div class="schedule-header">
-                            <div class="room-name">
-                                <span class="room-name-icon">${room.icon}</span>
-                                Sala ${room.name}
-                            </div>
-                            <div class="room-age-display">${room.age}</div>
-                            <div class="date-info">
-                                <div class="schedule-date">📅 ${schedule.date}</div>
-                                <div class="lesson-badge">Lição ${schedule.lesson}</div>
-                            </div>
-                        </div>
-                        <div class="teachers-section">
-                            <div class="teachers-label">👥 Professores:</div>
-                            <div class="teachers-list">
-                                ${schedule.teachers.filter(t => t && t.trim() !== '').map(teacher => 
-                                    `<div class="teacher-card">👤 ${teacher}</div>`
-                                ).join('')}
-                            </div>
-                        </div>
-                    `;
-                    container.appendChild(card);
+                room.schedules.forEach(schedule => {
+                    allSchedules.push({ roomKey, room, schedule });
                 });
             });
 
+            // 2. Aplica os filtros
+            let filteredSchedules = allSchedules.filter(item => {
+                const { roomKey, schedule } = item;
+                
+                // FILTRO POR PROFESSOR: Tem prioridade e busca em todas as escalas
+                if (searchTerm) {
+                    const teachersUpper = schedule.teachers.map(t => t.toUpperCase());
+                    return teachersUpper.some(t => t.includes(searchTerm));
+                }
+
+                // FILTRO POR DATA (se não houver termo de busca)
+                if (selectedDate && schedule.date !== selectedDate) {
+                    return false;
+                }
+
+                // FILTRO POR SALA (se não houver termo de busca)
+                if (selectedRoom && roomKey !== selectedRoom) {
+                    return false;
+                }
+
+                return true;
+            });
+            
+            let scheduleCount = filteredSchedules.length;
+
+            // 3. Renderiza os resultados
+            filteredSchedules.forEach(({ room, schedule }) => {
+                const isSantaCeia = schedule.date === '09/11/2025'; 
+
+                const card = document.createElement('div');
+                // Adiciona a classe de destaque se for Santa Ceia
+                card.className = 'schedule-card' + (isSantaCeia ? ' santa-ceia-highlight' : '');
+                
+                card.innerHTML = `
+                    <div class="schedule-header">
+                        <div class="room-name">
+                            <span class="room-name-icon">${room.icon}</span>
+                            Sala ${room.name}
+                        </div>
+                        <div class="room-age-display">${room.age}</div>
+                        <div class="date-info">
+                            <div class="schedule-date">📅 ${schedule.date}</div>
+                            <div class="lesson-badge">Lição ${schedule.lesson}</div>
+                        </div>
+                    </div>
+                    <div class="teachers-section">
+                        <div class="teachers-label">👥 Professores:</div>
+                        <div class="teachers-list">
+                            ${schedule.teachers.filter(t => t && t.trim() !== '').map(teacher => {
+                                // Verifica se o professor deve ser destacado (se houver termo de busca)
+                                const isHighlighted = searchTerm && teacher.toUpperCase().includes(searchTerm);
+                                // Aplica um estilo inline para o destaque, já que é dinâmico
+                                return `<div class="teacher-card" ${isHighlighted ? 'style="border: 2px solid #667eea; background: #e6e9f9;"' : ''}>👤 ${teacher}</div>`;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            // 4. Atualiza o estado vazio e o título
             if (scheduleCount === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">📭</div>
                         <h3>Nenhuma escala encontrada</h3>
-                        <p>Selecione outra data ou sala</p>
+                        <p>Verifique o nome do professor ou redefina os filtros.</p>
                     </div>
                 `;
             }
 
             let titleText = 'Todas as Escalas';
-            if (selectedDate && selectedRoom) {
+            if (searchTerm) {
+                titleText = `Resultados para "${searchTerm}" (${scheduleCount})`;
+            } else if (selectedDate && selectedRoom) {
                 titleText = `${selectedDate} - ${scheduleData[selectedRoom].name}`;
             } else if (selectedDate) {
                 titleText = `Escalas de ${selectedDate}`;
@@ -581,14 +659,15 @@
             resultsTitle.textContent = titleText;
         }
 
+        // CORRIGIDO: Função de reset para limpar todos os filtros
         function resetFilters() {
-            selectedDate = null;
-            selectedRoom = null;
-            document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.room-btn').forEach(b => b.classList.remove('active'));
+            resetDateAndRoomFilters(); // Limpa botões de data e sala
+            searchTerm = ''; // Limpa o termo de busca
+            document.getElementById('teacherSearchInput').value = ''; // Limpa o campo de input
             renderSchedules();
         }
 
+        // Função de exportação para CSV (mantida a original com ajuste para colunas)
         function exportToCSV() {
             let csv = 'Sala,Idade,Data,Lição,Professor 1,Professor 2,Professor 3\n';
             
@@ -596,7 +675,11 @@
                 const room = scheduleData[roomKey];
                 room.schedules.forEach(schedule => {
                     const teachers = schedule.teachers.filter(t => t && t.trim() !== '');
-                    csv += `${room.name},${room.age},${schedule.date},${schedule.lesson},${teachers.join(',')}\n`;
+                    // Garante que haja 3 colunas de professor no CSV, mesmo que vazias
+                    const t1 = teachers[0] || '';
+                    const t2 = teachers[1] || '';
+                    const t3 = teachers[2] || '';
+                    csv += `${room.name},${room.age},${schedule.date},${schedule.lesson},${t1},${t2},${t3}\n`;
                 });
             });
 
@@ -607,6 +690,7 @@
             link.click();
         }
 
+        // Inicialização
         initializeDateButtons();
         initializeRoomButtons();
         renderSchedules();
