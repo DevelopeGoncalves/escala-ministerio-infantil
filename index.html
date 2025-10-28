@@ -206,6 +206,23 @@
             border-radius: 15px;
             border-left: 5px solid #667eea;
         }
+        
+        /* NOVO: Estilos para o destaque de Santa Ceia */
+        .schedule-card.santa-ceia-highlight {
+            border-left: 5px solid #dc3545; /* Cor de destaque vermelha */
+            background: linear-gradient(135deg, #fcebeb 0%, #f8d7da 100%); /* Fundo mais claro para Santa Ceia */
+        }
+
+        .schedule-card.santa-ceia-highlight .room-name {
+            color: #c82333; /* Cor do texto do título */
+        }
+
+        .schedule-card.santa-ceia-highlight .schedule-date {
+            background: #dc3545; /* Cor vermelha no badge da data */
+            color: white;
+        }
+        /* FIM NOVO */
+
 
         .schedule-header {
             margin-bottom: 15px;
@@ -508,8 +525,16 @@
 
                 schedules.forEach(schedule => {
                     scheduleCount++;
+                    const isSantaCeia = schedule.date === '09/11/2025'; // NOVO: Checa a data para Santa Ceia
+
                     const card = document.createElement('div');
                     card.className = 'schedule-card';
+                    
+                    // NOVO: Adiciona a classe de destaque se for Santa Ceia
+                    if (isSantaCeia) {
+                        card.classList.add('santa-ceia-highlight');
+                    }
+                    
                     card.innerHTML = `
                         <div class="schedule-header">
                             <div class="room-name">
