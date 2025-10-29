@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Escalas - Ministério Infantil</title>
+    <title>Ministério Infantil - Escalas e Chamada</title>
     <style>
+        /* ESTILOS BASE - MANTIDOS E UNIFICADOS DO CÓDIGO 1 */
         * {
             margin: 0;
             padding: 0;
@@ -43,16 +44,55 @@
             opacity: 0.95;
         }
 
-        .filter-section {
+        /* NOVO: ESTILOS DE ABAS (TABS) */
+        .tabs-nav {
+            display: flex;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 15px;
+            padding: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 14px 10px;
+            border: none;
+            background: transparent;
+            color: #764ba2;
+            font-size: 1.05em;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            touch-action: manipulation;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+        /* FIM: ESTILOS DE ABAS (TABS) */
+
+        /* ESTILOS DE SEÇÃO (ORIGINAIS DOS CÓDIGOS 1 E 2) */
+        .filter-section, .call-section, .results-section, .room-selection-section {
             background: white;
             padding: 20px;
             border-radius: 20px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.15);
             margin-bottom: 20px;
         }
-        
 
-        .filter-title {
+        .filter-title, .form-label {
             font-size: 1.1em;
             color: #333;
             margin-bottom: 15px;
@@ -62,6 +102,7 @@
             gap: 8px;
         }
 
+        /* ESTILOS DO CÓDIGO 1 (ESCALAS) */
         .date-buttons {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -177,13 +218,6 @@
             color: white;
         }
 
-        .results-section {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-        }
-
         .results-header {
             font-size: 1.2em;
             color: #333;
@@ -208,25 +242,18 @@
             border-left: 5px solid #667eea;
         }
         
-        /* Estilos para o destaque de Santa Ceia */
         .schedule-card.santa-ceia-highlight {
-            border-left: 5px solid #dc3545; /* Cor de destaque vermelha */
-            background: linear-gradient(135deg, #fcebeb 0%, #f7636f 100%); /* Fundo mais claro para Santa Ceia */
+            border-left: 5px solid #dc3545;
+            background: linear-gradient(135deg, #fcebeb 0%, #f7636f 100%);
         }
 
         .schedule-card.santa-ceia-highlight .room-name {
-            color: #c82333; /* Cor do texto do título */
+            color: #c82333;
         }
 
         .schedule-card.santa-ceia-highlight .schedule-date {
-            background: #dc3545; /* Cor vermelha no badge da data */
+            background: #dc3545;
             color: white;
-        }
-        /* FIM NOVO */
-
-
-        .schedule-header {
-            margin-bottom: 15px;
         }
 
         .room-name {
@@ -237,10 +264,6 @@
             align-items: center;
             gap: 8px;
             margin-bottom: 10px;
-        }
-
-        .room-name-icon {
-            font-size: 1.2em;
         }
 
         .room-age-display {
@@ -256,7 +279,7 @@
             margin-top: 10px;
         }
 
-        .schedule-date {
+        .schedule-date, .lesson-badge {
             background: #667eea;
             color: white;
             padding: 8px 16px;
@@ -267,17 +290,8 @@
 
         .lesson-badge {
             background: #10b981;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 0.95em;
         }
 
-        .teachers-section {
-            margin-top: 15px;
-        }
-        /* Estilo para o campo de pesquisa */
         .teacher-search {
             width: 100%;
             padding: 12px;
@@ -316,7 +330,7 @@
             align-items: center;
             gap: 10px;
             font-size: 1em;
-            border: 2px solid transparent; /* Adicionado para destaque do filtro */
+            border: 2px solid transparent; 
             transition: all 0.2s ease;
         }
 
@@ -326,23 +340,128 @@
             color: #666;
         }
 
-        .empty-state-icon {
-            font-size: 3em;
-            margin-bottom: 15px;
-        }
-
         .empty-state h3 {
             font-size: 1.3em;
             margin-bottom: 10px;
             color: #333;
         }
 
-        .empty-state p {
-            font-size: 1em;
-            color: #666;
+        /* ESTILOS DO CÓDIGO 2 (CHAMADA) - UNIFICADOS */
+        .room-selection-section {
+            padding: 15px; 
+            margin-bottom: 20px;
         }
 
-        /* Estilos específicos para telas muito pequenas */
+        .room-tabs-call { /* Renomeado para evitar conflito com .room-tabs-nav */
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .room-tab-call { /* Renomeado para evitar conflito com .tab-btn */
+            flex: 1 1 45%; 
+            min-width: 120px;
+            padding: 15px 10px;
+            border: 3px solid #e0e0e0; /* Ajustado para 3px para combinar com o .room-btn do código 1 */
+            background: white; /* Ajustado para white para combinar com o .room-btn do código 1 */
+            border-radius: 12px; /* Ajustado para 12px para combinar com o .room-btn do código 1 */
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            color: #333; /* Ajustado para #333 para combinar com o .room-btn do código 1 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .room-tab-call.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .room-tab-call:active {
+            transform: scale(0.98); /* Ajustado para 0.98 para combinar com o .room-btn do código 1 */
+        }
+
+        .room-name-tab {
+            font-size: 1.1em;
+        }
+
+        .room-age-tab {
+            font-size: 0.8em;
+            font-weight: 500;
+            opacity: 0.8;
+            margin-top: 3px;
+        }
+
+        .call-section h2 {
+            font-size: 1.2em; /* Corrigido para não conflitar com h1 */
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .kid-input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+
+        .kid-input-group input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ccc; /* Ajustado para 2px para combinar com o input geral */
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.2s ease;
+        }
+        
+        .kid-input-group input:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+
+        .kid-number {
+            font-weight: 700;
+            color: #667eea;
+            width: 30px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        .btn-submit {
+            background: #10b981;
+            padding: 16px 20px; /* Ajustado para combinar com os botões do Código 1 */
+            border-radius: 12px; /* Ajustado para combinar com os botões do Código 1 */
+            font-size: 1.05em; /* Ajustado para combinar com os botões do Código 1 */
+            margin-top: 25px;
+        }
+
+        /* Outros ajustes de estilo */
+            input[type="date"], #teacherName {
+        width: 100%;
+        /* Alterações Feitas AQUI: */
+        padding: 16px; /* Aumenta a altura do campo (preenchimento interno) */
+        font-size: 1.1em; /* Aumenta o tamanho do texto dentro do campo */
+        /* Outras propriedades de estilo mantidas: */
+        border: 2px solid #ccc; 
+        border-radius: 12px;
+        transition: border-color 0.2s ease;
+    }
+
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        button:focus {
+            outline: none;
+        }
+        
         @media (max-width: 360px) {
             h1 {
                 font-size: 1.5em;
@@ -351,20 +470,6 @@
             .date-buttons {
                 grid-template-columns: 1fr;
             }
-            
-            .room-name {
-                font-size: 1.1em;
-            }
-        }
-
-        /* Scroll suave */
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Remove outline azul ao tocar */
-        button:focus {
-            outline: none;
         }
     </style>
 </head>
@@ -372,39 +477,82 @@
     <div class="container">
         <header>
             <h1>✝️ Ministério Infantil ✝️</h1>
-            <p class="subtitle">Escalas - Novembro 2025</p>
+            <p class="subtitle">Escalas e Chamadas - Novembro 2025</p>
         </header>
 
-        <div class="filter-section">
-            <div class="filter-title">🔎 Buscar por Professor</div>
-            <input type="text" id="teacherSearchInput" class="teacher-search" placeholder="Digite o nome do professor" oninput="filterByTeacher(this.value)">
-            
-            <div class="filter-title">📅 Escolha a Data</div>
-            <div class="date-buttons" id="dateButtons"></div>
+        <div class="tabs-nav">
+            <button class="tab-btn active" data-tab="escalas" onclick="openTab('escalas', this)">Escalas 📅</button>
+            <button class="tab-btn" data-tab="chamada" onclick="openTab('chamada', this)">Chamada 🔔</button>
+        </div>
+        <div class="tab-content active" id="tab-escalas">
+            <div class="filter-section">
+                <div class="filter-title">🔎 Buscar por Professor</div>
+                <input type="text" id="teacherSearchInput" class="teacher-search" placeholder="Digite o nome do professor" oninput="filterByTeacher(this.value)">
+                
+                <div class="filter-title">📅 Escolha a Data</div>
+                <div class="date-buttons" id="dateButtons"></div>
 
-            <div class="filter-title">🏠 Escolha a Sala</div>
-            <div class="room-buttons" id="roomButtons"></div>
+                <div class="filter-title">🏠 Escolha a Sala</div>
+                <div class="room-buttons" id="roomButtons"></div>
 
-            <div class="action-buttons">
-                <button class="btn btn-reset" onclick="resetFilters()">🔄 Mostrar Todas</button>
-                <button class="btn btn-export" onclick="exportToCSV()">📥 Exportar CSV</button>
+                <div class="action-buttons">
+                    <button class="btn btn-reset" onclick="resetFilters()">🔄 Mostrar Todas</button>
+                    <button class="btn btn-export" onclick="exportToCSV()">📥 Exportar CSV</button>
+                </div>
+            </div>
+
+            <div class="results-section">
+                <div class="results-header">
+                    📋 <span id="resultsTitle">Todas as Escalas</span>
+                </div>
+                <div class="schedule-grid" id="scheduleGrid"></div>
             </div>
         </div>
-
-        <div class="results-section">
-            <div class="results-header">
-                📋 <span id="resultsTitle">Todas as Escalas</span>
+        <div class="tab-content" id="tab-chamada">
+            <div class="room-selection-section">
+                <div class="form-label">🏠 Selecione a Sala (Etapa 1)</div>
+                <div class="room-tabs-call" id="roomTabsCall">
+                    </div>
             </div>
-            <div class="schedule-grid" id="scheduleGrid"></div>
+
+            <div class="call-section">
+                <h2 class="form-label" id="chamadaTitle">📝 Chamada - Selecione a Sala Acima</h2>
+
+                <div class="form-group">
+                    <label for="teacherName" class="form-label">🧑‍🏫 Seu Nome:</label>
+                    <input type="text" id="teacherName" placeholder="Seu nome completo" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="dateInput" class="form-label">📅 Data da Aula:</label>
+                    <input type="date" id="dateInput" required>
+                </div>
+                
+                <div id="kidsList">
+                    <div class="empty-state">
+                        Escolha uma sala para começar a lista de chamada.
+                    </div>
+                </div>
+
+                <button class="btn-submit" onclick="submitCall()">✅ Finalizar Chamada</button>
+            </div>
         </div>
-    </div>
+        </div>
 
     <script>
+        // DADOS COMPARTILHADOS (ESCALAS E CHAMADA)
+        const roomsData = {
+            berçario: { name: "Berçário", age: "0-2 anos", icon: "👶" },
+            alfa: { name: "Alfa", age: "3-4 anos", icon: "🧸" },
+            beta: { name: "Beta", age: "5-6 anos", icon: "🎨" },
+            gama: { name: "Gama", age: "7-8 anos", icon: "⚽" },
+            ômega: { name: "Ômega", age: "9-11 anos", icon: "📚" }
+        };
+
+        // DADOS SOMENTE DA ABA ESCALAS
         const scheduleData = {
             berçario: {
-                name: "Berçário",
-                age: "0-2 anos",
-                icon: "👶",
+                ...roomsData.berçario,
                 schedules: [
                     { date: "02/11/2025", lesson: "13°", teachers: ["Eliane Rodrigues dos Santos", "Wagna da Penha meneguite", "ANA RAFAELA"] },
                     { date: "09/11/2025", lesson: "14°", teachers: ["Juscilene Amaral Pereira", "ERICA", "Luiza Messa Lemos Farias"] },
@@ -414,21 +562,17 @@
                 ]
             },
             alfa: {
-                name: "Alfa",
-                age: "3-4 anos",
-                icon: "🧸",
+                ...roomsData.alfa,
                 schedules: [
                     { date: "02/11/2025", lesson: "13°", teachers: ["Paulo Henrique Mendes Dias", "Iandra Jesus de Novais Santana", "KETTLEY"] },
                     { date: "09/11/2025", lesson: "14°", teachers: ["Roseane Jadyvsky", "ESTER", "Anna Victória Bebiano de Carvalho"] },
                     { date: "16/11/2025", lesson: "15°", teachers: ["ROSE PIMENTA", "Stefani Rodrigues Vieira", "RYAN"] },
-                    { date: "23/11/2025", lesson: "16°", teachers: ["MARILENE", "Amanda Francisca Batista dos Santos", "KETTLEY"] },
+                    { date: "23/11/2025", lesson: "16°", teachers: ["Marilene Francisca Batista", "Amanda Francisca Batista dos Santos", "KETTLEY"] },
                     { date: "30/11/2025", lesson: "17°", teachers: ["Arthur dos Santos da conceição", "Iandra Jesus de Novais Santana", "RYAN"] }
                 ]
             },
             beta: {
-                name: "Beta",
-                age: "5-6 anos",
-                icon: "🎨",
+                ...roomsData.beta,
                 schedules: [
                     { date: "02/11/2025", lesson: "13°", teachers: ["Núbia Nascimento de Medeiros Dos Santos", "MARCIA", "DOUGLAS"] },
                     { date: "09/11/2025", lesson: "14°", teachers: ["Ana Crysthina Martins Lyrio", "Elaine Pereira Rocha Anacleto ", "SOPHIA"] },
@@ -438,9 +582,7 @@
                 ]
             },
             gama: {
-                name: "Gama",
-                age: "7-8 anos",
-                icon: "⚽",
+                ...roomsData.gama,
                 schedules: [
                     { date: "02/11/2025", lesson: "13°", teachers: ["Ramon de Oliveira Correa", "Ana Clara Silva Petersen"] },
                     { date: "09/11/2025", lesson: "14°", teachers: ["Lucas de Souza Fernandes", "Libhya da Silva Souza Gonçalves Victorino"] },
@@ -450,9 +592,7 @@
                 ]
             },
             ômega: {
-                name: "Ômega",
-                age: "9-11 anos",
-                icon: "📚",
+                ...roomsData.ômega,
                 schedules: [
                     { date: "02/11/2025", lesson: "13°", teachers: ["Kauã Guimarães Stein", "Brunara dos Santos Alves"] },
                     { date: "09/11/2025", lesson: "14°", teachers: ["Brenda Rodrigues de Souza", "JOICE"] },
@@ -462,26 +602,58 @@
                 ]
             }
         };
-
-        let selectedDate = null;
-        let selectedRoom = null;
-        let searchTerm = ''; // Variável global para o termo de pesquisa
-
+        
         const allDates = ["02/11/2025", "09/11/2025", "16/11/2025", "23/11/2025", "30/11/2025"];
 
-        // Função auxiliar para resetar os botões de data e sala
+        // VARIÁVEIS DE ESTADO DA ABA ESCALAS
+        let selectedDate = null;
+        let selectedRoom = null;
+        let searchTerm = ''; 
+
+        // VARIÁVEIS DE ESTADO DA ABA CHAMADA
+        let selectedRoomKeyChamada = null;
+        const MAX_KIDS = 20;
+
+        /* ---------------------------------- */
+        /* FUNÇÕES GERAIS (ABAS)              */
+        /* ---------------------------------- */
+
+        function openTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById('tab-' + tabId).classList.add('active');
+            element.classList.add('active');
+            
+            // Re-renderiza a lista de chamadas se for a aba "Chamada"
+            if (tabId === 'chamada') {
+                if (!selectedRoomKeyChamada) {
+                    renderEmptyKidsList();
+                } else {
+                    renderKidsList();
+                }
+            }
+        }
+
+
+        /* ---------------------------------- */
+        /* FUNÇÕES DA ABA ESCALAS             */
+        /* ---------------------------------- */
+        
         function resetDateAndRoomFilters() {
             selectedDate = null;
             selectedRoom = null;
-            document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.room-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('#tab-escalas .date-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('#tab-escalas .room-btn').forEach(b => b.classList.remove('active'));
         }
         
-        // NOVO: Função para o filtro por professor
         function filterByTeacher(term) {
             searchTerm = term.toUpperCase().trim();
             
-            // Se o usuário está buscando, removemos os filtros de data e sala para uma busca global
             if (searchTerm.length > 0) {
                 resetDateAndRoomFilters(); 
             }
@@ -489,7 +661,6 @@
             renderSchedules();
         }
 
-        // Função para renderizar os botões de data
         function initializeDateButtons() {
             const container = document.getElementById('dateButtons');
             container.innerHTML = '';
@@ -503,7 +674,6 @@
             });
         }
 
-        // Função para renderizar os botões de sala
         function initializeRoomButtons() {
             const container = document.getElementById('roomButtons');
             container.innerHTML = '';
@@ -519,16 +689,15 @@
                         <div class="room-age">${room.age}</div>
                     </div>
                 `;
-                btn.onclick = () => selectRoom(roomKey, btn);
+                btn.onclick = () => selectRoomEscalas(roomKey, btn);
                 container.appendChild(btn);
             });
         }
 
-        // Função de seleção de data (ajustada para limpar a busca por nome)
         function selectDate(date, btn) {
-            document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.room-btn').forEach(b => b.classList.remove('active'));
-            selectedRoom = null; // Limpa filtro de sala
+            document.querySelectorAll('#tab-escalas .date-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('#tab-escalas .room-btn').forEach(b => b.classList.remove('active'));
+            selectedRoom = null; 
 
             if (selectedDate === date) {
                 selectedDate = null;
@@ -537,16 +706,15 @@
                 btn.classList.add('active');
             }
             
-            searchTerm = ''; // Limpa o termo de busca
+            searchTerm = ''; 
             document.getElementById('teacherSearchInput').value = ''; 
             renderSchedules();
         }
 
-        // Função de seleção de sala (ajustada para limpar a busca por nome)
-        function selectRoom(roomKey, btn) {
-            document.querySelectorAll('.room-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('active'));
-            selectedDate = null; // Limpa filtro de data
+        function selectRoomEscalas(roomKey, btn) {
+            document.querySelectorAll('#tab-escalas .room-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('#tab-escalas .date-btn').forEach(b => b.classList.remove('active'));
+            selectedDate = null; 
 
             if (selectedRoom === roomKey) {
                 selectedRoom = null;
@@ -555,18 +723,16 @@
                 btn.classList.add('active');
             }
             
-            searchTerm = ''; // Limpa o termo de busca
+            searchTerm = ''; 
             document.getElementById('teacherSearchInput').value = '';
             renderSchedules();
         }
 
-        // CORRIGIDO: Função principal de renderização com lógica de filtro unificada
         function renderSchedules() {
             const container = document.getElementById('scheduleGrid');
             const resultsTitle = document.getElementById('resultsTitle');
             container.innerHTML = '';
 
-            // 1. Cria uma lista plana de TODAS as escalas, com as informações da sala
             let allSchedules = [];
             Object.keys(scheduleData).forEach(roomKey => {
                 const room = scheduleData[roomKey];
@@ -575,22 +741,18 @@
                 });
             });
 
-            // 2. Aplica os filtros
             let filteredSchedules = allSchedules.filter(item => {
                 const { roomKey, schedule } = item;
                 
-                // FILTRO POR PROFESSOR: Tem prioridade e busca em todas as escalas
                 if (searchTerm) {
                     const teachersUpper = schedule.teachers.map(t => t.toUpperCase());
                     return teachersUpper.some(t => t.includes(searchTerm));
                 }
 
-                // FILTRO POR DATA (se não houver termo de busca)
                 if (selectedDate && schedule.date !== selectedDate) {
                     return false;
                 }
 
-                // FILTRO POR SALA (se não houver termo de busca)
                 if (selectedRoom && roomKey !== selectedRoom) {
                     return false;
                 }
@@ -600,12 +762,10 @@
             
             let scheduleCount = filteredSchedules.length;
 
-            // 3. Renderiza os resultados
             filteredSchedules.forEach(({ room, schedule }) => {
                 const isSantaCeia = schedule.date === '09/11/2025'; 
 
                 const card = document.createElement('div');
-                // Adiciona a classe de destaque se for Santa Ceia
                 card.className = 'schedule-card' + (isSantaCeia ? ' santa-ceia-highlight' : '');
                 
                 card.innerHTML = `
@@ -624,9 +784,7 @@
                         <div class="teachers-label">👥 Professores:</div>
                         <div class="teachers-list">
                             ${schedule.teachers.filter(t => t && t.trim() !== '').map(teacher => {
-                                // Verifica se o professor deve ser destacado (se houver termo de busca)
                                 const isHighlighted = searchTerm && teacher.toUpperCase().includes(searchTerm);
-                                // Aplica um estilo inline para o destaque, já que é dinâmico
                                 return `<div class="teacher-card" ${isHighlighted ? 'style="border: 2px solid #667eea; background: #e6e9f9;"' : ''}>👨‍🔬 ${teacher}</div>`;
                             }).join('')}
                         </div>
@@ -635,7 +793,6 @@
                 container.appendChild(card);
             });
 
-            // 4. Atualiza o estado vazio e o título
             if (scheduleCount === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
@@ -659,15 +816,13 @@
             resultsTitle.textContent = titleText;
         }
 
-        // CORRIGIDO: Função de reset para limpar todos os filtros
         function resetFilters() {
-            resetDateAndRoomFilters(); // Limpa botões de data e sala
-            searchTerm = ''; // Limpa o termo de busca
-            document.getElementById('teacherSearchInput').value = ''; // Limpa o campo de input
+            resetDateAndRoomFilters(); 
+            searchTerm = ''; 
+            document.getElementById('teacherSearchInput').value = ''; 
             renderSchedules();
         }
 
-        // Função de exportação para CSV (mantida a original com ajuste para colunas)
         function exportToCSV() {
             let csv = 'Sala,Idade,Data,Lição,Professor 1,Professor 2,Professor 3\n';
             
@@ -675,7 +830,6 @@
                 const room = scheduleData[roomKey];
                 room.schedules.forEach(schedule => {
                     const teachers = schedule.teachers.filter(t => t && t.trim() !== '');
-                    // Garante que haja 3 colunas de professor no CSV, mesmo que vazias
                     const t1 = teachers[0] || '';
                     const t2 = teachers[1] || '';
                     const t3 = teachers[2] || '';
@@ -690,9 +844,120 @@
             link.click();
         }
 
-        // Inicialização
+        /* ---------------------------------- */
+        /* FUNÇÕES DA ABA CHAMADA             */
+        /* ---------------------------------- */
+
+        function initializeRoomTabsChamada() {
+            const container = document.getElementById('roomTabsCall');
+            container.innerHTML = '';
+            
+            Object.keys(roomsData).forEach(roomKey => {
+                const room = roomsData[roomKey];
+                const tab = document.createElement('div');
+                tab.className = 'room-tab-call';
+                tab.innerHTML = `<div class="room-name-tab">${room.icon} ${room.name}</div><div class="room-age-tab">${room.age}</div>`;
+                tab.onclick = () => selectRoomChamada(roomKey, tab);
+                container.appendChild(tab);
+            });
+            
+            document.getElementById('dateInput').valueAsDate = new Date();
+            renderEmptyKidsList();
+        }
+        
+        function renderEmptyKidsList() {
+            document.getElementById('kidsList').innerHTML = `
+                <div class="empty-state">
+                    Escolha uma sala para começar a lista de chamada.
+                </div>
+            `;
+            document.getElementById('chamadaTitle').innerHTML = `📝 Chamada - Selecione a Sala Acima`;
+        }
+
+        function selectRoomChamada(roomKey, tabElement) {
+            document.querySelectorAll('.room-tab-call').forEach(t => t.classList.remove('active'));
+            
+            tabElement.classList.add('active');
+            selectedRoomKeyChamada = roomKey;
+            
+            const room = roomsData[roomKey];
+            document.getElementById('chamadaTitle').innerHTML = `📝 Chamada - ${room.icon} Sala ${room.name}`;
+            renderKidsList();
+        }
+        
+        function renderKidsList() {
+            const container = document.getElementById('kidsList');
+            container.innerHTML = `<div class="form-label">Crianças Presentes (Preencha de 1 a ${MAX_KIDS} nomes):</div>`;
+            
+            for (let i = 1; i <= MAX_KIDS; i++) {
+                const group = document.createElement('div');
+                group.className = 'kid-input-group';
+                group.innerHTML = `
+                    <div class="kid-number">${i}.</div>
+                    <input type="text" id="kid-${i}" placeholder="Nome da criança ${i}">
+                `;
+                container.appendChild(group);
+            }
+        }
+        
+        function submitCall() {
+            if (!selectedRoomKeyChamada) {
+                alert("Por favor, selecione uma Sala!");
+                return;
+            }
+
+            const teacherName = document.getElementById('teacherName').value.trim();
+            const date = document.getElementById('dateInput').value;
+
+            if (!teacherName || !date) {
+                alert("Por favor, preencha seu nome e a data da aula!");
+                return;
+            }
+            
+            const room = roomsData[selectedRoomKeyChamada];
+            const presentKids = [];
+
+            for (let i = 1; i <= MAX_KIDS; i++) {
+                const kidName = document.getElementById(`kid-${i}`).value.trim();
+                if (kidName) {
+                    presentKids.push(kidName);
+                }
+            }
+            
+            const totalPresent = presentKids.length;
+
+            if (totalPresent === 0) {
+                alert("Nenhuma criança registrada! Por favor, insira pelo menos um nome.");
+                return;
+            }
+
+            const callData = {
+                sala: room.name,
+                faixa_etaria: room.age,
+                data_aula: date,
+                professor: teacherName,
+                total_presentes: totalPresent,
+                lista_criancas: presentKids
+            };
+
+            // Simulação de envio (exibição no console)
+            console.log("------------------------------------------");
+            console.log(`✅ CHAMADA FINALIZADA - ${room.name}`);
+            console.log("------------------------------------------");
+            console.log(callData); 
+            console.log("------------------------------------------");
+            
+            alert(`Chamada da Sala ${room.name} concluída com sucesso!\nProfessor: ${teacherName}\nTotal de Crianças: ${totalPresent}`);
+
+            document.getElementById('teacherName').value = '';
+            document.querySelectorAll('#tab-chamada .kid-input-group input').forEach(input => input.value = '');
+        }
+
+
+        // INICIALIZAÇÃO GERAL
         initializeDateButtons();
         initializeRoomButtons();
+        initializeRoomTabsChamada(); // Inicializa os botões da aba Chamada
         renderSchedules();
     </script>
 </body>
