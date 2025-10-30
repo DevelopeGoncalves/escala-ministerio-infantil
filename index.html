@@ -441,18 +441,22 @@
             font-size: 1.05em; /* Ajustado para combinar com os botões do Código 1 */
             margin-top: 25px;
         }
-
+        
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
         /* Outros ajustes de estilo */
             input[type="date"], #teacherName {
-        width: 100%;
-        /* Alterações Feitas AQUI: */
-        padding: 16px; /* Aumenta a altura do campo (preenchimento interno) */
-        font-size: 1.1em; /* Aumenta o tamanho do texto dentro do campo */
-        /* Outras propriedades de estilo mantidas: */
-        border: 2px solid #ccc; 
-        border-radius: 12px;
-        transition: border-color 0.2s ease;
-    }
+            width: 100%;
+            /* Alterações Feitas AQUI: */
+            padding: 16px; /* Aumenta a altura do campo (preenchimento interno) */
+            font-size: 1.1em; /* Aumenta o tamanho do texto dentro do campo */
+            /* Outras propriedades de estilo mantidas: */
+            border: 2px solid #ccc; 
+            border-radius: 12px;
+            transition: border-color 0.2s ease;
+        }
 
         html {
             scroll-behavior: smooth;
@@ -534,12 +538,16 @@
                     </div>
                 </div>
 
-                <button class="btn-submit" onclick="submitCall()">✅ Finalizar Chamada</button>
+                <button class="btn btn-submit" onclick="submitCall()">✅ Finalizar Chamada</button>
             </div>
         </div>
         </div>
 
     <script>
+        // *** SEU URL DO APPS SCRIPT DEPLOYED ESTÁ AQUI ***
+        const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzl3ajI4Vc7sdHe5aeuHji6mGyhA0elkigHSTZcpPJ7ZF0S0FZrpMC2mIRDq7hNXjKUgQ/exec';
+        // ************************************************
+
         // DADOS COMPARTILHADOS (ESCALAS E CHAMADA)
         const roomsData = {
             berçario: { name: "Berçário", age: "0-2 anos", icon: "👶" },
@@ -615,7 +623,7 @@
         const MAX_KIDS = 20;
 
         /* ---------------------------------- */
-        /* FUNÇÕES GERAIS (ABAS)              */
+        /* FUNÇÕES GERAIS (ABAS)             */
         /* ---------------------------------- */
 
         function openTab(tabId, element) {
@@ -641,7 +649,7 @@
 
 
         /* ---------------------------------- */
-        /* FUNÇÕES DA ABA ESCALAS             */
+        /* FUNÇÕES DA ABA ESCALAS            */
         /* ---------------------------------- */
         
         function resetDateAndRoomFilters() {
@@ -833,7 +841,7 @@
                     const t1 = teachers[0] || '';
                     const t2 = teachers[1] || '';
                     const t3 = teachers[2] || '';
-                    csv += `${room.name},${room.age},${schedule.date},${schedule.lesson},${t1},${t2},${t3}\n`;
+                    csv += `${room.name},${room.age},${schedule.date},${schedule.lesson},"${t1}","${t2}","${t3}"\n`; // Adicionado aspas para nomes com vírgulas
                 });
             });
 
@@ -845,7 +853,7 @@
         }
 
         /* ---------------------------------- */
-        /* FUNÇÕES DA ABA CHAMADA             */
+        /* FUNÇÕES DA ABA CHAMADA            */
         /* ---------------------------------- */
 
         function initializeRoomTabsChamada() {
@@ -861,7 +869,13 @@
                 container.appendChild(tab);
             });
             
-            document.getElementById('dateInput').valueAsDate = new Date();
+            // Define a data atual no input de data
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0'); // Mês começa em 0
+            const dd = String(today.getDate()).padStart(2, '0');
+            document.getElementById('dateInput').value = `${yyyy}-${mm}-${dd}`;
+            
             renderEmptyKidsList();
         }
         
@@ -900,17 +914,24 @@
             }
         }
         
-        function submitCall() {
+        async function submitCall() {
+
             if (!selectedRoomKeyChamada) {
                 alert("Por favor, selecione uma Sala!");
                 return;
             }
 
+            const submitBtn = document.querySelector('.btn-submit');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Enviando...';
+
             const teacherName = document.getElementById('teacherName').value.trim();
-            const date = document.getElementById('dateInput').value;
+            const date = document.getElementById('dateInput').value; // Formato YYYY-MM-DD
 
             if (!teacherName || !date) {
                 alert("Por favor, preencha seu nome e a data da aula!");
+                submitBtn.disabled = false;
+                submitBtn.textContent = '✅ Finalizar Chamada';
                 return;
             }
             
@@ -928,29 +949,42 @@
 
             if (totalPresent === 0) {
                 alert("Nenhuma criança registrada! Por favor, insira pelo menos um nome.");
+                submitBtn.disabled = false;
+                submitBtn.textContent = '✅ Finalizar Chamada';
                 return;
             }
-
-            const callData = {
-                sala: room.name,
-                faixa_etaria: room.age,
-                data_aula: date,
-                professor: teacherName,
-                total_presentes: totalPresent,
-                lista_criancas: presentKids
-            };
-
-            // Simulação de envio (exibição no console)
-            console.log("------------------------------------------");
-            console.log(`✅ CHAMADA FINALIZADA - ${room.name}`);
-            console.log("------------------------------------------");
-            console.log(callData); 
-            console.log("------------------------------------------");
             
-            alert(`Chamada da Sala ${room.name} concluída com sucesso!\nProfessor: ${teacherName}\nTotal de Crianças: ${totalPresent}`);
+            // Usando URLSearchParams para dados de formulário (formato que o Apps Script prefere)
+            const formData = new URLSearchParams();
+            formData.append('room_name', room.name);
+            formData.append('room_age', room.age);
+            formData.append('lesson_date', date);
+            formData.append('teacher_name', teacherName);
+            formData.append('total_present', totalPresent);
+            formData.append('kids_list', presentKids.join('; ')); // Junta em uma string separada por ;
 
-            document.getElementById('teacherName').value = '';
-            document.querySelectorAll('#tab-chamada .kid-input-group input').forEach(input => input.value = '');
+            try {
+                const response = await fetch(SHEET_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', 
+                    body: formData // Envia os dados no formato de formulário
+                });
+
+                // A resposta real não é lida devido ao 'no-cors', mas se chegou aqui, a requisição foi enviada.
+
+                alert(`🎉 Chamada da Sala ${room.name} concluída com sucesso! Os ${totalPresent} nomes foram enviados para a planilha.`);
+
+                // Limpar o formulário
+                document.getElementById('teacherName').value = '';
+                document.querySelectorAll('#tab-chamada .kid-input-group input').forEach(input => input.value = '');
+
+            } catch (error) {
+                console.error("Erro ao enviar dados para o Google Sheet:", error);
+                alert("❌ Erro ao enviar a chamada. Tente novamente ou verifique a conexão.");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '✅ Finalizar Chamada';
+            }
         }
 
 
