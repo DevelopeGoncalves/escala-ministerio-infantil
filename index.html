@@ -405,35 +405,6 @@
             margin-bottom: 20px;
         }
 
-        .kid-input-group {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            gap: 10px;
-        }
-
-        .kid-input-group input {
-            flex: 1;
-            padding: 10px;
-            border: 2px solid #ccc; /* Ajustado para 2px para combinar com o input geral */
-            border-radius: 8px;
-            font-size: 1em;
-            transition: border-color 0.2s ease;
-        }
-        
-        .kid-input-group input:focus {
-            border-color: #667eea;
-            outline: none;
-        }
-
-        .kid-number {
-            font-weight: 700;
-            color: #667eea;
-            width: 30px;
-            text-align: center;
-            font-size: 1.1em;
-        }
-
         .btn-submit {
             background: #10b981;
             padding: 16px 20px; /* Ajustado para combinar com os botões do Código 1 */
@@ -457,6 +428,49 @@
             border-radius: 12px;
             transition: border-color 0.2s ease;
         }
+        
+        /* ESTILO PARA A SEÇÃO DE ADICIONAR CRIANÇA */
+        .add-kid-section {
+            margin-bottom: 20px;
+            padding-top: 5px;
+        }
+
+        .add-kid-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+            margin-bottom: 10px;
+        }
+
+        #extraKidName {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ccc;
+            border-radius: 12px;
+            font-size: 1em;
+            transition: border-color 0.2s ease;
+        }
+
+        #extraKidName:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+
+        .btn-add-kid {
+            padding: 0 15px;
+            background: #ffc107; /* Amarelo */
+            color: #333;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-add-kid:active {
+            transform: scale(0.98);
+        }
+
 
         html {
             scroll-behavior: smooth;
@@ -474,6 +488,120 @@
             .date-buttons {
                 grid-template-columns: 1fr;
             }
+            
+            .add-kid-input-group {
+                flex-direction: column;
+            }
+            .btn-add-kid {
+                height: 48px;
+            }
+        }
+
+        /* CSS PARA OS CARDS DE CRIANÇAS - ALTERADO SIGNIFICATIVAMENTE AQUI */
+        .kids-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); /* Aumenta o tamanho base */
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .kid-card {
+            background: #f8f9fa;
+            border: 3px solid #dee2e6;
+            border-radius: 15px;
+            padding: 0; /* Remove padding para a imagem preencher */
+            overflow: hidden; /* Garante que a imagem não vaze */
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* Ajustado para acomodar a imagem e o nome */
+            height: 180px; /* Altura fixa para todos os cartões */
+            position: relative;
+        }
+        
+        /* ESTILO PARA CRIANÇA ADICIONADA MANUALMENTE */
+        .kid-card.extra {
+            background: #fff8e1; /* Amarelo muito claro */
+            border-color: #ffc107; /* Amarelo */
+        }
+        
+        .kid-card:active {
+            transform: scale(0.98);
+        }
+        
+        .kid-card.present {
+            background: #e6f7ef; /* Fundo verde claro */
+            border-color: #10b981; /* Borda verde */
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .kid-photo {
+            width: 100%; /* A imagem cobre a largura total do card */
+            height: 140px; /* Altura fixa para a imagem */
+            object-fit: cover; /* Garante que a imagem preencha sem distorcer */
+            border-radius: 12px 12px 0 0; /* Apenas bordas superiores */
+            border-bottom: none; /* Remove a borda de baixo */
+            
+            /* Remove a borda e sombra extras se for uma imagem real */
+            border: none;
+            box-shadow: none;
+        }
+        
+        .kid-card.present .kid-photo {
+            border-color: #10b981; /* Manter se houver uma borda sutil no card */
+        }
+        
+        /* ESTILO PARA PHOTO PLACEHOLDER DE CRIANÇA EXTRA */
+        .kid-card.extra .kid-photo {
+            background: #ffc107;
+            border-color: #ffc107; /* Cor da borda do card extra */
+            font-size: 2.5em; /* Aumenta o ícone ainda mais */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: none;
+            border-radius: 12px 12px 0 0; /* Bordas superiores */
+        }
+        
+        .kid-card.extra.present .kid-photo {
+            background: #10b981;
+            border-color: #10b981;
+        }
+
+        .kid-name {
+            font-size: 1.1em; /* Nome um pouco maior */
+            font-weight: 600;
+            color: #333;
+            line-height: 1.2;
+            padding: 8px 5px; /* Adiciona padding para o nome */
+            width: 100%; /* Garante que o nome ocupe a largura */
+            background: white; /* Fundo branco para o nome */
+            border-top: 1px solid #eee; /* Linha sutil separando da imagem */
+            border-radius: 0 0 12px 12px; /* Bordas inferiores */
+        }
+
+        .kid-card.present .kid-name {
+            background: #d4ede6; /* Fundo verde claro para o nome quando presente */
+            border-color: #10b981;
+        }
+
+        .kid-card.extra .kid-name {
+            background: #ffe082; /* Fundo amarelo claro para o nome extra */
+        }
+
+        .kid-card.extra.present .kid-name {
+            background: #d4ede6; /* Fundo verde claro para o nome extra e presente */
+        }
+
+        /* Ajuste para o form-label antes da lista de crianças */
+        #kidsList > .form-label {
+            margin-bottom: 15px; /* Mais espaço antes da grade de crianças */
         }
     </style>
 </head>
@@ -532,6 +660,13 @@
                     <input type="date" id="dateInput" required>
                 </div>
                 
+                <div class="add-kid-section">
+                    <div class="form-label">✨ Adicionar Criança Extra/Visitante</div>
+                    <div class="add-kid-input-group">
+                        <input type="text" id="extraKidName" placeholder="Nome da criança visitante/nova" disabled>
+                        <button class="btn btn-add-kid" onclick="addExtraKid()" disabled>+ Adicionar</button>
+                    </div>
+                </div>
                 <div id="kidsList">
                     <div class="empty-state">
                         Escolha uma sala para começar a lista de chamada.
@@ -556,6 +691,104 @@
             gama: { name: "Gama", age: "7-8 anos", icon: "⚽" },
             ômega: { name: "Ômega", age: "9-11 anos", icon: "📚" }
         };
+
+        // NOVO: DADOS FIXOS DAS CRIANÇAS PARA A CHAMADA VISUAL
+        const kidsData = {
+            berçario: [
+                { id: 1, name: "Maria Eduarda", photo: "m_eduarda.png" },
+                { id: 2, name: "João Pedro", photo: "j_pedro.png" },
+                { id: 3, name: "Sophia R.", photo: "sophia.png" },
+                { id: 4, name: "Benício L.", photo: "benicio.png" },
+                { id: 5, name: "Lara M.", photo: "lara.png" }
+            ],
+            alfa: [
+                { id: 6, name: "Alice", photo: "alice_alfa.png" },
+                { id: 7, name: "Levi", photo: "levi_alfa.png" },
+                { id: 8, name: "Emily", photo: "emily_alfa.png" },
+                { id: 9, name: "Arthur", photo: "arthur_alfa.png" },
+                { id: 10, name: "Laura", photo: "laura_alfa.png" },
+                { id: 11, name: "Benício", photo: "benicio_aalfa.png" },
+                { id: 12, name: "Heloísa", photo: "heloisa_alfa.png" },
+                { id: 13, name: "Júlio", photo: "julio_alfa.png" },
+                { id: 14, name: "Bernardo", photo: "bernardo_alfa.png" },
+                { id: 15, name: "Isadora", photo: "isadora_alfa.png" },
+                { id: 16, name: "Emanuel", photo: "emanuel_alfa.png" },
+                { id: 17, name: "Heitor", photo: "heitor_alfa.png" },
+                { id: 18, name: "Davi", photo: "davi_alfa.png" }
+            ],
+            beta: [
+                { id: 19, name: "Maitê", photo: "maite.png" },
+                { id: 20, name: "Liz Pacheco", photo: "liz_pacheco.png" },
+                { id: 21, name: "Helena M.", photo: "helena_m.png" },
+                { id: 22, name: "Pedro", photo: "pedro_b.png" },
+                { id: 23, name: "Tiffany", photo: "tiffany.png" },
+                { id: 24, name: "Arthur Souza", photo: "arthur_s.png" },
+                { id: 25, name: "João", photo: "joao_b.png" },
+                { id: 26, name: "José Luís", photo: "jose_luis.png" },
+                { id: 27, name: "João Miguel", photo: "joao_miguel_b.png" },
+                { id: 28, name: "Matteo", photo: "matteo.png" },
+                { id: 29, name: "Murilo", photo: "murilo.png" },
+                { id: 30, name: "Elisa", photo: "elisa_b.png" },
+                { id: 31, name: "Safira", photo: "safira.png" },
+                { id: 32, name: "Manuella", photo: "manuella_b.png" },
+                { id: 33, name: "Nicoly", photo: "nicoly_b.png" },
+                { id: 34, name: "Helena P.", photo: "helena_p.png" },
+                { id: 35, name: "Enrico J.", photo: "enrico.png" },
+                { id: 36, name: "Liz Medeiros", photo: "liz_medeiros.png" },
+                { id: 37, name: "Arthur R.", photo: "arthur_r.png" },
+                { id: 38, name: "Benjamin", photo: "benjamin_b.png" }
+            ],
+            gama: [
+                { id: 39, name: "Isaac", photo: "isaac.png" },
+                { id: 40, name: "Davi", photo: "davi_g.png" },
+                { id: 41, name: "Sophia", photo: "sophia_g.png" },
+                { id: 42, name: "Wendel", photo: "wendel.png" },
+                { id: 43, name: "Isabela", photo: "isabela_g.png" },
+                { id: 44, name: "Lauren", photo: "lauren.png" },
+                { id: 45, name: "Brayan", photo: "brayan.png" },
+                { id: 46, name: "Elisa", photo: "elisa_g.png" },
+                { id: 47, name: "Emanuelly", photo: "emanuelly.png" },
+                { id: 48, name: "Kauã", photo: "kaua_g.png" },
+                { id: 49, name: "Vicente", photo: "vicente.png" },
+                { id: 50, name: "Elisa Romão", photo: "elisa_romao.png" },
+                { id: 51, name: "Helena", photo: "helena_g.png" },
+                { id: 52, name: "Ana Clara", photo: "ana_clara_g.png" },
+                { id: 53, name: "Érick", photo: "erick.png" },
+                { id: 54, name: "Lorenzo", photo: "lorenzo_g.png" },
+                { id: 55, name: "Theo", photo: "theo_g.png" }
+            ],
+            ômega: [
+                { id: 56, name: "Nicolly", photo: "nicolly_o.png" },
+                { id: 57, name: "Saulo", photo: "saulo.png" },
+                { id: 58, name: "Kemily", photo: "kemily.png" },
+                { id: 59, name: "Maria Eduarda", photo: "maria_eduarda_o.png" },
+                { id: 60, name: "Lorena", photo: "lorena.png" },
+                { id: 61, name: "Laura", photo: "laura_o.png" },
+                { id: 62, name: "Eduardo", photo: "eduardo_o.png" },
+                { id: 63, name: "Kauã", photo: "kaua_o.png" },
+                { id: 64, name: "Pedro Lucas", photo: "pedro_lucas.png" },
+                { id: 65, name: "Italo", photo: "italo.png" },
+                { id: 66, name: "Davi", photo: "davi_o.png" },
+                { id: 67, name: "Laiz", photo: "laiz.png" },
+                { id: 68, name: "Micael", photo: "micael.png" },
+                { id: 69, name: "Ketelly", photo: "ketelly.png" },
+                { id: 70, name: "Bernardo", photo: "bernardo_o.png" },
+                { id: 71, name: "Asafe", photo: "asafe.png" },
+                { id: 72, name: "Isabelly", photo: "isabelly_o.png" },
+                { id: 73, name: "Heitor", photo: "heitor_o.png" },
+                { id: 74, name: "Lívia", photo: "livya.png" },
+                { id: 75, name: "Smith", photo: "smith.png" },
+                { id: 76, name: "Mikeias", photo: "mikeias.png" },
+                { id: 77, name: "Raphaela", photo: "raphaela.png" },
+                { id: 78, name: "Éric", photo: "eric_o.png" },
+                { id: 79, name: "Lavínia", photo: "lavinia.png" },
+                { id: 80, name: "Pietra", photo: "pietra.png" },
+                { id: 81, name: "Sophia", photo: "sophia_o.png" },
+                { id: 82, name: "João Miguel", photo: "joao_miguel_o.png" },
+                { id: 83, name: "Maria", photo: "maria_o.png" }
+            ]
+        };
+        
 
         // DADOS SOMENTE DA ABA ESCALAS
         const scheduleData = {
@@ -620,10 +853,9 @@
 
         // VARIÁVEIS DE ESTADO DA ABA CHAMADA
         let selectedRoomKeyChamada = null;
-        const MAX_KIDS = 20;
 
         /* ---------------------------------- */
-        /* FUNÇÕES GERAIS (ABAS)             */
+        /* FUNÇÕES GERAIS (ABAS)             */
         /* ---------------------------------- */
 
         function openTab(tabId, element) {
@@ -639,17 +871,30 @@
             
             // Re-renderiza a lista de chamadas se for a aba "Chamada"
             if (tabId === 'chamada') {
-                if (!selectedRoomKeyChamada) {
-                    renderEmptyKidsList();
+                if (selectedRoomKeyChamada) {
+                    // Garante que o botão da sala esteja ativo e a lista renderizada
+                    const activeTab = document.querySelector(`.room-tab-call[data-room-key="${selectedRoomKeyChamada}"]`);
+                    if (activeTab) {
+                        activeTab.classList.add('active');
+                    }
+                    renderKidsList(selectedRoomKeyChamada); 
+                    // Habilita o campo de criança extra
+                    document.getElementById('extraKidName').disabled = false;
+                    document.querySelector('.btn-add-kid').disabled = false;
+
                 } else {
-                    renderKidsList();
+                    renderEmptyKidsList();
+                     // Desabilita o campo de criança extra
+                    document.getElementById('extraKidName').disabled = true;
+                    document.querySelector('.btn-add-kid').disabled = true;
                 }
+                checkCallFormValidity(); // Valida o estado do botão
             }
         }
 
 
         /* ---------------------------------- */
-        /* FUNÇÕES DA ABA ESCALAS            */
+        /* FUNÇÕES DA ABA ESCALAS            */
         /* ---------------------------------- */
         
         function resetDateAndRoomFilters() {
@@ -853,9 +1098,20 @@
         }
 
         /* ---------------------------------- */
-        /* FUNÇÕES DA ABA CHAMADA            */
+        /* FUNÇÕES DA ABA CHAMADA (ATUALIZADAS PARA CARTÕES) */
         /* ---------------------------------- */
 
+        function checkCallFormValidity() {
+            const teacherName = document.getElementById('teacherName').value.trim();
+            const date = document.getElementById('dateInput').value;
+            const submitBtn = document.querySelector('.btn-submit');
+            
+            // Habilita se sala, nome e data estiverem preenchidos
+            const isValid = selectedRoomKeyChamada && teacherName && date;
+            
+            submitBtn.disabled = !isValid;
+        }
+        
         function initializeRoomTabsChamada() {
             const container = document.getElementById('roomTabsCall');
             container.innerHTML = '';
@@ -864,6 +1120,7 @@
                 const room = roomsData[roomKey];
                 const tab = document.createElement('div');
                 tab.className = 'room-tab-call';
+                tab.setAttribute('data-room-key', roomKey); // NOVO: Adiciona chave para seleção
                 tab.innerHTML = `<div class="room-name-tab">${room.icon} ${room.name}</div><div class="room-age-tab">${room.age}</div>`;
                 tab.onclick = () => selectRoomChamada(roomKey, tab);
                 container.appendChild(tab);
@@ -877,6 +1134,7 @@
             document.getElementById('dateInput').value = `${yyyy}-${mm}-${dd}`;
             
             renderEmptyKidsList();
+            checkCallFormValidity(); // Desabilita o botão inicialmente
         }
         
         function renderEmptyKidsList() {
@@ -888,30 +1146,101 @@
             document.getElementById('chamadaTitle').innerHTML = `📝 Chamada - Selecione a Sala Acima`;
         }
 
+        function togglePresence(element) {
+            element.classList.toggle('present');
+        }
+
         function selectRoomChamada(roomKey, tabElement) {
             document.querySelectorAll('.room-tab-call').forEach(t => t.classList.remove('active'));
             
-            tabElement.classList.add('active');
+            if (tabElement) {
+                tabElement.classList.add('active');
+            }
             selectedRoomKeyChamada = roomKey;
             
             const room = roomsData[roomKey];
             document.getElementById('chamadaTitle').innerHTML = `📝 Chamada - ${room.icon} Sala ${room.name}`;
-            renderKidsList();
+            renderKidsList(roomKey); // Passa a chave da sala
+            
+            // Habilita o campo de criança extra
+            document.getElementById('extraKidName').disabled = false;
+            document.querySelector('.btn-add-kid').disabled = false;
+
+            checkCallFormValidity();
+        }
+
+        let extraKidCounter = 0; // Contador para IDs exclusivos de crianças adicionadas
+
+        function addExtraKid() {
+            const extraKidNameInput = document.getElementById('extraKidName');
+            const name = extraKidNameInput.value.trim();
+            const kidsGrid = document.querySelector('#kidsList .kids-grid');
+
+            if (!name) {
+                alert("Por favor, digite o nome da criança!");
+                return;
+            }
+
+            if (!kidsGrid) {
+                alert("Selecione uma sala primeiro!");
+                return;
+            }
+            
+            extraKidCounter++;
+            const kidId = `extra-${extraKidCounter}`;
+            
+            // Cria o novo cartão
+            const newKidCard = document.createElement('div');
+            newKidCard.className = 'kid-card extra present'; // Já marca como presente (chegou agora)
+            newKidCard.setAttribute('onclick', 'togglePresence(this)');
+            newKidCard.setAttribute('data-kid-name', `${name} (Extra)`);
+
+            newKidCard.innerHTML = `
+                <img class="kid-photo" src="https://via.placeholder.com/150/ffc107/ffffff?text=✨" alt="Criança Extra">
+                <div class="kid-name">${name}</div>
+            `;
+            
+            kidsGrid.appendChild(newKidCard);
+            
+            // Limpa o input após a adição
+            extraKidNameInput.value = '';
+            extraKidNameInput.focus();
+            
+            checkCallFormValidity(); // Garante que o botão de submissão está validado
         }
         
-        function renderKidsList() {
+        function renderKidsList(roomKey) {
             const container = document.getElementById('kidsList');
-            container.innerHTML = `<div class="form-label">Crianças Presentes (Preencha de 1 a ${MAX_KIDS} nomes):</div>`;
+            const kids = kidsData[roomKey] || [];
             
-            for (let i = 1; i <= MAX_KIDS; i++) {
-                const group = document.createElement('div');
-                group.className = 'kid-input-group';
-                group.innerHTML = `
-                    <div class="kid-number">${i}.</div>
-                    <input type="text" id="kid-${i}" placeholder="Nome da criança ${i}">
+            if (kids.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Lista de Crianças Vazia</h3>
+                        <p>Nenhuma criança cadastrada para esta sala.</p>
+                    </div>
                 `;
-                container.appendChild(group);
+                return;
             }
+            
+            let html = `<div class="form-label">👋 Toque na foto da criança que está PRESENTE</div>`;
+            html += `<div class="kids-grid">`;
+            
+            kids.forEach(kid => {
+                // A URL da foto deve ser ajustada para o local onde você salvará as imagens.
+                // Exemplo: 'img/' + kid.photo ou um URL completo se hospedado
+                const photoUrl = kid.photo.startsWith('http') ? kid.photo : `img/${kid.photo}`;
+                
+                html += `
+                    <div class="kid-card" onclick="togglePresence(this)" data-kid-name="${kid.name}">
+                        <img class="kid-photo" src="${photoUrl}" alt="${kid.name}" onerror="this.onerror=null; this.src='https://via.placeholder.com/150/667eea/ffffff?text=👶';">
+                        <div class="kid-name">${kid.name}</div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            container.innerHTML = html;
         }
         
         async function submitCall() {
@@ -932,25 +1261,23 @@
                 alert("Por favor, preencha seu nome e a data da aula!");
                 submitBtn.disabled = false;
                 submitBtn.textContent = '✅ Finalizar Chamada';
+                checkCallFormValidity();
                 return;
             }
             
             const room = roomsData[selectedRoomKeyChamada];
-            const presentKids = [];
-
-            for (let i = 1; i <= MAX_KIDS; i++) {
-                const kidName = document.getElementById(`kid-${i}`).value.trim();
-                if (kidName) {
-                    presentKids.push(kidName);
-                }
-            }
             
+            // COLETA OS NOMES DE TODOS OS CARDS MARCADOS COMO 'present'
+            const presentKidsElements = document.querySelectorAll('#kidsList .kid-card.present');
+            const presentKids = Array.from(presentKidsElements).map(el => el.getAttribute('data-kid-name'));
+
             const totalPresent = presentKids.length;
 
             if (totalPresent === 0) {
-                alert("Nenhuma criança registrada! Por favor, insira pelo menos um nome.");
+                alert("Nenhuma criança registrada! Por favor, toque no cartão das crianças presentes.");
                 submitBtn.disabled = false;
                 submitBtn.textContent = '✅ Finalizar Chamada';
+                checkCallFormValidity();
                 return;
             }
             
@@ -969,14 +1296,19 @@
                     mode: 'no-cors', 
                     body: formData // Envia os dados no formato de formulário
                 });
-
-                // A resposta real não é lida devido ao 'no-cors', mas se chegou aqui, a requisição foi enviada.
+                
+                // Limpar as seleções e a lista de crianças extras
+                document.querySelectorAll('#kidsList .kid-card').forEach(card => {
+                    if (card.classList.contains('extra')) {
+                        card.remove(); // Remove crianças extras
+                    } else {
+                        card.classList.remove('present'); // Limpa seleção das crianças fixas
+                    }
+                });
+                document.getElementById('extraKidName').value = '';
+                extraKidCounter = 0; // Reinicia o contador
 
                 alert(`🎉 Chamada da Sala ${room.name} concluída com sucesso! Os ${totalPresent} nomes foram enviados para a planilha.`);
-
-                // Limpar o formulário
-                document.getElementById('teacherName').value = '';
-                document.querySelectorAll('#tab-chamada .kid-input-group input').forEach(input => input.value = '');
 
             } catch (error) {
                 console.error("Erro ao enviar dados para o Google Sheet:", error);
@@ -984,6 +1316,7 @@
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = '✅ Finalizar Chamada';
+                checkCallFormValidity(); // Revalida o botão
             }
         }
 
@@ -993,6 +1326,10 @@
         initializeRoomButtons();
         initializeRoomTabsChamada(); // Inicializa os botões da aba Chamada
         renderSchedules();
+
+        // Adiciona listeners para validar o formulário
+        document.getElementById('teacherName').addEventListener('input', checkCallFormValidity);
+        document.getElementById('dateInput').addEventListener('input', checkCallFormValidity);
     </script>
 </body>
 </html>
