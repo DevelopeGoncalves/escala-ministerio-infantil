@@ -817,7 +817,7 @@
 
     <script>
         // *** SEU URL DO APPS SCRIPT DEPLOYED ESTÁ AQUI ***
-        const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxEWjkpgOSmFgNLNBIVj_OV73leclt8wk4Swdc_xpWMxCTbw_jw_WNUsD5xcTUimlah5Q/exec';
+        const SHEET_URL = 'https://script.google.com/macros/s/AKfycbwl_v32Brp9of0PoPiqLNtZOJEeTQLGd202QARaK2DBx8Hh8B6PFj1gshWv6kae5H__hw/exec';
         // ************************************************
         
         // LIMITE DE ARQUIVO: 5 MB em bytes
@@ -1550,7 +1550,7 @@ function initializeRoomTabsLicoes() {
         container.appendChild(btn);
     });
 }
-        
+
 function initializeDateButtonsLicoes() {
     const container = document.getElementById('dateButtonsLessons');
     container.innerHTML = '';
@@ -1563,7 +1563,7 @@ function initializeDateButtonsLicoes() {
         container.appendChild(btn);
     });
 }
-        
+
 function selectRoomLicoes(roomKey, btn) {
     selectedFile = null;
     document.getElementById('pdfFile').value = '';
@@ -1584,7 +1584,7 @@ function selectRoomLicoes(roomKey, btn) {
     }
     checkLessonFormValidity();
 }
-        
+
 function selectDateLicoes(date, btn) {
     selectedFile = null;
     document.getElementById('pdfFile').value = '';
@@ -1605,7 +1605,7 @@ function selectDateLicoes(date, btn) {
     }
     checkLessonFormValidity();
 }
-        
+
 function handleFileSelect() {
     const fileInput = document.getElementById('pdfFile');
     if (fileInput.files.length === 0) {
@@ -1753,9 +1753,7 @@ async function uploadLesson() {
         }
     }
 
-    /**
-    * ATUALIZADA: Exibe a lição no iframe, buscando o link diretamente do Google Drive.
-    */
+        // Localize esta função no seu código JavaScript:
     async function displayLesson(roomKey, date) {
         const viewerContainer = document.getElementById('pdfViewerContent');
         const roomName = roomsData[roomKey].name;
@@ -1767,19 +1765,25 @@ async function uploadLesson() {
         const statusResponse = await fetchLessonStatus(roomKey, date); 
         
         if (statusResponse.status === 'found') {
-            const fileUrl = statusResponse.fileUrl;
+            const fileUrl = statusResponse.fileUrl; // O link do Drive
             currentLessonFileUrl = fileUrl; // Armazena o URL no estado
 
-            let iframe = document.getElementById('pdfViewerIframe');
-            if (!iframe) {
-                viewerContainer.innerHTML = ''; 
-                iframe = document.createElement('iframe');
-                iframe.id = 'pdfViewerIframe';
-                iframe.className = 'pdf-viewer';
-                viewerContainer.appendChild(iframe);
-            }
+            // ---- CORREÇÃO CRÍTICA AQUI ----
             
-            iframe.src = fileUrl; // Define o src para o URL de visualização do Google Drive
+            // Remove qualquer elemento anterior (iframe ou embed)
+            viewerContainer.innerHTML = ''; 
+
+            // Cria a tag <embed> para melhor compatibilidade com links de download forçado
+            let embed = document.createElement('embed');
+            embed.id = 'pdfViewerEmbed';
+            embed.className = 'pdf-viewer'; // Mantém os estilos CSS
+            embed.src = fileUrl; // Define o src para o URL do Google Drive
+            embed.type = 'application/pdf'; // Indica ao navegador que é um PDF
+            
+            viewerContainer.appendChild(embed);
+
+            // ---- FIM DA CORREÇÃO CRÍTICA ----
+            
             displayLessonEmptyState(`✅ Lição Salva no Drive! Exibindo lição para ${roomName}.`);
             
         } else {
@@ -1789,7 +1793,7 @@ async function uploadLesson() {
 
         checkLessonFormValidity();
     }
-            
+
     function displayLessonEmptyState(message = 'Selecione uma sala e data acima.') {
         const viewerContainer = document.getElementById('pdfViewerContent');
         const existingIframe = document.getElementById('pdfViewerIframe');
