@@ -817,7 +817,7 @@
 
     <script>
         // *** SEU URL DO APPS SCRIPT DEPLOYED ESTÁ AQUI ***
-        const SHEET_URL = 'https://script.google.com/macros/s/AKfycbwl_v32Brp9of0PoPiqLNtZOJEeTQLGd202QARaK2DBx8Hh8B6PFj1gshWv6kae5H__hw/exec';
+        const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxmD9myoho6RHhrXPwFBvRVPVwJaxVHHh6rqknqTbEl0wvoI9iFywuv-vEkz9ihkosCfw/exec';
         // ************************************************
         
         // LIMITE DE ARQUIVO: 5 MB em bytes
@@ -1753,41 +1753,45 @@ async function uploadLesson() {
         }
     }
 
-        // Localize esta função no seu código JavaScript:
+            // Localize esta função no seu código JavaScript:
     async function displayLesson(roomKey, date) {
         const viewerContainer = document.getElementById('pdfViewerContent');
         const roomName = roomsData[roomKey].name;
 
-        // Limpa o iframe atual e mostra o estado de carregamento
         displayLessonEmptyState(`⏳ Verificando lição para Sala ${roomName} em ${date}...`);
         
-        // 1. Chama o Apps Script para verificar o status do arquivo e obter o URL
         const statusResponse = await fetchLessonStatus(roomKey, date); 
         
         if (statusResponse.status === 'found') {
-            const fileUrl = statusResponse.fileUrl; // O link do Drive
-            currentLessonFileUrl = fileUrl; // Armazena o URL no estado
+            // O Apps Script retorna a URL de DOWNLOAD. Vamos usá-la no Docs Viewer.
+            const driveDownloadUrl = statusResponse.fileUrl; 
+            
+            // **URL FINAL DE VISUALIZAÇÃO VIA GOOGLE DOCS VIEWER**
+            const docsViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(driveDownloadUrl)}&embedded=true`;
+            
+            currentLessonFileUrl = driveDownloadUrl; // Mantemos o URL de download no estado para o botão Excluir
 
             // ---- CORREÇÃO CRÍTICA AQUI ----
             
-            // Remove qualquer elemento anterior (iframe ou embed)
+            // Remove qualquer elemento anterior
             viewerContainer.innerHTML = ''; 
 
-            // Cria a tag <embed> para melhor compatibilidade com links de download forçado
-            let embed = document.createElement('embed');
-            embed.id = 'pdfViewerEmbed';
-            embed.className = 'pdf-viewer'; // Mantém os estilos CSS
-            embed.src = fileUrl; // Define o src para o URL do Google Drive
-            embed.type = 'application/pdf'; // Indica ao navegador que é um PDF
+            // Cria a tag <iframe> (Docs Viewer é mais compatível com iframe)
+            let iframe = document.createElement('iframe');
+            iframe.id = 'pdfViewerIframe';
+            iframe.className = 'pdf-viewer'; // Mantém os estilos CSS
+            iframe.src = docsViewerUrl; // Define o src para o Docs Viewer
+            iframe.setAttribute('allowfullscreen', 'true');
+            iframe.setAttribute('frameborder', '0');
             
-            viewerContainer.appendChild(embed);
+            viewerContainer.appendChild(iframe);
 
             // ---- FIM DA CORREÇÃO CRÍTICA ----
             
             displayLessonEmptyState(`✅ Lição Salva no Drive! Exibindo lição para ${roomName}.`);
             
         } else {
-            currentLessonFileUrl = null; // Limpa o estado
+            currentLessonFileUrl = null; 
             displayLessonEmptyState(`Nenhuma lição salva para Sala ${roomName} em ${date}. Faça o upload.`);
         }
 
