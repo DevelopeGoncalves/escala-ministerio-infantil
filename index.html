@@ -817,7 +817,7 @@
 
     <script>
         // *** SEU URL DO APPS SCRIPT DEPLOYED ESTÁ AQUI ***
-        const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxmD9myoho6RHhrXPwFBvRVPVwJaxVHHh6rqknqTbEl0wvoI9iFywuv-vEkz9ihkosCfw/exec';
+        const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxEWjkpgOSmFgNLNBIVj_OV73leclt8wk4Swdc_xpWMxCTbw_jw_WNUsD5xcTUimlah5Q/exec';
         // ************************************************
         
         // LIMITE DE ARQUIVO: 5 MB em bytes
@@ -874,9 +874,10 @@
                 { id: 33, name: "Nicoly", photo: "nicoly_beta.png" },
                 { id: 34, name: "Helena P.", photo: "helena_beta.png" },
                 { id: 35, name: "Enrico J.", photo: "enrico_beta.png" },
-                { id: 36, name: "Liz Medeiros", photo: "liz_medeiros_beta.png" },
+                { id: 36, name: "Liz Pacheco", photo: "liz_pacheco_beta.png" },
                 { id: 37, name: "Arthur R.", photo: "arthur_beta.png" },
-                { id: 38, name: "Benjamin", photo: "benjamin_beta.png" }
+                { id: 38, name: "Benjamin", photo: "benjamin_beta.png" },
+                { id: 39, name: "Ana Luiza", photo: "ana_luiza_beta.png" }
             ],
             gama: [ 
                 { id: 39, name: "Isaac", photo: "isaac_gama.png" },
@@ -1550,7 +1551,7 @@ function initializeRoomTabsLicoes() {
         container.appendChild(btn);
     });
 }
-
+        
 function initializeDateButtonsLicoes() {
     const container = document.getElementById('dateButtonsLessons');
     container.innerHTML = '';
@@ -1563,7 +1564,7 @@ function initializeDateButtonsLicoes() {
         container.appendChild(btn);
     });
 }
-
+        
 function selectRoomLicoes(roomKey, btn) {
     selectedFile = null;
     document.getElementById('pdfFile').value = '';
@@ -1584,7 +1585,7 @@ function selectRoomLicoes(roomKey, btn) {
     }
     checkLessonFormValidity();
 }
-
+        
 function selectDateLicoes(date, btn) {
     selectedFile = null;
     document.getElementById('pdfFile').value = '';
@@ -1605,7 +1606,7 @@ function selectDateLicoes(date, btn) {
     }
     checkLessonFormValidity();
 }
-
+        
 function handleFileSelect() {
     const fileInput = document.getElementById('pdfFile');
     if (fileInput.files.length === 0) {
@@ -1753,51 +1754,43 @@ async function uploadLesson() {
         }
     }
 
-            // Localize esta função no seu código JavaScript:
+    /**
+    * ATUALIZADA: Exibe a lição no iframe, buscando o link diretamente do Google Drive.
+    */
     async function displayLesson(roomKey, date) {
         const viewerContainer = document.getElementById('pdfViewerContent');
         const roomName = roomsData[roomKey].name;
 
+        // Limpa o iframe atual e mostra o estado de carregamento
         displayLessonEmptyState(`⏳ Verificando lição para Sala ${roomName} em ${date}...`);
         
+        // 1. Chama o Apps Script para verificar o status do arquivo e obter o URL
         const statusResponse = await fetchLessonStatus(roomKey, date); 
         
         if (statusResponse.status === 'found') {
-            // O Apps Script retorna a URL de DOWNLOAD. Vamos usá-la no Docs Viewer.
-            const driveDownloadUrl = statusResponse.fileUrl; 
-            
-            // **URL FINAL DE VISUALIZAÇÃO VIA GOOGLE DOCS VIEWER**
-            const docsViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(driveDownloadUrl)}&embedded=true`;
-            
-            currentLessonFileUrl = driveDownloadUrl; // Mantemos o URL de download no estado para o botão Excluir
+            const fileUrl = statusResponse.fileUrl;
+            currentLessonFileUrl = fileUrl; // Armazena o URL no estado
 
-            // ---- CORREÇÃO CRÍTICA AQUI ----
+            let iframe = document.getElementById('pdfViewerIframe');
+            if (!iframe) {
+                viewerContainer.innerHTML = ''; 
+                iframe = document.createElement('iframe');
+                iframe.id = 'pdfViewerIframe';
+                iframe.className = 'pdf-viewer';
+                viewerContainer.appendChild(iframe);
+            }
             
-            // Remove qualquer elemento anterior
-            viewerContainer.innerHTML = ''; 
-
-            // Cria a tag <iframe> (Docs Viewer é mais compatível com iframe)
-            let iframe = document.createElement('iframe');
-            iframe.id = 'pdfViewerIframe';
-            iframe.className = 'pdf-viewer'; // Mantém os estilos CSS
-            iframe.src = docsViewerUrl; // Define o src para o Docs Viewer
-            iframe.setAttribute('allowfullscreen', 'true');
-            iframe.setAttribute('frameborder', '0');
-            
-            viewerContainer.appendChild(iframe);
-
-            // ---- FIM DA CORREÇÃO CRÍTICA ----
-            
+            iframe.src = fileUrl; // Define o src para o URL de visualização do Google Drive
             displayLessonEmptyState(`✅ Lição Salva no Drive! Exibindo lição para ${roomName}.`);
             
         } else {
-            currentLessonFileUrl = null; 
+            currentLessonFileUrl = null; // Limpa o estado
             displayLessonEmptyState(`Nenhuma lição salva para Sala ${roomName} em ${date}. Faça o upload.`);
         }
 
         checkLessonFormValidity();
     }
-
+            
     function displayLessonEmptyState(message = 'Selecione uma sala e data acima.') {
         const viewerContainer = document.getElementById('pdfViewerContent');
         const existingIframe = document.getElementById('pdfViewerIframe');
