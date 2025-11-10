@@ -228,6 +228,12 @@
             background: #10b981;
             color: white;
         }
+        
+        /* NOVO ESTILO: BOTÃO DE DOWNLOAD */
+        .btn-download {
+            background: #ffc107; /* Amarelo - Alerta/Download */
+            color: #333;
+        }
 
         .results-header {
             font-size: 1.2em;
@@ -659,9 +665,10 @@
             display: none;
         }
         
+        /* ATUALIZADO: 3 botões na grade */
         .lesson-actions {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
             margin-top: 20px;
         }
@@ -680,7 +687,9 @@
             background: #ccc;
             cursor: not-allowed;
         }
-
+        
+        /* NOVO BOTÃO DE DOWNLOAD AQUI (usando .btn-download já definido acima) */
+        
         .pdf-viewer-container {
             margin-top: 30px;
             padding-top: 15px;
@@ -797,6 +806,9 @@
                     <button class="btn btn-upload" id="btnUploadLesson" onclick="uploadLesson()" disabled>
                         ⬆️ Enviar Lição
                     </button>
+                    <button class="btn btn-download" id="btnDownloadLesson" onclick="downloadLesson()" disabled>
+                        ⬇️ Baixar Lição
+                    </button>
                     <button class="btn btn-delete" id="btnDeleteLesson" onclick="deleteLesson()" disabled>
                         🗑️ Excluir
                     </button>
@@ -813,7 +825,7 @@
                 </div>
             </div>
         </div>
-        </div>
+    </div>
 
     <script>
         // *** SEU URL DO APPS SCRIPT DEPLOYED ESTÁ AQUI ***
@@ -822,6 +834,10 @@
         
         // LIMITE DE ARQUIVO: 5 MB em bytes
         const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; 
+
+        // VARIÁVEL DE ESTADO PARA O DOWNLOAD
+        let currentLessonFileId = null; 
+        let currentLessonFileUrl = null; 
 
         // DADOS COMPARTILHADOS (ESCALAS E CHAMADA)
         const roomsData = {
@@ -874,7 +890,7 @@
                 { id: 33, name: "Nicoly", photo: "nicoly_beta.png" },
                 { id: 34, name: "Helena P.", photo: "helena_beta.png" },
                 { id: 35, name: "Enrico J.", photo: "enrico_beta.png" },
-                { id: 36, name: "Liz Pacheco", photo: "liz_pacheco_beta.png" },
+                { id: 36, name: "Liz Medeiros", photo: "liz_Medeiros_beta.png" },
                 { id: 37, name: "Arthur R.", photo: "arthur_beta.png" },
                 { id: 38, name: "Benjamin", photo: "benjamin_beta.png" },
                 { id: 39, name: "Ana Luiza", photo: "ana_luiza_beta.png" }
@@ -933,55 +949,55 @@
         // DADOS SOMENTE DA ABA ESCALAS (Mantidos)
         const scheduleData = {
              berçario: {
-                ...roomsData.berçario,
-                schedules: [
-                    { date: "02/11/2025", lesson: "13°", teachers: ["Eliane Rodrigues dos Santos", "Wagna da Penha meneguite", "ANA RAFAELA"] },
-                    { date: "09/11/2025", lesson: "14°", teachers: ["Juscilene Amaral Pereira", "ERICA", "Luiza Messa Lemos Farias"] },
-                    { date: "16/11/2025", lesson: "15°", teachers: ["Leidiane Lopes dos Santos da Silva", "Adriana Lopes dos Santos Martins", "Sarah dos santos Tomaz"] },
-                    { date: "23/11/2025", lesson: "16°", teachers: ["MAIARA", "Jussimere Pacheco da Silva", "Kemelly Ribeiro Dos Santos"] },
-                    { date: "30/11/2025", lesson: "17°", teachers: ["Eliane Rodrigues dos Santos", "Ingrid Silva Coelho", "DUDA"] }
-                ]
-            },
-            alfa: {
-                ...roomsData.alfa,
-                schedules: [
-                    { date: "02/11/2025", lesson: "13°", teachers: ["Paulo Henrique Mendes Dias", "Iandra Jesus de Novais Santana", "KETTLEY"] },
-                    { date: "09/11/2025", lesson: "14°", teachers: ["Roseane Jadyvsky", "ESTER", "Anna Victória Bebiano de Carvalho"] },
-                    { date: "16/11/2025", lesson: "15°", teachers: ["ROSE PIMENTA", "Stefani Rodrigues Vieira", "RYAN"] },
-                    { date: "23/11/2025", lesson: "16°", teachers: ["Marilene Francisca Batista", "Amanda Francisca Batista dos Santos", "KETTLEY"] },
-                    { date: "30/11/2025", lesson: "17°", teachers: ["Arthur dos Santos da conceição", "Iandra Jesus de Novais Santana", "RYAN"] }
-                ]
-            },
-            beta: {
-                ...roomsData.beta,
-                schedules: [
-                    { date: "02/11/2025", lesson: "13°", teachers: ["Núbia Nascimento de Medeiros Dos Santos", "MARCIA", "DOUGLAS"] },
-                    { date: "09/11/2025", lesson: "14°", teachers: ["Ana Crysthina Martins Lyrio", "Elaine Pereira Rocha Anacleto ", "SOPHIA"] },
-                    { date: "16/11/2025", lesson: "15°", teachers: ["Ana Paula Nogueira Tongo", "Maxsuel Oliveira da Silva", "JEAN"] },
-                    { date: "23/11/2025", lesson: "16°", teachers: ["MARCIA", "Mirian Pereira da Cruz da Cunha", "HELOISA"] },
-                    { date: "30/11/2025", lesson: "17°", teachers: ["Núbia Nascimento de Medeiros Dos Santos", "ANA PAULA", "JEAN"] }
-                ]
-            },
-            gama: {
-                ...roomsData.gama,
-                schedules: [
-                    { date: "02/11/2025", lesson: "13°", teachers: ["Ramon de Oliveira Correa", "Ana Clara Silva Petersen"] },
-                    { date: "09/11/2025", lesson: "14°", teachers: ["Lucas de Souza Fernandes", "Libhya da Silva Souza Gonçalves Victorino"] },
-                    { date: "16/11/2025", lesson: "15°", teachers: ["Alberto Fausther Da Silva De Souza", "Mikaeli Manoel Jacinto Furriel Gonçalves"] },
-                    { date: "23/11/2025", lesson: "16°", teachers: ["ARTHUR", "Ana Beatriz Rodrigues de Souza", "Alex Gonçalves Victorino"] },
-                    { date: "30/11/2025", lesson: "17°", teachers: ["Paulo Henrique Mendes Dias", "Libhya da Silva Souza Gonçalves Victorino", "Stefani Rodrigues Vieira"] }
-                ]
-            },
-            ômega: {
-                ...roomsData.ômega,
-                schedules: [
-                    { date: "02/11/2025", lesson: "13°", teachers: ["Kauã Guimarães Stein", "Brunara dos Santos Alves"] },
-                    { date: "09/11/2025", lesson: "14°", teachers: ["Brenda Rodrigues de Souza", "JOICE"] },
-                    { date: "16/11/2025", lesson: "15°", teachers: ["Diego Pimenta", "Raiara da Conceição Viana Pimenta"] },
-                    { date: "23/11/2025", lesson: "16°", teachers: ["Jackson Jadyvysky", "Luiz Felipe Oliveira dos Santos"] },
-                    { date: "30/11/2025", lesson: "17°", teachers: ["Kauã Guimarães Stein", "Brunara dos Santos Alves"] }
-                ]
-            }
+                 ...roomsData.berçario,
+                 schedules: [
+                     { date: "02/11/2025", lesson: "13°", teachers: ["Eliane Rodrigues dos Santos", "Wagna da Penha meneguite", "ANA RAFAELA"] },
+                     { date: "09/11/2025", lesson: "14°", teachers: ["Juscilene Amaral Pereira", "ERICA", "Luiza Messa Lemos Farias"] },
+                     { date: "16/11/2025", lesson: "15°", teachers: ["Leidiane Lopes dos Santos da Silva", "Adriana Lopes dos Santos Martins", "Sarah dos santos Tomaz"] },
+                     { date: "23/11/2025", lesson: "16°", teachers: ["MAIARA", "Jussimere Pacheco da Silva", "Kemelly Ribeiro Dos Santos"] },
+                     { date: "30/11/2025", lesson: "17°", teachers: ["Eliane Rodrigues dos Santos", "Ingrid Silva Coelho", "DUDA"] }
+                 ]
+             },
+             alfa: {
+                 ...roomsData.alfa,
+                 schedules: [
+                     { date: "02/11/2025", lesson: "13°", teachers: ["Paulo Henrique Mendes Dias", "Iandra Jesus de Novais Santana", "KETTLEY"] },
+                     { date: "09/11/2025", lesson: "14°", teachers: ["Roseane Jadyvsky", "ESTER", "Anna Victória Bebiano de Carvalho"] },
+                     { date: "16/11/2025", lesson: "15°", teachers: ["ROSE PIMENTA", "Stefani Rodrigues Vieira", "RYAN"] },
+                     { date: "23/11/2025", lesson: "16°", teachers: ["Marilene Francisca Batista", "Amanda Francisca Batista dos Santos", "KETTLEY"] },
+                     { date: "30/11/2025", lesson: "17°", teachers: ["Arthur dos Santos da conceição", "Iandra Jesus de Novais Santana", "RYAN"] }
+                 ]
+             },
+             beta: {
+                 ...roomsData.beta,
+                 schedules: [
+                     { date: "02/11/2025", lesson: "13°", teachers: ["Núbia Nascimento de Medeiros Dos Santos", "MARCIA", "DOUGLAS"] },
+                     { date: "09/11/2025", lesson: "14°", teachers: ["Ana Crysthina Martins Lyrio", "Elaine Pereira Rocha Anacleto ", "SOPHIA"] },
+                     { date: "16/11/2025", lesson: "15°", teachers: ["Ana Paula Nogueira Tongo", "Maxsuel Oliveira da Silva", "JEAN"] },
+                     { date: "23/11/2025", lesson: "16°", teachers: ["MARCIA", "Mirian Pereira da Cruz da Cunha", "HELOISA"] },
+                     { date: "30/11/2025", lesson: "17°", teachers: ["Núbia Nascimento de Medeiros Dos Santos", "ANA PAULA", "JEAN"] }
+                 ]
+             },
+             gama: {
+                 ...roomsData.gama,
+                 schedules: [
+                     { date: "02/11/2025", lesson: "13°", teachers: ["Ramon de Oliveira Correa", "Ana Clara Silva Petersen"] },
+                     { date: "09/11/2025", lesson: "14°", teachers: ["Lucas de Souza Fernandes", "Libhya da Silva Souza Gonçalves Victorino"] },
+                     { date: "16/11/2025", lesson: "15°", teachers: ["Alberto Fausther Da Silva De Souza", "Mikaeli Manoel Jacinto Furriel Gonçalves"] },
+                     { date: "23/11/2025", lesson: "16°", teachers: ["ARTHUR", "Ana Beatriz Rodrigues de Souza", "Alex Gonçalves Victorino"] },
+                     { date: "30/11/2025", lesson: "17°", teachers: ["Paulo Henrique Mendes Dias", "Libhya da Silva Souza Gonçalves Victorino", "Stefani Rodrigues Vieira"] }
+                 ]
+             },
+             ômega: {
+                 ...roomsData.ômega,
+                 schedules: [
+                     { date: "02/11/2025", lesson: "13°", teachers: ["Kauã Guimarães Stein", "Brunara dos Santos Alves"] },
+                     { date: "09/11/2025", lesson: "14°", teachers: ["Brenda Rodrigues de Souza", "JOICE"] },
+                     { date: "16/11/2025", lesson: "15°", teachers: ["Diego Pimenta", "Raiara da Conceição Viana Pimenta"] },
+                     { date: "23/11/2025", lesson: "16°", teachers: ["Jackson Jadyvysky", "Luiz Felipe Oliveira dos Santos"] },
+                     { date: "30/11/2025", lesson: "17°", teachers: ["Kauã Guimarães Stein", "Brunara dos Santos Alves"] }
+                 ]
+             }
         };
         
         const allDates = ["02/11/2025", "09/11/2025", "16/11/2025", "23/11/2025", "30/11/2025"];
@@ -1001,7 +1017,7 @@
         let selectedFile = null;
 
         /* ---------------------------------- */
-        /* FUNÇÕES GERAIS (ABAS)             */
+        /* FUNÇÕES GERAIS (ABAS)             */
         /* ---------------------------------- */
 
         function openTab(tabId, element) {
@@ -1471,347 +1487,369 @@
         }
         
         // ======================================================================================
-// --- FUNÇÕES DA NOVA ABA LIÇÕES 📖 (ATUALIZADAS PARA GOOGLE DRIVE)     
-// --- NOTA: A variável 'currentLessonFileUrl' foi declarada no topo do script.
-// ======================================================================================
+        // --- FUNÇÕES DA ABA LIÇÕES 📖 (ATUALIZADAS PARA O DOWNLOAD) 
+        // ======================================================================================
 
-/**
- * Função auxiliar para buscar o status do arquivo no Apps Script (Drive).
- */
-async function fetchLessonStatus(roomKey, date) {
-    if (!roomKey || !date) return { status: 'error', message: 'Dados de busca incompletos.' };
-    
-    const room = roomsData[roomKey];
-
-    const url = new URL(SHEET_URL);
-    url.searchParams.append('action', 'checkLesson');
-    url.searchParams.append('room_name', room.name);
-    url.searchParams.append('lesson_date', date);
-
-    try {
-        const response = await fetch(url.toString(), {
-            method: 'GET',
-            mode: 'cors' 
-        });
-        
-        if (!response.ok) {
-            throw new Error(`Erro de rede: ${response.statusText}`);
-        }
-        
-        return await response.json();
-    } catch (error) {
-        console.error("Erro ao buscar status do arquivo no Drive:", error);
-        return { status: 'error', message: `Erro de comunicação com o Apps Script: ${error.message}` };
-    }
-}
-
-/**
- * ATUALIZADA: Verifica o status da lição no Drive e habilita/desabilita botões.
- */
-function checkLessonFormValidity() {
-    const isReady = selectedRoomKeyLicoes && selectedDateLicoes;
-    const hasFileSelected = selectedFile !== null;
-    
-    // Habilita o upload se estiver pronto e o arquivo selecionado
-    document.getElementById('btnUploadLesson').disabled = !(isReady && hasFileSelected);
-    
-    // Habilita o delete se houver um link de arquivo (significa que está salvo no Drive)
-    document.getElementById('btnDeleteLesson').disabled = !currentLessonFileUrl;
-    
-    if (currentLessonFileUrl) {
-        document.getElementById('fileUploadLabel').style.display = 'none';
-        document.getElementById('fileInfo').textContent = `✅ Lição salva no Google Drive e pronta para visualização!`;
-    } else if (isReady) {
-        document.getElementById('fileUploadLabel').style.display = 'block';
-        document.getElementById('fileInfo').textContent = hasFileSelected ? 
-            `✅ Arquivo selecionado: ${selectedFile.name} (${(selectedFile.size / 1024 / 1024).toFixed(2)} MB)` : 
-            "Nenhuma lição salva. Selecione um PDF e clique em 'Enviar Lição'.";
-    } else {
-        document.getElementById('fileUploadLabel').style.display = 'block';
-        document.getElementById('fileInfo').textContent = "Selecione a Sala e Data para gerenciar a lição.";
-    }
-}
-
-function initializeRoomTabsLicoes() {
-    const container = document.getElementById('roomTabsLessons');
-    container.innerHTML = '';
-    
-    Object.keys(roomsData).forEach(roomKey => {
-        const room = roomsData[roomKey];
-        const btn = document.createElement('button');
-        btn.className = 'room-btn';
-        btn.innerHTML = `
-            <span class="room-icon-btn">${room.icon}</span>
-            <div class="room-text">
-                <div>${room.name}</div>
-                <div class="room-age">${room.age}</div>
-            </div>
-        `;
-        btn.onclick = () => selectRoomLicoes(roomKey, btn);
-        container.appendChild(btn);
-    });
-}
-        
-function initializeDateButtonsLicoes() {
-    const container = document.getElementById('dateButtonsLessons');
-    container.innerHTML = '';
-    
-    allDates.forEach(date => {
-        const btn = document.createElement('button');
-        btn.className = 'date-btn';
-        btn.textContent = date;
-        btn.onclick = () => selectDateLicoes(date, btn);
-        container.appendChild(btn);
-    });
-}
-        
-function selectRoomLicoes(roomKey, btn) {
-    selectedFile = null;
-    document.getElementById('pdfFile').value = '';
-    
-    document.querySelectorAll('#roomTabsLessons .room-btn').forEach(b => b.classList.remove('active'));
-
-    if (selectedRoomKeyLicoes === roomKey) {
-        selectedRoomKeyLicoes = null;
-    } else {
-        selectedRoomKeyLicoes = roomKey;
-        btn.classList.add('active');
-    }
-    
-    if (selectedRoomKeyLicoes && selectedDateLicoes) {
-        displayLesson(selectedRoomKeyLicoes, selectedDateLicoes);
-    } else {
-        displayLessonEmptyState();
-    }
-    checkLessonFormValidity();
-}
-        
-function selectDateLicoes(date, btn) {
-    selectedFile = null;
-    document.getElementById('pdfFile').value = '';
-    
-    document.querySelectorAll('#dateButtonsLessons .date-btn').forEach(b => b.classList.remove('active'));
-
-    if (selectedDateLicoes === date) {
-        selectedDateLicoes = null;
-    } else {
-        selectedDateLicoes = date;
-        btn.classList.add('active');
-    }
-    
-    if (selectedRoomKeyLicoes && selectedDateLicoes) {
-        displayLesson(selectedRoomKeyLicoes, selectedDateLicoes);
-    } else {
-        displayLessonEmptyState();
-    }
-    checkLessonFormValidity();
-}
-        
-function handleFileSelect() {
-    const fileInput = document.getElementById('pdfFile');
-    if (fileInput.files.length === 0) {
-        selectedFile = null;
-    } else {
-        const file = fileInput.files[0];
-        if (file.type !== 'application/pdf') {
-            alert("Apenas arquivos PDF são permitidos.");
-            fileInput.value = '';
-            selectedFile = null;
-        } else if (file.size > MAX_FILE_SIZE_BYTES) {
-            alert(`O arquivo é muito grande. O limite é de ${(MAX_FILE_SIZE_BYTES / 1024 / 1024).toFixed(0)} MB.`);
-            fileInput.value = '';
-            selectedFile = null;
-        } else {
-            selectedFile = file;
-        }
-    }
-    checkLessonFormValidity();
-}
-
-/**
- * ATUALIZADA: Converte o arquivo para Base64 e o envia para o Apps Script (Google Drive).
- */
-async function uploadLesson() {
-    if (!selectedFile || !selectedRoomKeyLicoes || !selectedDateLicoes) {
-        alert("Por favor, selecione a Sala, Data e o arquivo PDF.");
-        return;
-    }
-    
-    const uploadBtn = document.getElementById('btnUploadLesson');
-    uploadBtn.disabled = true;
-    uploadBtn.textContent = '⏳ Enviando para o Drive...';
-
-    // Conversão do arquivo para Base64
-    const reader = new FileReader();
-
-    reader.onload = async function(event) {
-        // Remove o cabeçalho "data:application/pdf;base64,"
-        const base64Data = event.target.result.split(',')[1]; 
-        
-        const room = roomsData[selectedRoomKeyLicoes];
-        
-        const payload = {
-            action: 'uploadLesson',
-            room_name: room.name,
-            lesson_date: selectedDateLicoes,
-            file_base64: base64Data
-        };
-
-        try {
-            // Chamada POST para o Apps Script para realizar o upload
-            const response = await fetch(SHEET_URL, {
-                method: 'POST',
-                mode: 'cors', 
-                headers: {
-                    'Content-Type': 'text/plain;charset=utf-8'
-                },
-                body: JSON.stringify(payload)
-            });
+        /**
+        * Função auxiliar para buscar o status do arquivo no Apps Script (Drive).
+        */
+        async function fetchLessonStatus(roomKey, date) {
+            if (!roomKey || !date) return { status: 'error', message: 'Dados de busca incompletos.' };
             
-            const result = await response.json();
-            
-            if (result.status === 'success') {
-                alert(`🎉 Upload concluído: ${result.message}`);
-            } else {
-                alert(`❌ Erro no Apps Script: ${result.message}`);
-                console.error(result.message);
+            const room = roomsData[roomKey];
+
+            const url = new URL(SHEET_URL);
+            url.searchParams.append('action', 'checkLesson');
+            url.searchParams.append('room_name', room.name);
+            url.searchParams.append('lesson_date', date);
+
+            try {
+                const response = await fetch(url.toString(), {
+                    method: 'GET',
+                    mode: 'cors' 
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Erro de rede: ${response.statusText}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error("Erro ao buscar status do arquivo no Drive:", error);
+                return { status: 'error', message: `Erro de comunicação com o Apps Script: ${error.message}` };
             }
+        }
 
-        } catch (error) {
-            console.error("Erro ao enviar dados para o Apps Script:", error);
-            alert("❌ Erro de rede ou CORS. Verifique o console e o seu Apps Script.");
-        } finally {
-            uploadBtn.textContent = '⬆️ Enviar Lição';
+        /**
+        * ATUALIZADA: Verifica o status da lição no Drive e habilita/desabilita botões.
+        */
+        function checkLessonFormValidity() {
+            const isReady = selectedRoomKeyLicoes && selectedDateLicoes;
+            const hasFileSelected = selectedFile !== null;
+            
+            // Habilita o upload se estiver pronto e o arquivo selecionado
+            document.getElementById('btnUploadLesson').disabled = !(isReady && hasFileSelected);
+            
+            // Habilita download e delete se houver um ID de arquivo (significa que está salvo no Drive)
+            document.getElementById('btnDownloadLesson').disabled = !currentLessonFileId;
+            document.getElementById('btnDeleteLesson').disabled = !currentLessonFileId;
+            
+            if (currentLessonFileId) {
+                document.getElementById('fileUploadLabel').style.display = 'none';
+                document.getElementById('fileInfo').textContent = `✅ Lição salva no Google Drive e pronta para visualização/download!`;
+            } else if (isReady) {
+                document.getElementById('fileUploadLabel').style.display = 'block';
+                document.getElementById('fileInfo').textContent = hasFileSelected ? 
+                    `✅ Arquivo selecionado: ${selectedFile.name} (${(selectedFile.size / 1024 / 1024).toFixed(2)} MB)` : 
+                    "Nenhuma lição salva. Selecione um PDF e clique em 'Enviar Lição'.";
+            } else {
+                document.getElementById('fileUploadLabel').style.display = 'block';
+                document.getElementById('fileInfo').textContent = "Selecione a Sala e Data para gerenciar a lição.";
+            }
+        }
+
+        function initializeRoomTabsLicoes() {
+            const container = document.getElementById('roomTabsLessons');
+            container.innerHTML = '';
+            
+            Object.keys(roomsData).forEach(roomKey => {
+                const room = roomsData[roomKey];
+                const btn = document.createElement('button');
+                btn.className = 'room-btn';
+                btn.innerHTML = `
+                    <span class="room-icon-btn">${room.icon}</span>
+                    <div class="room-text">
+                        <div>${room.name}</div>
+                        <div class="room-age">${room.age}</div>
+                    </div>
+                `;
+                btn.onclick = () => selectRoomLicoes(roomKey, btn);
+                container.appendChild(btn);
+            });
+        }
+        
+        function initializeDateButtonsLicoes() {
+            const container = document.getElementById('dateButtonsLessons');
+            container.innerHTML = '';
+            
+            allDates.forEach(date => {
+                const btn = document.createElement('button');
+                btn.className = 'date-btn';
+                btn.textContent = date;
+                btn.onclick = () => selectDateLicoes(date, btn);
+                container.appendChild(btn);
+            });
+        }
+        
+        function selectRoomLicoes(roomKey, btn) {
             selectedFile = null;
             document.getElementById('pdfFile').value = '';
-            // Recarrega a lição para checar o status no Drive e exibir
-            await displayLesson(selectedRoomKeyLicoes, selectedDateLicoes); 
-        }
-    };
-
-    reader.onerror = function() {
-        alert("Erro ao ler o arquivo.");
-        uploadBtn.disabled = false;
-        uploadBtn.textContent = '⬆️ Enviar Lição';
-        checkLessonFormValidity();
-    };
-
-    reader.readAsDataURL(selectedFile);
-}
-
-    /**
-    * ATUALIZADA: Envia o comando de exclusão para o Apps Script (Google Drive).
-    */
-    async function deleteLesson() {
-        if (!currentLessonFileUrl || !selectedRoomKeyLicoes || !selectedDateLicoes) {
-            alert("Nenhuma lição salva para esta data/sala para excluir.");
-            return;
-        }
-        
-        const room = roomsData[selectedRoomKeyLicoes];
-        
-        if (!confirm(`Tem certeza que deseja EXCLUIR a lição salva para a Sala ${room.name} em ${selectedDateLicoes} do Google Drive?`)) {
-            return;
-        }
-
-        const deleteBtn = document.getElementById('btnDeleteLesson');
-        deleteBtn.disabled = true;
-        deleteBtn.textContent = '🗑️ Excluindo...';
-        
-        const payload = {
-            action: 'deleteLesson',
-            room_name: room.name,
-            lesson_date: selectedDateLicoes
-        };
-
-        try {
-            const response = await fetch(SHEET_URL, {
-                method: 'POST',
-                mode: 'cors',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
             
-            const result = await response.json();
+            document.querySelectorAll('#roomTabsLessons .room-btn').forEach(b => b.classList.remove('active'));
 
-            if (result.status === 'success') {
-                alert(`🗑️ Lição excluída: ${result.message}`);
-                currentLessonFileUrl = null; 
+            if (selectedRoomKeyLicoes === roomKey) {
+                selectedRoomKeyLicoes = null;
             } else {
-                alert(`❌ Erro ao excluir: ${result.message}`);
-                console.error(result.message);
-            }
-
-        } catch (error) {
-            console.error("Erro de rede ou CORS ao excluir:", error);
-            alert("❌ Erro de rede ou CORS. Verifique o console.");
-        } finally {
-            deleteBtn.textContent = '🗑️ Excluir';
-            // Atualiza a visualização para mostrar que o arquivo foi removido
-            await displayLesson(selectedRoomKeyLicoes, selectedDateLicoes); 
-        }
-    }
-
-    /**
-    * ATUALIZADA: Exibe a lição no iframe, buscando o link diretamente do Google Drive.
-    */
-    async function displayLesson(roomKey, date) {
-        const viewerContainer = document.getElementById('pdfViewerContent');
-        const roomName = roomsData[roomKey].name;
-
-        // Limpa o iframe atual e mostra o estado de carregamento
-        displayLessonEmptyState(`⏳ Verificando lição para Sala ${roomName} em ${date}...`);
-        
-        // 1. Chama o Apps Script para verificar o status do arquivo e obter o URL
-        const statusResponse = await fetchLessonStatus(roomKey, date); 
-        
-        if (statusResponse.status === 'found') {
-            const fileUrl = statusResponse.fileUrl;
-            currentLessonFileUrl = fileUrl; // Armazena o URL no estado
-
-            let iframe = document.getElementById('pdfViewerIframe');
-            if (!iframe) {
-                viewerContainer.innerHTML = ''; 
-                iframe = document.createElement('iframe');
-                iframe.id = 'pdfViewerIframe';
-                iframe.className = 'pdf-viewer';
-                viewerContainer.appendChild(iframe);
+                selectedRoomKeyLicoes = roomKey;
+                btn.classList.add('active');
             }
             
-            iframe.src = fileUrl; // Define o src para o URL de visualização do Google Drive
-            displayLessonEmptyState(`✅ Lição Salva no Drive! Exibindo lição para ${roomName}.`);
+            if (selectedRoomKeyLicoes && selectedDateLicoes) {
+                displayLesson(selectedRoomKeyLicoes, selectedDateLicoes);
+            } else {
+                displayLessonEmptyState();
+            }
+            checkLessonFormValidity();
+        }
+        
+        function selectDateLicoes(date, btn) {
+            selectedFile = null;
+            document.getElementById('pdfFile').value = '';
             
-        } else {
-            currentLessonFileUrl = null; // Limpa o estado
-            displayLessonEmptyState(`Nenhuma lição salva para Sala ${roomName} em ${date}. Faça o upload.`);
+            document.querySelectorAll('#dateButtonsLessons .date-btn').forEach(b => b.classList.remove('active'));
+
+            if (selectedDateLicoes === date) {
+                selectedDateLicoes = null;
+            } else {
+                selectedDateLicoes = date;
+                btn.classList.add('active');
+            }
+            
+            if (selectedRoomKeyLicoes && selectedDateLicoes) {
+                displayLesson(selectedRoomKeyLicoes, selectedDateLicoes);
+            } else {
+                displayLessonEmptyState();
+            }
+            checkLessonFormValidity();
+        }
+        
+        function handleFileSelect() {
+            const fileInput = document.getElementById('pdfFile');
+            if (fileInput.files.length === 0) {
+                selectedFile = null;
+            } else {
+                const file = fileInput.files[0];
+                if (file.type !== 'application/pdf') {
+                    alert("Apenas arquivos PDF são permitidos.");
+                    fileInput.value = '';
+                    selectedFile = null;
+                } else if (file.size > MAX_FILE_SIZE_BYTES) {
+                    alert(`O arquivo é muito grande. O limite é de ${(MAX_FILE_SIZE_BYTES / 1024 / 1024).toFixed(0)} MB.`);
+                    fileInput.value = '';
+                    selectedFile = null;
+                } else {
+                    selectedFile = file;
+                }
+            }
+            checkLessonFormValidity();
         }
 
-        checkLessonFormValidity();
-    }
-            
-    function displayLessonEmptyState(message = 'Selecione uma sala e data acima.') {
-        const viewerContainer = document.getElementById('pdfViewerContent');
-        const existingIframe = document.getElementById('pdfViewerIframe');
-        
-        if (existingIframe) {
-            existingIframe.remove();
+        /**
+        * NOVO: Dispara o download usando o ID do arquivo.
+        */
+        function downloadLesson() {
+            if (!currentLessonFileId) {
+                alert("Nenhuma lição encontrada para download.");
+                return;
+            }
+
+            const downloadUrl = `https://drive.google.com/uc?export=download&id=${currentLessonFileId}`;
+            
+            // Abre o link em uma nova aba para forçar o download
+            window.open(downloadUrl, '_blank');
         }
-        
-        if (!document.getElementById('lessonsEmptyState')) {
-            viewerContainer.innerHTML = `
-                <div class="empty-state" id="lessonsEmptyState">
-                    <h3>${message}</h3>
-                    <p>O PDF da lição será carregado aqui, se existir.</p>
-                </div>
-            `;
-        } else {
-            document.querySelector('#lessonsEmptyState h3').textContent = message;
-            const pTag = document.querySelector('#lessonsEmptyState p');
-            if(pTag) pTag.textContent = 'O PDF da lição será carregado aqui, se existir.';
+
+        /**
+        * ATUALIZADA: Converte o arquivo para Base64 e o envia para o Apps Script (Google Drive).
+        */
+        async function uploadLesson() {
+            if (!selectedFile || !selectedRoomKeyLicoes || !selectedDateLicoes) {
+                alert("Por favor, selecione a Sala, Data e o arquivo PDF.");
+                return;
+            }
+            
+            const uploadBtn = document.getElementById('btnUploadLesson');
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = '⏳ Enviando para o Drive...';
+
+            // Conversão do arquivo para Base64
+            const reader = new FileReader();
+
+            reader.onload = async function(event) {
+                // Remove o cabeçalho "data:application/pdf;base64,"
+                const base64Data = event.target.result.split(',')[1]; 
+                
+                const room = roomsData[selectedRoomKeyLicoes];
+                
+                const payload = {
+                    action: 'uploadLesson',
+                    room_name: room.name,
+                    lesson_date: selectedDateLicoes,
+                    file_base64: base64Data
+                };
+
+                try {
+                    // Chamada POST para o Apps Script para realizar o upload
+                    const response = await fetch(SHEET_URL, {
+                        method: 'POST',
+                        mode: 'cors', 
+                        headers: {
+                            'Content-Type': 'text/plain;charset=utf-8'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.status === 'success') {
+                        alert(`🎉 Upload concluído: ${result.message}`);
+                    } else {
+                        alert(`❌ Erro no Apps Script: ${result.message}`);
+                        console.error(result.message);
+                    }
+
+                } catch (error) {
+                    console.error("Erro ao enviar dados para o Apps Script:", error);
+                    alert("❌ Erro de rede ou CORS. Verifique o console e o seu Apps Script.");
+                } finally {
+                    uploadBtn.textContent = '⬆️ Enviar Lição';
+                    selectedFile = null;
+                    document.getElementById('pdfFile').value = '';
+                    // Recarrega a lição para checar o status no Drive e exibir
+                    await displayLesson(selectedRoomKeyLicoes, selectedDateLicoes); 
+                }
+            };
+
+            reader.onerror = function() {
+                alert("Erro ao ler o arquivo.");
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = '⬆️ Enviar Lição';
+                checkLessonFormValidity();
+            };
+
+            reader.readAsDataURL(selectedFile);
         }
-    }
+
+        /**
+        * ATUALIZADA: Envia o comando de exclusão para o Apps Script (Google Drive).
+        */
+        async function deleteLesson() {
+            if (!currentLessonFileId || !selectedRoomKeyLicoes || !selectedDateLicoes) {
+                alert("Nenhuma lição salva para esta data/sala para excluir.");
+                return;
+            }
+            
+            const room = roomsData[selectedRoomKeyLicoes];
+            
+            if (!confirm(`Tem certeza que deseja EXCLUIR a lição salva para a Sala ${room.name} em ${selectedDateLicoes} do Google Drive?`)) {
+                return;
+            }
+
+            const deleteBtn = document.getElementById('btnDeleteLesson');
+            deleteBtn.disabled = true;
+            deleteBtn.textContent = '🗑️ Excluindo...';
+            
+            const payload = {
+                action: 'deleteLesson',
+                room_name: room.name,
+                lesson_date: selectedDateLicoes
+            };
+
+            try {
+                const response = await fetch(SHEET_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    alert(`🗑️ Lição excluída: ${result.message}`);
+                    currentLessonFileUrl = null; 
+                    currentLessonFileId = null; 
+                } else {
+                    alert(`❌ Erro ao excluir: ${result.message}`);
+                    console.error(result.message);
+                }
+
+            } catch (error) {
+                console.error("Erro de rede ou CORS ao excluir:", error);
+                alert("❌ Erro de rede ou CORS. Verifique o console.");
+            } finally {
+                deleteBtn.textContent = '🗑️ Excluir';
+                // Atualiza a visualização para mostrar que o arquivo foi removido
+                await displayLesson(selectedRoomKeyLicoes, selectedDateLicoes); 
+            }
+        }
+
+        /**
+        * ATUALIZADA: Exibe a lição no iframe, buscando o link diretamente do Google Drive.
+        */
+        async function displayLesson(roomKey, date) {
+            const viewerContainer = document.getElementById('pdfViewerContent');
+            const roomName = roomsData[roomKey].name;
+
+            // Limpa o estado e mostra o estado de carregamento
+            currentLessonFileUrl = null; 
+            currentLessonFileId = null; 
+            displayLessonEmptyState(`⏳ Verificando lição para Sala ${roomName} em ${date}...`);
+            
+            // 1. Chama o Apps Script para verificar o status do arquivo e obter o URL e ID
+            const statusResponse = await fetchLessonStatus(roomKey, date); 
+            
+            if (statusResponse.status === 'found') {
+                const fileUrl = statusResponse.fileUrl;
+                const fileId = statusResponse.fileId; // NOVO: Captura o ID
+                
+                currentLessonFileUrl = fileUrl; // Armazena o URL de visualização no estado
+                currentLessonFileId = fileId;   // Armazena o ID no estado (para download/delete)
+
+                let iframe = document.getElementById('pdfViewerIframe');
+                if (!iframe) {
+                    viewerContainer.innerHTML = ''; 
+                    iframe = document.createElement('iframe');
+                    iframe.id = 'pdfViewerIframe';
+                    iframe.className = 'pdf-viewer';
+                    viewerContainer.appendChild(iframe);
+                }
+                
+                iframe.src = fileUrl; // Define o src para o URL de visualização do Google Drive
+                displayLessonEmptyState(`✅ Lição Salva no Drive! Exibindo lição para ${roomName}.`);
+                
+            } else {
+                currentLessonFileUrl = null; 
+                currentLessonFileId = null; 
+                displayLessonEmptyState(`Nenhuma lição salva para Sala ${roomName} em ${date}. Faça o upload.`);
+            }
+
+            checkLessonFormValidity();
+        }
+            
+        function displayLessonEmptyState(message = 'Selecione uma sala e data acima.') {
+            const viewerContainer = document.getElementById('pdfViewerContent');
+            const existingIframe = document.getElementById('pdfViewerIframe');
+            
+            if (existingIframe) {
+                existingIframe.remove();
+            }
+            
+            if (!document.getElementById('lessonsEmptyState')) {
+                viewerContainer.innerHTML = `
+                    <div class="empty-state" id="lessonsEmptyState">
+                        <h3>${message}</h3>
+                        <p>O PDF da lição será carregado aqui, se existir.</p>
+                    </div>
+                `;
+            } else {
+                document.querySelector('#lessonsEmptyState h3').textContent = message;
+                const pTag = document.querySelector('#lessonsEmptyState p');
+                if(pTag) pTag.textContent = 'O PDF da lição será carregado aqui, se existir.';
+            }
+        }
 
 
         // INICIALIZAÇÃO GERAL
