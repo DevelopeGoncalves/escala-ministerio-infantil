@@ -688,21 +688,21 @@
             cursor: not-allowed;
         }
         
-        /* NOVO BOTÃO DE DOWNLOAD AQUI (usando .btn-download já definido acima) */
-        
-        .pdf-viewer-container {
-            margin-top: 30px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
-            min-height: 400px;
-        }
-        
-        .pdf-viewer {
+        /* NOVO ESTILO PARA IMAGEM */
+        .pdf-viewer, .image-viewer {
             width: 100%;
             height: 600px; 
             border: 1px solid #ccc;
             border-radius: 10px;
             background: #f8f9fa;
+            overflow: auto;
+        }
+
+        .image-viewer img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
         }
 
     </style>
@@ -784,7 +784,7 @@
         
         <div class="tab-content" id="tab-licoes">
             <div class="lesson-section">
-                <div class="lesson-header">🛠️ Gerenciar Lições em PDF</div>
+                <div class="lesson-header">🛠️ Gerenciar Lições em PDF ou Imagem</div>
                 
                 <div class="form-label">🏠 Escolha a Sala</div>
                 <div class="room-tabs-lessons" id="roomTabsLessons">
@@ -796,9 +796,9 @@
                 
                 <div class="file-upload-group">
                     <label for="pdfFile" class="file-upload-label" id="fileUploadLabel">
-                        📁 Escolher Arquivo PDF (Max 5MB)
+                        📁 Escolher Arquivo PDF, JPG ou PNG (Max 5MB)
                     </label>
-                    <input type="file" id="pdfFile" accept="application/pdf" onchange="handleFileSelect()">
+                    <input type="file" id="pdfFile" accept="application/pdf,image/jpeg,image/png" onchange="handleFileSelect()">
                     <div class="lesson-status-info" id="fileInfo">Nenhuma lição selecionada.</div>
                 </div>
                 
@@ -819,7 +819,7 @@
                     <div id="pdfViewerContent">
                         <div class="empty-state" id="lessonsEmptyState">
                             <h3>Selecione uma sala e data acima.</h3>
-                            <p>O PDF da lição será carregado aqui, se existir.</p>
+                            <p>O PDF ou Imagem da lição será carregado aqui, se existir.</p>
                         </div>
                     </div>
                 </div>
@@ -829,15 +829,19 @@
 
     <script>
         // *** SEU URL DO APPS SCRIPT DEPLOYED ESTÁ AQUI ***
-        const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxEWjkpgOSmFgNLNBIVj_OV73leclt8wk4Swdc_xpWMxCTbw_jw_WNUsD5xcTUimlah5Q/exec';
+        const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxXQy2yQ97P0liioC5UMdicfqXmW1W0b8clWPMJQE_3pB7yoCQPAklrtZdMaTfjmIuVVw/exec';
         // ************************************************
         
         // LIMITE DE ARQUIVO: 5 MB em bytes
         const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; 
+        // Tipos de arquivo permitidos
+        const ALLOWED_MIMES = ['application/pdf', 'image/jpeg', 'image/png'];
+        
 
         // VARIÁVEL DE ESTADO PARA O DOWNLOAD
         let currentLessonFileId = null; 
         let currentLessonFileUrl = null; 
+        let currentLessonFileType = null; // NOVO: Armazena o tipo de arquivo (pdf, jpg, png)
 
         // DADOS COMPARTILHADOS (ESCALAS E CHAMADA)
         const roomsData = {
@@ -1395,7 +1399,7 @@
                 return;
             }
             
-            let html = `<div class="form-label">👋 Toque na foto da criança que está PRESENTE</div>`;
+            let html = `<div class="form-label">👋 Toque na foto da criança que está **PRESENTE**</div>`;
             html += `<div class="kids-grid">`;
             
             kids.forEach(kid => {
@@ -1487,7 +1491,7 @@
         }
         
         // ======================================================================================
-        // --- FUNÇÕES DA ABA LIÇÕES 📖 (ATUALIZADAS PARA O DOWNLOAD) 
+        // --- FUNÇÕES DA ABA LIÇÕES 📖 (ATUALIZADAS PARA O DOWNLOAD/IMAGEM) 
         // ======================================================================================
 
         /**
@@ -1541,7 +1545,7 @@
                 document.getElementById('fileUploadLabel').style.display = 'block';
                 document.getElementById('fileInfo').textContent = hasFileSelected ? 
                     `✅ Arquivo selecionado: ${selectedFile.name} (${(selectedFile.size / 1024 / 1024).toFixed(2)} MB)` : 
-                    "Nenhuma lição salva. Selecione um PDF e clique em 'Enviar Lição'.";
+                    "Nenhuma lição salva. Selecione um PDF ou Imagem e clique em 'Enviar Lição'.";
             } else {
                 document.getElementById('fileUploadLabel').style.display = 'block';
                 document.getElementById('fileInfo').textContent = "Selecione a Sala e Data para gerenciar a lição.";
@@ -1629,8 +1633,9 @@
                 selectedFile = null;
             } else {
                 const file = fileInput.files[0];
-                if (file.type !== 'application/pdf') {
-                    alert("Apenas arquivos PDF são permitidos.");
+                // NOVO: Verifica se o tipo de arquivo é permitido
+                if (!ALLOWED_MIMES.includes(file.type)) {
+                    alert("Apenas arquivos PDF, JPG e PNG são permitidos.");
                     fileInput.value = '';
                     selectedFile = null;
                 } else if (file.size > MAX_FILE_SIZE_BYTES) {
@@ -1660,11 +1665,12 @@
         }
 
         /**
-        * ATUALIZADA: Converte o arquivo para Base64 e o envia para o Apps Script (Google Drive).
+        * ATUALIZADA: Converte o arquivo para Base64 e o envia para o Apps Script (Google Drive),
+        * enviando também o tipo do arquivo.
         */
         async function uploadLesson() {
             if (!selectedFile || !selectedRoomKeyLicoes || !selectedDateLicoes) {
-                alert("Por favor, selecione a Sala, Data e o arquivo PDF.");
+                alert("Por favor, selecione a Sala, Data e o arquivo (PDF/Imagem).");
                 return;
             }
             
@@ -1672,11 +1678,26 @@
             uploadBtn.disabled = true;
             uploadBtn.textContent = '⏳ Enviando para o Drive...';
 
+            // Determina o tipo de arquivo
+            let fileType;
+            if (selectedFile.type === 'application/pdf') {
+                fileType = 'pdf';
+            } else if (selectedFile.type === 'image/jpeg' || selectedFile.type === 'image/jpg') {
+                fileType = 'jpg';
+            } else if (selectedFile.type === 'image/png') {
+                fileType = 'png';
+            } else {
+                alert("Tipo de arquivo não suportado.");
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = '⬆️ Enviar Lição';
+                return;
+            }
+
             // Conversão do arquivo para Base64
             const reader = new FileReader();
 
             reader.onload = async function(event) {
-                // Remove o cabeçalho "data:application/pdf;base64,"
+                // Remove o cabeçalho "data:mime/type;base64,"
                 const base64Data = event.target.result.split(',')[1]; 
                 
                 const room = roomsData[selectedRoomKeyLicoes];
@@ -1685,6 +1706,7 @@
                     action: 'uploadLesson',
                     room_name: room.name,
                     lesson_date: selectedDateLicoes,
+                    file_type: fileType, // NOVO: Envia o tipo de arquivo
                     file_base64: base64Data
                 };
 
@@ -1727,6 +1749,8 @@
                 checkLessonFormValidity();
             };
 
+            // Para imagens, use readAsDataURL. Para PDF, readAsBinaryString (ou DataURL)
+            // Usaremos DataURL para todos, mas o MIME Type é importante no Apps Script.
             reader.readAsDataURL(selectedFile);
         }
 
@@ -1771,6 +1795,7 @@
                     alert(`🗑️ Lição excluída: ${result.message}`);
                     currentLessonFileUrl = null; 
                     currentLessonFileId = null; 
+                    currentLessonFileType = null; // Limpa o tipo
                 } else {
                     alert(`❌ Erro ao excluir: ${result.message}`);
                     console.error(result.message);
@@ -1787,7 +1812,7 @@
         }
 
         /**
-        * ATUALIZADA: Exibe a lição no iframe, buscando o link diretamente do Google Drive.
+        * ATUALIZADA: Exibe a lição no iframe (PDF) ou img (Imagem).
         */
         async function displayLesson(roomKey, date) {
             const viewerContainer = document.getElementById('pdfViewerContent');
@@ -1796,34 +1821,62 @@
             // Limpa o estado e mostra o estado de carregamento
             currentLessonFileUrl = null; 
             currentLessonFileId = null; 
+            currentLessonFileType = null;
             displayLessonEmptyState(`⏳ Verificando lição para Sala ${roomName} em ${date}...`);
             
-            // 1. Chama o Apps Script para verificar o status do arquivo e obter o URL e ID
+            // 1. Chama o Apps Script para verificar o status do arquivo e obter o URL, ID e TIPO
             const statusResponse = await fetchLessonStatus(roomKey, date); 
             
             if (statusResponse.status === 'found') {
-                const fileUrl = statusResponse.fileUrl;
-                const fileId = statusResponse.fileId; // NOVO: Captura o ID
+                const fileId = statusResponse.fileId; 
+                const fileType = statusResponse.fileType; // NOVO: Captura o tipo
                 
-                currentLessonFileUrl = fileUrl; // Armazena o URL de visualização no estado
-                currentLessonFileId = fileId;   // Armazena o ID no estado (para download/delete)
+                currentLessonFileId = fileId;   
+                currentLessonFileType = fileType; 
 
-                let iframe = document.getElementById('pdfViewerIframe');
-                if (!iframe) {
-                    viewerContainer.innerHTML = ''; 
-                    iframe = document.createElement('iframe');
-                    iframe.id = 'pdfViewerIframe';
-                    iframe.className = 'pdf-viewer';
-                    viewerContainer.appendChild(iframe);
+                // NOVO: Define o URL de visualização baseado no tipo
+                let fileUrl;
+                if (fileType === 'pdf') {
+                    fileUrl = `https://drive.google.com/file/d/${fileId}/preview`; // Visualização de PDF (iframe)
+                } else if (fileType === 'jpg' || fileType === 'png') {
+                    fileUrl = `https://drive.google.com/uc?id=${fileId}&export=view`; // Link direto para imagem (img)
+                } else {
+                    displayLessonEmptyState(`Erro: Tipo de arquivo desconhecido: ${fileType}.`);
+                    checkLessonFormValidity();
+                    return;
                 }
                 
-                iframe.src = fileUrl; // Define o src para o URL de visualização do Google Drive
-                displayLessonEmptyState(`✅ Lição Salva no Drive! Exibindo lição para ${roomName}.`);
+                currentLessonFileUrl = fileUrl; // Armazena o URL de visualização no estado
+
+                // Limpa o container
+                viewerContainer.innerHTML = ''; 
+                
+                if (fileType === 'pdf') {
+                    // Renderiza o IFRAME para PDF
+                    const iframe = document.createElement('iframe');
+                    iframe.id = 'pdfViewerIframe';
+                    iframe.className = 'pdf-viewer';
+                    iframe.src = fileUrl; 
+                    viewerContainer.appendChild(iframe);
+                } else if (fileType === 'jpg' || fileType === 'png') {
+                    // Renderiza a TAG IMG para Imagens
+                    const div = document.createElement('div');
+                    div.className = 'image-viewer';
+                    div.id = 'imageViewerDiv';
+                    const img = document.createElement('img');
+                    img.src = fileUrl;
+                    img.alt = `Lição ${roomName} - ${date}`;
+                    div.appendChild(img);
+                    viewerContainer.appendChild(div);
+                }
+
+                displayLessonEmptyState(`✅ Lição Salva no Drive! Exibindo lição (${fileType.toUpperCase()}) para ${roomName}.`);
                 
             } else {
                 currentLessonFileUrl = null; 
                 currentLessonFileId = null; 
-                displayLessonEmptyState(`Nenhuma lição salva para Sala ${roomName} em ${date}. Faça o upload.`);
+                currentLessonFileType = null;
+                displayLessonEmptyState(`Nenhuma lição salva para Sala ${roomName} em ${date}. Faça o upload de um PDF ou Imagem.`);
             }
 
             checkLessonFormValidity();
@@ -1831,24 +1884,17 @@
             
         function displayLessonEmptyState(message = 'Selecione uma sala e data acima.') {
             const viewerContainer = document.getElementById('pdfViewerContent');
-            const existingIframe = document.getElementById('pdfViewerIframe');
+            // Remove qualquer visualizador existente (iframe ou imagem div)
+            viewerContainer.innerHTML = '';
             
-            if (existingIframe) {
-                existingIframe.remove();
-            }
-            
-            if (!document.getElementById('lessonsEmptyState')) {
-                viewerContainer.innerHTML = `
-                    <div class="empty-state" id="lessonsEmptyState">
-                        <h3>${message}</h3>
-                        <p>O PDF da lição será carregado aqui, se existir.</p>
-                    </div>
-                `;
-            } else {
-                document.querySelector('#lessonsEmptyState h3').textContent = message;
-                const pTag = document.querySelector('#lessonsEmptyState p');
-                if(pTag) pTag.textContent = 'O PDF da lição será carregado aqui, se existir.';
-            }
+            const emptyState = document.createElement('div');
+            emptyState.className = 'empty-state';
+            emptyState.id = 'lessonsEmptyState';
+            emptyState.innerHTML = `
+                <h3>${message}</h3>
+                <p>O PDF ou Imagem da lição será carregado aqui, se existir.</p>
+            `;
+            viewerContainer.appendChild(emptyState);
         }
 
 
@@ -1869,3 +1915,4 @@
     </script>
 </body>
 </html>
+
