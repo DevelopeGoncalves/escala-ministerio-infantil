@@ -3,968 +3,470 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ministério Infantil - Escalas e Chamada</title>
+    <title>Ministério Kids | Portal do Líder</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        /* ESTILOS BASE - MANTIDOS E UNIFICADOS DO CÓDIGO 1 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+        /* =========================================
+           DESIGN SYSTEM PREMIUM
+           ========================================= */
+        :root {
+            --primary: #4F46E5;       /* Índigo */
+            --primary-light: #818CF8;
+            --secondary: #10B981;     /* Verde */
+            --accent: #F43F5E;        /* Rosa */
+            --bg-body: #F3F4F6;
+            --surface: #FFFFFF;
+            --text-main: #1F2937;
+            --text-muted: #6B7280;
+            --border-radius: 20px;
+            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --gradient-header: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 15px;
-            padding-bottom: 30px;
-        }
-
-        .container {
-            max-width: 100%;
-            margin: 0 auto;
-        }
-
-        header {
-            text-align: center;
-            color: white;
-            margin-bottom: 20px;
-            padding: 10px 0;
-        }
-
-        h1 {
-            font-size: 1.8em;
-            margin-bottom: 8px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .subtitle {
-            font-size: 1em;
-            opacity: 0.95;
-        }
-
-        /* NOVO: ESTILOS DE ABAS (TABS) - VOLTOU PARA 1.05em */
-        .tabs-nav {
-            display: flex;
-            margin-bottom: 20px;
-            background: white;
-            border-radius: 15px;
-            padding: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 14px 10px;
-            border: none;
-            background: transparent;
-            color: #764ba2;
-            font-size: 1.05em;
-            font-weight: 700;
-            cursor: pointer;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            touch-action: manipulation;
-        }
-
-        .tab-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-        /* FIM: ESTILOS DE ABAS (TABS) */
-
-        /* ESTILOS DE SEÇÃO (ORIGINAIS DOS CÓDIGOS 1 E 2 + LIÇÕES) */
-        .filter-section, .call-section, .results-section, .room-selection-section, .lesson-section {
-            background: white;
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-            margin-bottom: 20px;
-        }
-
-        .filter-title, .form-label {
-            font-size: 1.1em;
-            color: #333;
-            margin-bottom: 15px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* ESTILOS DO CÓDIGO 1 (ESCALAS) */
-        .date-buttons {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 25px;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; padding-bottom: 80px; }
         
-        /* NOVO: Estilo para botões de data na aba Lições */
-        .date-buttons-lessons { 
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 25px;
+        /* Fundo Decorativo */
+        body::before {
+            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 300px;
+            background: var(--gradient-header); border-radius: 0 0 50% 50% / 20px; z-index: -1;
         }
 
-        .date-btn {
-            padding: 16px 10px;
-            border: 3px solid #e0e0e0;
-            background: white;
-            border-radius: 12px;
-            font-size: 0.95em;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            color: #333;
-            text-align: center;
-            touch-action: manipulation;
-            /* Propriedades Flex para Lições */
-            flex: 1 1 45%; 
-            min-width: 120px;
-        }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
 
-        .date-btn:active {
-            transform: scale(0.95);
-        }
+        /* Header */
+        header { text-align: center; color: white; margin-bottom: 30px; padding-top: 10px; }
+        h1 { font-size: 1.8em; font-weight: 700; letter-spacing: -0.5px; text-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 5px; }
+        .subtitle { font-size: 0.95em; opacity: 0.9; font-weight: 300; }
 
-        .date-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-color: #667eea;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        /* Tabs Nav */
+        .tabs-nav {
+            display: flex; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);
+            padding: 8px; border-radius: 24px; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+            margin-bottom: 30px; gap: 5px; overflow-x: auto; position: sticky; top: 10px; z-index: 100;
         }
+        .tab-btn {
+            flex: 1; padding: 12px 15px; border: none; background: transparent; color: var(--text-muted);
+            font-size: 0.9em; font-weight: 600; cursor: pointer; border-radius: 16px; transition: all 0.3s ease; white-space: nowrap;
+        }
+        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3); }
 
-        .room-buttons {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
+        /* Conteúdo */
+        .tab-content { display: none; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .tab-content.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .room-btn {
-            padding: 18px 15px;
-            border: 3px solid #e0e0e0;
-            background: white;
-            border-radius: 12px;
-            font-size: 1em;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            color: #333;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 12px;
-            touch-action: manipulation;
+        /* Cards Base */
+        .card-section {
+            background: var(--surface); padding: 25px; border-radius: var(--border-radius);
+            box-shadow: var(--shadow-card); margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.5);
         }
+        .section-title { font-size: 1.1em; color: var(--primary); margin-bottom: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        .room-btn:active {
-            transform: scale(0.98);
+        /* Inputs & Buttons */
+        input, select {
+            width: 100%; padding: 16px 20px; border: 2px solid #E5E7EB; border-radius: 16px;
+            font-size: 1em; background: #F9FAFB; transition: all 0.3s ease; outline: none; color: var(--text-main); font-family: inherit;
         }
-
-        .room-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-color: #667eea;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .room-icon-btn {
-            font-size: 1.8em;
-        }
-
-        .room-text {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            flex: 1;
-        }
-
-        .room-age {
-            font-size: 0.85em;
-            opacity: 0.8;
-            font-weight: 500;
-        }
-
-        .action-buttons {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-        }
+        input:focus, select:focus { border-color: var(--primary); background: #FFF; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+        .form-label { display: block; margin-bottom: 8px; font-size: 0.9em; font-weight: 600; color: var(--text-muted); margin-left: 5px; }
+        .form-group { margin-bottom: 20px; }
 
         .btn {
-            padding: 16px 20px;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.05em;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            touch-action: manipulation;
+            width: 100%; padding: 18px; border: none; border-radius: 16px; font-size: 1em; font-weight: 600;
+            cursor: pointer; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; font-family: inherit;
         }
+        .btn:active { transform: scale(0.97); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4); }
+        .btn-success { background: var(--secondary); color: white; box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.4); }
+        .btn-danger { background: var(--accent); color: white; }
+        .btn-ghost { background: #E5E7EB; color: var(--text-muted); }
 
-        .btn:active {
-            transform: scale(0.98);
+        /* Grids de Seleção */
+        .selection-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 12px; margin-bottom: 25px; }
+        .selection-card {
+            background: #FFF; border: 2px solid #E5E7EB; border-radius: 16px; padding: 15px 10px; text-align: center;
+            cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
         }
+        .selection-card.active { border-color: var(--primary); background: #EEF2FF; color: var(--primary); }
+        .selection-icon { font-size: 1.8em; } .selection-text { font-size: 0.9em; font-weight: 600; }
 
-        .btn-reset {
-            background: #6c757d;
-            color: white;
-        }
+        /* Escalas & Chamada Grid */
+        .schedule-grid { display: flex; flex-direction: column; gap: 15px; }
+        .schedule-item { background: white; padding: 20px; border-radius: 18px; border-left: 5px solid var(--primary); box-shadow: var(--shadow-card); }
+        .schedule-item.santa-ceia { border-left-color: var(--accent); background: #FFF1F2; }
+        .room-badge { background: #EEF2FF; color: var(--primary); padding: 5px 12px; border-radius: 20px; font-weight: 700; font-size: 0.85em; }
+        .date-badge { background: var(--primary); color: white; padding: 5px 12px; border-radius: 20px; font-weight: 700; font-size: 0.85em; }
+        .teacher-chip { display: inline-flex; background: #F3F4F6; padding: 8px 12px; border-radius: 10px; margin: 4px 4px 0 0; font-size: 0.9em; font-weight: 500; }
 
-        .btn-export {
-            background: #10b981;
-            color: white;
+        .kids-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 15px; margin-top: 20px; }
+        .kid-avatar-card { background: white; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-card); border: 3px solid transparent; transition: all 0.2s; cursor: pointer; }
+        .kid-avatar-card.present { border-color: var(--secondary); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2); }
+        .kid-avatar-card.extra { border-color: #FBBF24; }
+        .kid-img-wrapper { width: 100%; height: 100px; background: #F3F4F6; overflow: hidden; }
+        .kid-img { width: 100%; height: 100%; object-fit: cover; }
+        .kid-name-tag { padding: 8px 5px; text-align: center; font-size: 0.8em; font-weight: 700; background: white; line-height: 1.2; }
+        .kid-avatar-card.present .kid-name-tag { background: var(--secondary); color: white; }
+
+        /* =========================================
+           DASHBOARD DE CADASTRO
+           ========================================= */
+        .login-overlay { padding: 40px 20px; text-align: center; }
+        .registry-container { display: none; } 
+
+        /* Cards das Turmas */
+        .class-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 20px; }
+        @media (min-width: 600px) { .class-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        .class-card {
+            background: white; border-radius: 20px; padding: 25px; cursor: pointer;
+            display: flex; align-items: center; gap: 20px; transition: transform 0.2s;
+            box-shadow: var(--shadow-card); border: 1px solid #F3F4F6; position: relative; overflow: hidden;
         }
+        .class-card:active { transform: scale(0.98); }
+        .class-card::after { content: '➜'; position: absolute; right: 20px; color: #E5E7EB; font-size: 1.5em; }
+        .class-icon-box {
+            width: 60px; height: 60px; background: #EEF2FF; border-radius: 15px;
+            display: flex; align-items: center; justify-content: center; font-size: 2em;
+        }
+        .class-info h3 { margin: 0; color: var(--text-main); font-size: 1.2em; }
+        .class-info p { margin: 0; color: var(--text-muted); font-size: 0.9em; margin-top: 4px; }
+
+        /* Lista Detalhada da Criança */
+        .child-detailed-list { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
         
-        /* NOVO ESTILO: BOTÃO DE DOWNLOAD */
-        .btn-download {
-            background: #ffc107; /* Amarelo - Alerta/Download */
-            color: #333;
+        .child-detail-card {
+            background: white; border-radius: 20px; padding: 15px;
+            display: flex; align-items: flex-start; gap: 15px;
+            box-shadow: var(--shadow-card); border: 1px solid #F3F4F6;
         }
-
-        .results-header {
-            font-size: 1.2em;
-            color: #333;
-            margin-bottom: 20px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            line-height: 1.4;
+        .child-detail-img {
+            width: 80px; height: 80px; border-radius: 12px; object-fit: cover;
+            border: 2px solid #E5E7EB; background: #F3F4F6;
         }
-
-        .schedule-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .schedule-card {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 18px;
-            border-radius: 15px;
-            border-left: 5px solid #667eea;
-        }
+        .child-detail-info { flex: 1; }
+        .child-detail-info h4 { margin: 0 0 5px 0; font-size: 1.1em; color: var(--primary); }
+        .info-row { display: flex; align-items: center; gap: 6px; font-size: 0.85em; color: var(--text-muted); margin-bottom: 3px; }
+        .info-label { font-weight: 600; color: var(--text-main); }
         
-        .schedule-card.santa-ceia-highlight {
-            border-left: 5px solid #dc3545;
-            background: linear-gradient(135deg, #fcebeb 0%, #f7636f 100%);
+        /* Cabeçalho da Lista de Turma */
+        .class-header {
+            display: flex; align-items: center; gap: 15px; margin-bottom: 20px;
+            background: white; padding: 15px; border-radius: 16px; box-shadow: var(--shadow-card);
         }
-
-        .schedule-card.santa-ceia-highlight .room-name {
-            color: #c82333;
-        }
-
-        .schedule-card.santa-ceia-highlight .schedule-date {
-            background: #dc3545;
-            color: white;
-        }
-
-        .room-name {
-            font-size: 1.3em;
-            font-weight: 700;
-            color: #667eea;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-
-        .room-age-display {
-            font-size: 0.85em;
-            color: #666;
-            font-weight: 500;
-        }
-
-        .date-info {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 10px;
-        }
-
-        .schedule-date, .lesson-badge {
-            background: #667eea;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 0.95em;
-        }
-
-        .lesson-badge {
-            background: #10b981;
-        }
-
-        .teacher-search {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 25px; 
-            border: 2px solid #ccc;
-            border-radius: 12px;
-            font-size: 1em;
-            transition: border-color 0.2s ease;
-        }
-        .teacher-search:focus {
-            border-color: #667eea;
-            outline: none;
-        }
-
-        .teachers-label {
-            font-weight: 700;
-            color: #555;
-            margin-bottom: 10px;
-            font-size: 0.95em;
-        }
-
-        .teachers-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .teacher-card {
-            background: white;
-            padding: 12px 15px;
-            border-radius: 10px;
-            font-weight: 600;
-            color: #333;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1em;
-            border: 2px solid transparent; 
-            transition: all 0.2s ease;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #666;
-        }
-
-        .empty-state h3 {
-            font-size: 1.3em;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        /* ESTILOS DO CÓDIGO 2 (CHAMADA) - UNIFICADOS */
-        .room-selection-section {
-            padding: 15px; 
-            margin-bottom: 20px;
-        }
-
-        .room-tabs-call { 
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            justify-content: center;
-        }
-
-        .room-tab-call { 
-            flex: 1 1 45%; 
-            min-width: 120px;
-            padding: 15px 10px;
-            border: 3px solid #e0e0e0; 
-            background: white; 
-            border-radius: 12px; 
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: center;
-            color: #333; 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        .btn-back { width: 40px; height: 40px; border-radius: 12px; border: none; background: #F3F4F6; cursor: pointer; font-size: 1.2em; }
         
-        .room-tab-call.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-color: #667eea;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-        
-        .room-tab-call:active {
-            transform: scale(0.98); 
-        }
+        /* Helpers */
+        .hidden { display: none !important; }
+        .flex-row { display: flex; gap: 10px; }
+        .full-width { width: 100%; }
 
-        .room-name-tab {
-            font-size: 1.1em;
-        }
-
-        .room-age-tab {
-            font-size: 0.8em;
-            font-weight: 500;
-            opacity: 0.8;
-            margin-top: 3px;
-        }
-
-        .call-section h2 {
-            font-size: 1.2em; 
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .btn-submit {
-            background: #10b981;
-            padding: 16px 20px; 
-            border-radius: 12px; 
-            font-size: 1.05em; 
-            margin-top: 25px;
-        }
+        /* Upload Lições */
+        .upload-area { border: 2px dashed #D1D5DB; border-radius: 20px; padding: 40px 20px; text-align: center; background: #F9FAFB; cursor: pointer; margin-bottom: 20px; }
+        .pdf-viewer-box { background: #1F2937; border-radius: 20px; padding: 10px; min-height: 400px; margin-top: 20px; }
+        .pdf-frame, .image-viewer { width: 100%; height: 500px; border-radius: 12px; background: white; border: none; }
+        .image-viewer img { width: 100%; height: auto; display: block; margin: 0 auto; }
         
-        .btn-submit:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        
-        /* Ajustes de input (RESTAURO DE FONT-SIZE PARA 1.1em) */
-        input[type="date"], #teacherName {
-            width: 100%;
-            padding: 16px; 
-            font-size: 1.1em; 
-            border: 2px solid #ccc; 
-            border-radius: 12px;
-            transition: border-color 0.2s ease;
-        }
-        
-        /* ESTILO PARA A SEÇÃO DE ADICIONAR CRIANÇA */
-        .add-kid-section {
-            margin-bottom: 20px;
-            padding-top: 5px;
-        }
-
-        .add-kid-input-group {
-            display: flex;
-            gap: 10px;
-            align-items: stretch;
-            margin-bottom: 10px;
-        }
-
-        #extraKidName {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid #ccc;
-            border-radius: 12px;
-            font-size: 1em;
-            transition: border-color 0.2s ease;
-        }
-
-        #extraKidName:focus {
-            border-color: #667eea;
-            outline: none;
-        }
-
-        .btn-add-kid {
-            padding: 0 15px;
-            background: #ffc107; 
-            color: #333;
-            border: none;
-            border-radius: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .btn-add-kid:active {
-            transform: scale(0.98);
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-        
-        button:focus {
-            outline: none;
-        }
-        
-        @media (max-width: 360px) {
-            h1 {
-                font-size: 1.5em;
-            }
-            
-            .date-buttons {
-                grid-template-columns: 1fr;
-            }
-            
-            .add-kid-input-group {
-                flex-direction: column;
-            }
-            .btn-add-kid {
-                height: 48px;
-            }
-        }
-
-        /* CSS PARA OS CARDS DE CRIANÇAS - MANTIDO ORIGINALMENTE */
-        .kids-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); 
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .kid-card {
-            background: #f8f9fa;
-            border: 3px solid #dee2e6;
-            border-radius: 15px;
-            padding: 0; 
-            overflow: hidden; 
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            user-select: none;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 180px; 
-            position: relative;
-        }
-        
-        .kid-card.extra {
-            background: #fff8e1; 
-            border-color: #ffc107; 
-        }
-        
-        .kid-card:active {
-            transform: scale(0.98);
-        }
-        
-        .kid-card.present {
-            background: #e6f7ef; 
-            border-color: #10b981; 
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-        }
-        
-        .kid-photo {
-            width: 100%; 
-            height: 140px; 
-            object-fit: cover; 
-            border-radius: 12px 12px 0 0; 
-            border-bottom: none; 
-            border: none;
-            box-shadow: none;
-        }
-        
-        .kid-card.extra .kid-photo {
-            background: #ffc107;
-            border-color: #ffc107; 
-            font-size: 2.5em; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            box-shadow: none;
-            border-radius: 12px 12px 0 0; 
-        }
-        
-        .kid-card.extra.present .kid-photo {
-            background: #10b981;
-            border-color: #10b981;
-        }
-
-        .kid-name {
-            font-size: 1.1em; 
-            font-weight: 600;
-            color: #333;
-            line-height: 1.2;
-            padding: 8px 5px; 
-            width: 100%; 
-            background: white; 
-            border-top: 1px solid #eee; 
-            border-radius: 0 0 12px 12px; 
-        }
-
-        .kid-card.present .kid-name {
-            background: #d4ede6; 
-            border-color: #10b981;
-        }
-
-        .kid-card.extra .kid-name {
-            background: #ffe082; 
-        }
-
-        .kid-card.extra.present .kid-name {
-            background: #d4ede6; 
-        }
-
-        #kidsList > .form-label {
-            margin-bottom: 15px; 
-        }
-        
-        /* === NOVOS ESTILOS PARA A ABA LIÇÕES === */
-        
-        .room-tabs-lessons { 
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-        
-        .lesson-header {
-            font-size: 1.2em;
-            color: #333;
-            margin-bottom: 20px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .lesson-status-info {
-            padding: 15px;
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 10px;
-            margin-top: 15px;
-            font-size: 0.95em;
-            color: #6c757d;
-        }
-        
-        .file-upload-group {
-            margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .file-upload-label {
-            background: #f1f1f1;
-            padding: 15px;
-            border-radius: 12px;
-            cursor: pointer;
-            text-align: center;
-            font-weight: 600;
-            color: #333;
-            border: 2px dashed #ccc;
-            transition: all 0.2s ease;
-        }
-        
-        .file-upload-label:hover {
-            border-color: #667eea;
-            background: #e9ecef;
-        }
-        
-        #pdfFile {
-            display: none;
-        }
-        
-        /* ATUALIZADO: 3 botões na grade */
-        .lesson-actions {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        .btn-upload {
-            background: #10b981;
-            color: white;
-        }
-        
-        .btn-delete {
-            background: #dc3545;
-            color: white;
-        }
-        
-        .btn-upload:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        
-        /* NOVO ESTILO PARA IMAGEM */
-        .pdf-viewer, .image-viewer {
-            width: 100%;
-            height: 600px; 
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            background: #f8f9fa;
-            overflow: auto;
-        }
-
-        .image-viewer img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 0 auto;
-        }
-
     </style>
 </head>
 <body>
+
     <div class="container">
         <header>
-            <h1>✝️ Ministério Infantil ✝️</h1>
-            <p class="subtitle">Escalas, Chamadas e Lições - Novembro 2025</p>
+            <h1>✝️ Ministério Kids</h1>
+            <p class="subtitle">Portal de Liderança & Gestão</p>
         </header>
 
-        <div class="tabs-nav">
-            <button class="tab-btn active" data-tab="escalas" onclick="openTab('escalas', this)">Escalas 📅</button>
-            <button class="tab-btn" data-tab="chamada" onclick="openTab('chamada', this)">Chamada 🔔</button>
-            <button class="tab-btn" data-tab="licoes" onclick="openTab('licoes', this)">Lições 📖</button>
-        </div>
-        
-        <div class="tab-content active" id="tab-escalas">
-            <div class="filter-section">
-                <div class="filter-title">🔎 Buscar por Professor</div>
-                <input type="text" id="teacherSearchInput" class="teacher-search" placeholder="Digite o nome do professor" oninput="filterByTeacher(this.value)">
-                
-                <div class="filter-title">📅 Escolha a Data</div>
-                <div class="date-buttons" id="dateButtons"></div>
+        <nav class="tabs-nav">
+            <button class="tab-btn active" onclick="openTab('escalas', this)">📅 Escalas</button>
+            <button class="tab-btn" onclick="openTab('chamada', this)">✅ Chamada</button>
+            <button class="tab-btn" onclick="openTab('licoes', this)">📖 Lições</button>
+            <button class="tab-btn" onclick="openTab('cadastro', this)">🔐 Cadastro</button>
+        </nav>
 
-                <div class="filter-title">🏠 Escolha a Sala</div>
-                <div class="room-buttons" id="roomButtons"></div>
-
-                <div class="action-buttons">
-                    <button class="btn btn-reset" onclick="resetFilters()">🔄 Mostrar Todas</button>
-                    <button class="btn btn-export" onclick="exportToCSV()">📥 Exportar CSV</button>
-                </div>
+        <div id="tab-escalas" class="tab-content active">
+            <div class="card-section">
+                <div class="section-title">🔎 Filtros</div>
+                <div class="form-group"><input type="text" id="teacherSearchInput" placeholder="Busque por professor..." oninput="filterByTeacher(this.value)"></div>
+                <div class="form-label">Data</div><div class="selection-grid" id="dateButtons"></div>
+                <div class="form-label">Sala</div><div class="selection-grid" id="roomButtons"></div>
+                <div class="flex-row"><button class="btn btn-ghost" onclick="resetFilters()">🔄 Limpar</button><button class="btn btn-success" onclick="exportToCSV()">📥 CSV</button></div>
             </div>
-
-            <div class="results-section">
-                <div class="results-header">
-                    📋 <span id="resultsTitle">Todas as Escalas</span>
-                </div>
+            <div class="card-section" style="background:transparent;box-shadow:none;border:none;padding:0;">
+                <div class="section-title">📋 <span id="resultsTitle">Escalas</span></div>
                 <div class="schedule-grid" id="scheduleGrid"></div>
             </div>
         </div>
-        
-        <div class="tab-content" id="tab-chamada">
-            <div class="room-selection-section">
-                <div class="form-label">🏠 Selecione a Sala (Obrigatório)</div>
-                <div class="room-tabs-call" id="roomTabsCall">
-                    </div>
+
+        <div id="tab-chamada" class="tab-content">
+            <div class="card-section">
+                <div class="section-title">🏠 1. Sala</div>
+                <div class="selection-grid" id="roomTabsCall"></div>
             </div>
-
-            <div class="call-section">
-                <h2 class="form-label" id="chamadaTitle">📝Chamada - Selecione a Sala Acima 👆</h2>
-
-                <div class="form-group">
-                    <label for="teacherName" class="form-label">🧑‍🏫 Nome do Professor(a):</label>
-                    <input type="text" id="teacherName" placeholder="Nome da Dupla" required oninput="checkCallFormValidity()">
+            <div class="card-section">
+                <div class="section-title" id="chamadaTitle">📝 2. Chamada</div>
+                <div class="form-group"><label class="form-label">Professores</label><input type="text" id="teacherName" placeholder="Ex: Ana e Beatriz" oninput="checkCallFormValidity()"></div>
+                <div class="form-group"><label class="form-label">Data</label><input type="date" id="dateInput" onchange="checkCallFormValidity()"></div>
+                <div class="form-group" style="background:#FFFBEB;padding:15px;border-radius:16px;border:1px solid #FCD34D;">
+                    <label class="form-label" style="color:#92400E;">✨ Visitante</label>
+                    <div class="flex-row"><input type="text" id="extraKidName" placeholder="Nome" disabled style="background:white;"><button class="btn btn-primary" onclick="addExtraKid()" disabled style="width:auto;background:#F59E0B;">+</button></div>
                 </div>
-
-                <div class="form-group">
-                    <label for="dateInput" class="form-label">📅 Data da Aula:</label>
-                    <input type="date" id="dateInput" required onchange="checkCallFormValidity()">
-                </div>
-                
-                <div class="add-kid-section">
-                    <div class="form-label">✨ Adicionar Criança/Visitante</div>
-                    <div class="add-kid-input-group">
-                        <input type="text" id="extraKidName" placeholder="Nome da criança visitante" disabled>
-                        <button class="btn btn-add-kid" onclick="addExtraKid()" disabled>+ Adicionar</button>
-                    </div>
-                </div>
-                <div id="kidsList">
-                    <div class="empty-state">
-                        Escolha uma sala para começar a lista de chamada.
-                    </div>
-                </div>
-
-                <button class="btn btn-submit" onclick="submitCall()">✅ Finalizar Chamada</button>
+                <div id="kidsList"><div style="text-align:center;color:#9CA3AF;padding:20px;">Selecione uma sala acima.</div></div>
+                <div style="margin-top:25px;"><button class="btn btn-success" onclick="submitCall()" disabled>✅ Finalizar</button></div>
             </div>
         </div>
-        
-        <div class="tab-content" id="tab-licoes">
-            <div class="lesson-section">
-                <div class="lesson-header">🛠️ Gerenciar Lições em PDF ou Imagem</div>
-                
-                <div class="form-label">🏠 Escolha a Sala</div>
-                <div class="room-tabs-lessons" id="roomTabsLessons">
-                    </div>
-                
-                <div class="form-label">📅 Escolha a Data da Lição</div>
-                <div class="date-buttons-lessons" id="dateButtonsLessons">
-                    </div>
-                
-                <div class="file-upload-group">
-                    <label for="pdfFile" class="file-upload-label" id="fileUploadLabel">
-                        📁 Escolher Arquivo PDF, JPG ou PNG (Max 5MB) - Pode selecionar Múltiplos
+
+        <div id="tab-licoes" class="tab-content">
+            <div class="card-section">
+                <div class="section-title">📂 Arquivos</div>
+                <div class="form-label">Sala</div><div class="selection-grid" id="roomTabsLessons"></div>
+                <div class="form-label">Data</div><div class="selection-grid" id="dateButtonsLessons"></div>
+                <div class="form-group" style="margin-top:20px;">
+                    <label for="pdfFile" class="upload-area" id="fileUploadLabel">
+                        <div style="font-size:2.5em;margin-bottom:10px;">☁️</div><div>Toque para selecionar PDF ou Imagem</div>
                     </label>
-                    <input type="file" id="pdfFile" accept="application/pdf,image/jpeg,image/png" onchange="handleFileSelect()" multiple>
-                    <div class="lesson-status-info" id="fileInfo">Nenhuma lição selecionada.</div>
+                    <input type="file" id="pdfFile" accept="application/pdf,image/jpeg,image/png" onchange="handleFileSelect()" multiple style="display:none;">
+                    <div id="fileInfo" style="text-align:center;margin-top:10px;font-weight:600;color:var(--secondary);"></div>
                 </div>
-                
-                <div class="lesson-actions">
-                    <button class="btn btn-upload" id="btnUploadLesson" onclick="uploadLesson()" disabled>
-                        ⬆️ Enviar Lição
-                    </button>
-                    <button class="btn btn-download" id="btnDownloadLesson" onclick="downloadLesson()" disabled>
-                        ⬇️ Baixar Lições
-                    </button>
-                    <button class="btn btn-delete" id="btnDeleteLesson" onclick="deleteLesson()" disabled>
-                        🗑️ Excluir
-                    </button>
+                <div class="flex-row">
+                    <button class="btn btn-primary" id="btnUploadLesson" onclick="uploadLesson()" disabled>⬆️ Enviar</button>
+                    <button class="btn btn-success" id="btnDownloadLesson" onclick="downloadLesson()" disabled>⬇️ Baixar</button>
+                    <button class="btn btn-danger" id="btnDeleteLesson" onclick="deleteLesson()" disabled>🗑️</button>
                 </div>
+                <div class="pdf-viewer-box" id="pdfViewerContent"><div style="text-align:center;color:rgba(255,255,255,0.5);padding-top:150px;">Visualizador</div></div>
+            </div>
+        </div>
+
+        <div id="tab-cadastro" class="tab-content">
+            <div class="card-section">
                 
-                <div class="pdf-viewer-container">
-                    <div class="lesson-header">👁️ Visualizador da Lição</div>
-                    <div id="pdfViewerContent">
-                        <div class="empty-state" id="lessonsEmptyState">
-                            <h3>Selecione uma sala e data acima.</h3>
-                            <p>O PDF ou Imagem da lição será carregado aqui, se existir.</p>
+                <div id="loginSection" class="login-overlay">
+                    <div style="font-size:4em;margin-bottom:20px;">🔐</div>
+                    <h3 style="margin-bottom:10px;color:var(--primary);">Somente Líderes</h3>
+                    <div class="form-group"><input type="text" id="loginUser" placeholder="Usuário"></div>
+                    <div class="form-group"><input type="password" id="loginPass" placeholder="Senha"></div>
+                    <button class="btn btn-primary" onclick="login()">Entrar</button>
+                    <p style="margin-top:15px;font-size:0.8em;color:#AAA;">(Usuario / Senha)</p>
+                </div>
+
+                <div id="registryArea" class="registry-container">
+                    
+                    <div id="registryClassSelection">
+                        <div class="section-title" style="justify-content:space-between;">
+                            <span>🏫 Selecione a Turma</span>
+                            <button class="btn btn-primary" style="width:auto;padding:8px 15px;font-size:0.85em;" onclick="openRegistryForm()">+ Novo Aluno</button>
+                        </div>
+                        <div class="class-grid" id="classGridContainer"></div>
+                        <div style="margin-top:30px;text-align:center;">
+                            <button class="btn btn-ghost" onclick="logout()" style="color:var(--accent);width:auto;margin:0 auto;">🔒 Sair</button>
                         </div>
                     </div>
+
+                    <div id="registryClassDetail" class="hidden">
+                        <div class="class-header">
+                            <button class="btn-back" onclick="backToClassSelection()">⬅</button>
+                            <div>
+                                <h3 id="detailRoomName" style="margin:0;color:var(--primary);">Nome da Sala</h3>
+                                <p id="detailRoomAge" style="margin:0;color:var(--text-muted);font-size:0.9em;">Idade</p>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <input type="text" placeholder="🔍 Buscar na turma..." oninput="filterRegistryDetail(this.value)">
+                        </div>
+
+                        <div class="child-detailed-list" id="classDetailList"></div>
+                    </div>
+
+                    <div id="registryFormView" class="hidden">
+                        <div class="section-title">👶 Novo Cadastro</div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Nome Completo</label>
+                            <input type="text" id="regChildName" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Data de Nascimento</label>
+                            <input type="date" id="regChildDob" onchange="calculateAge()" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Idade (Automático)</label>
+                            <input type="text" id="regChildAge" readonly style="background:#E5E7EB; font-weight:bold; color:var(--primary);">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Nome do Responsável</label>
+                            <input type="text" id="regGuardianName" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Telefone / WhatsApp</label>
+                            <input type="number" id="regGuardianPhone" placeholder="(00) 00000-0000" required>
+                        </div>
+
+                        <hr style="border:0;border-top:1px solid #E5E7EB;margin:20px 0;">
+                        
+                        <div class="form-group">
+                            <label class="form-label">Sala Sugerida</label>
+                            <select id="regRoom">
+                                <option value="Berçário">Berçário (0-2)</option>
+                                <option value="Alfa">Alfa (3-4)</option>
+                                <option value="Beta">Beta (5-6)</option>
+                                <option value="Gama">Gama (7-8)</option>
+                                <option value="Ômega">Ômega (9-11)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex-row">
+                            <button class="btn btn-ghost" onclick="backToClassSelection()">Cancelar</button>
+                            <button class="btn btn-success" onclick="submitRegistration()">💾 Salvar</button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
+
     </div>
 
     <script>
-        // *** SEU URL DO APPS SCRIPT DEPLOYED ESTÁ AQUI ***
         const SHEET_URL = 'https://script.google.com/macros/s/AKfycbz-zw2zwET3iSgtNKasbc4NuCIrmJuJ3k3gPk9YhtFW3oNx1YbyQGe0zbXeUre0uBxxIg/exec';
-        // ************************************************
         
-        // LIMITE DE ARQUIVO: 5 MB em bytes
         const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; 
-        // Tipos de arquivo permitidos
         const ALLOWED_MIMES = ['application/pdf', 'image/jpeg', 'image/png'];
-        
 
-        // VARIÁVEL DE ESTADO PARA O DOWNLOAD (MUDANÇA: Agora é um array de objetos)
         let currentLessonFiles = []; 
-        let currentLessonFileUrl = null; // Mantido apenas para a visualização principal
+        let currentLessonFileUrl = null; 
         let currentLessonFileType = null; 
 
-        // DADOS COMPARTILHADOS (ESCALAS E CHAMADA)
         const roomsData = {
-            berçario: { name: "Berçário", age: "0-2 anos", icon: "👶" },
-            alfa: { name: "Alfa", age: "3-4 anos", icon: "🧸" },
-            beta: { name: "Beta", age: "5-6 anos", icon: "🎨" },
-            gama: { name: "Gama", age: "7-8 anos", icon: "⚽" },
-            ômega: { name: "Ômega", age: "9-11 anos", icon: "📚" }
+            berçario: { name: "Berçário", age: "0-2 anos", icon: "👶", color: "#6C63FF" },
+            alfa: { name: "Alfa", age: "3-4 anos", icon: "🧸", color: "#FF6584" },
+            beta: { name: "Beta", age: "5-6 anos", icon: "🎨", color: "#4299E1" },
+            gama: { name: "Gama", age: "7-8 anos", icon: "⚽", color: "#48BB78" },
+            ômega: { name: "Ômega", age: "9-11 anos", icon: "📚", color: "#ED8936" }
         };
         
-        // DADOS FIXOS DAS CRIANÇAS PARA A CHAMADA VISUAL (Mantidos)
+        // =========================================================================
+        // ⚠️ DADOS REAIS DAS CRIANÇAS - PREENCHA AQUI ⚠️
+        // ATENÇÃO: A data 'dob' deve ser no formato "AAAA-MM-DD"
+        // =========================================================================
         const kidsData = {
             berçario: [ 
-                { id: 1, name: "Maria Eduarda", photo: "m_eduarda.png" },
-                { id: 2, name: "João Pedro", photo: "j_pedro.png" },
-                { id: 3, name: "Sophia R.", photo: "sophia.png" },
-                { id: 4, name: "Benício L.", photo: "benicio.png" },
-                { id: 5, name: "Lara M.", photo: "lara.png" }
+                { id: 1, name: "Maria Eduarda", photo: "m_eduarda.png", dob: "2023-05-20", guardian: "Mãe da Maria", phone: "(27) 99999-9999" },
+                { id: 2, name: "João Pedro", photo: "j_pedro.png", dob: "2024-01-10", guardian: "Pai do João", phone: "(27) 98888-8888" },
+                { id: 3, name: "Sophia R.", photo: "sophia.png", dob: "", guardian: "", phone: "" },
+                { id: 4, name: "Benício L.", photo: "benicio.png", dob: "", guardian: "", phone: "" },
+                { id: 5, name: "Lara M.", photo: "lara.png", dob: "", guardian: "", phone: "" }
             ],
             alfa: [ 
-                { id: 6, name: "Alice", photo: "alice_alfa.png" },
-                { id: 7, name: "Levi", photo: "levi_alfa.png" },
-                { id: 8, name: "Emily", photo: "emily_alfa.png" },
-                { id: 9, name: "Arthur", photo: "arthur_alfa.png" },
-                { id: 10, name: "Laura", photo: "laura_alfa.png" },
-                { id: 11, name: "Benício", photo: "benicio_aalfa.png" },
-                { id: 12, name: "Heloísa", photo: "heloisa_alfa.png" },
-                { id: 13, name: "Júlio", photo: "julio_alfa.png" },
-                { id: 14, name: "Bernardo", photo: "bernardo_alfa.png" },
-                { id: 15, name: "Isadora", photo: "isadora_alfa.png" },
-                { id: 16, name: "Emanuel", photo: "emanuel_alfa.png" },
-                { id: 17, name: "Heitor", photo: "heitor_alfa.png" },
-                { id: 18, name: "Davi", photo: "davi_alfa.png" },
-                { id: 19, name: "Elisa", photo: "elisa_alfa.png" },
-                { id: 20, name: "Vitoria", photo: "vitoria_alfa.png" },
-                { id: 21, name: "Théo", photo: "Theo_alfa.png" }
+                { id: 6, name: "Alice", photo: "alice_alfa.png", dob: "", guardian: "", phone: "" },
+                { id: 7, name: "Levi", photo: "levi_alfa.png", dob: "", guardian: "", phone: "" },
+                { id: 8, name: "Emily", photo: "emily_alfa.png", dob: "", guardian: "", phone: "" },
+                { id: 9, name: "Arthur", photo: "arthur_alfa.png", dob: "", guardian: "", phone: "" },
+                { id: 10, name: "Laura", photo: "laura_alfa.png", dob: "", guardian: "", phone: "" },
+                { id: 11, name: "Benício", photo: "benicio_aalfa.png", dob: "", guardian: "", phone: "" },
+                { id: 12, name: "Heloísa", photo: "heloisa_alfa.png", dob: "", guardian: "", phone: "" },
+                { id: 13, name: "Júlio", photo: "julio_alfa.png", dob: "", guardian: "", phone: "" },
+                { id: 14, name: "Bernardo", photo: "bernardo_alfa.png", dob: "", guardian: "", phone: "" },
+                { id: 15, name: "Isadora", photo: "isadora_alfa.png", dob: "", guardian: "", phone: "" },
+                { id: 16, name: "Emanuel", photo: "emanuel_alfa.png", dob: "", guardian: "", phone: "" },
+                { id: 17, name: "Heitor", photo: "heitor_alfa.png", dob: "", guardian: "", phone: "" },
+                { id: 18, name: "Davi", photo: "davi_alfa.png", dob: "", guardian: "", phone: "" },
+                { id: 19, name: "Elisa", photo: "elisa_alfa.png", dob: "", guardian: "", phone: "" },
+                { id: 20, name: "Vitoria", photo: "vitoria_alfa.png", dob: "", guardian: "", phone: "" },
+                { id: 21, name: "Théo", photo: "Theo_alfa.png", dob: "", guardian: "", phone: "" }
             ],
             beta: [ 
-                { id: 19, name: "Maitê", photo: "maite_beta.png" },
-                { id: 20, name: "Liz Pacheco", photo: "liz_pacheco_beta.png" },
-                { id: 21, name: "Helena M.", photo: "helena_beta.png" },
-                { id: 22, name: "Pedro", photo: "pedro_beta.png" },
-                { id: 23, name: "Tiffany", photo: "tiffany_beta.png" },
-                { id: 24, name: "Arthur Souza", photo: "arthur_beta.png" },
-                { id: 25, name: "João", photo: "joao_beta.png" },
-                { id: 26, name: "José Luís", photo: "jose_luis_beta.png" },
-                { id: 27, name: "João Miguel", photo: "joao_miguel_beta.png" },
-                { id: 28, name: "Matteo", photo: "matteo_beta.png" },
-                { id: 29, name: "Murilo", photo: "murilo_beta.png" },
-                { id: 30, name: "Elisa", photo: "elisa_beta.png" },
-                { id: 31, name: "Safira", photo: "safira_beta.png" },
-                { id: 32, name: "Manuella", photo: "manuella_beta.png" },
-                { id: 33, name: "Nicoly", photo: "nicoly_beta.png" },
-                { id: 34, name: "Helena Pimenta.", photo: "helena_p_beta.png" },
-                { id: 35, name: "Enrico J.", photo: "enrico_beta.png" },
-                { id: 36, name: "Liz Medeiros", photo: "liz_Medeiros_beta.png" },
-                { id: 37, name: "Arthur R.", photo: "arthur_beta.png" },
-                { id: 38, name: "Benjamin", photo: "benjamin_beta.png" },
-                { id: 39, name: "Ana Luiza", photo: "ana_luiza_beta.png" },
-                { id: 40, name: "Liz Couto", photo: "liz_couto_beta.png" }
+                { id: 19, name: "Maitê", photo: "maite_beta.png", dob: "", guardian: "", phone: "" },
+                { id: 20, name: "Liz Pacheco", photo: "liz_pacheco_beta.png", dob: "", guardian: "", phone: "" },
+                { id: 21, name: "Helena M.", photo: "helena_beta.png", dob: "", guardian: "", phone: "" },
+                { id: 22, name: "Pedro", photo: "pedro_beta.png", dob: "", guardian: "", phone: "" },
+                { id: 23, name: "Tiffany", photo: "tiffany_beta.png", dob: "", guardian: "", phone: "" },
+                { id: 24, name: "Arthur Souza", photo: "arthur_beta.png", dob: "", guardian: "", phone: "" },
+                { id: 25, name: "João", photo: "joao_beta.png", dob: "", guardian: "", phone: "" },
+                { id: 26, name: "José Luís", photo: "jose_luis_beta.png", dob: "", guardian: "", phone: "" },
+                { id: 27, name: "João Miguel", photo: "joao_miguel_beta.png", dob: "", guardian: "", phone: "" },
+                { id: 28, name: "Matteo", photo: "matteo_beta.png", dob: "", guardian: "", phone: "" },
+                { id: 29, name: "Murilo", photo: "murilo_beta.png", dob: "", guardian: "", phone: "" },
+                { id: 30, name: "Elisa", photo: "elisa_beta.png", dob: "", guardian: "", phone: "" },
+                { id: 31, name: "Safira", photo: "safira_beta.png", dob: "", guardian: "", phone: "" },
+                { id: 32, name: "Manuella", photo: "manuella_beta.png", dob: "", guardian: "", phone: "" },
+                { id: 33, name: "Nicoly", photo: "nicoly_beta.png", dob: "", guardian: "", phone: "" },
+                { id: 34, name: "Helena Pimenta.", photo: "helena_p_beta.png", dob: "", guardian: "", phone: "" },
+                { id: 35, name: "Enrico J.", photo: "enrico_beta.png", dob: "", guardian: "", phone: "" },
+                { id: 36, name: "Liz Medeiros", photo: "liz_Medeiros_beta.png", dob: "", guardian: "", phone: "" },
+                { id: 37, name: "Arthur R.", photo: "arthur_beta.png", dob: "", guardian: "", phone: "" },
+                { id: 38, name: "Benjamin", photo: "benjamin_beta.png", dob: "", guardian: "", phone: "" },
+                { id: 39, name: "Ana Luiza", photo: "ana_luiza_beta.png", dob: "", guardian: "", phone: "" },
+                { id: 40, name: "Liz Couto", photo: "liz_couto_beta.png", dob: "", guardian: "", phone: "" }
             ],
             gama: [ 
-                { id: 39, name: "Isaac", photo: "isaac_gama.png" },
-                { id: 40, name: "Davi", photo: "davi_gama.png" },
-                { id: 41, name: "Sophia", photo: "sophia_gama.png" },
-                { id: 42, name: "Wendel", photo: "wendel_gama.png" },
-                { id: 43, name: "Isabela", photo: "isabela_gama.png" },
-                { id: 44, name: "Lauren", photo: "lauren_gama.png" },
-                { id: 45, name: "Brayan", photo: "brayan_gama.png" },
-                { id: 48, name: "Emanuelly", photo: "emanuelly_gama.png" },
-                { id: 49, name: "Kauã", photo: "kaua_gama.png" },
-                { id: 50, name: "Vicente", photo: "vicente_gama.png" },
-                { id: 51, name: "Elisa Romão", photo: "elisa_romao_gama.png" },
-                { id: 52, name: "Helena Miranda", photo: "helena_gama.png" },
-                { id: 53, name: "Ana Clara", photo: "ana_clara_gama.png" },
-                { id: 54, name: "Érick", photo: "erick_gama.png" }, 
-                { id: 55, name: "Lorenzo", photo: "lorenzo_gama.png" },
-                { id: 56, name: "Theo", photo: "theo_gama.png" },
-                { id: 57, name: "Brunelly", photo: "Brunelly_gama.png" },
-                { id: 58, name: "Vitor", photo: "Vitor_gama.png" },
-                { id: 59, name: "João Pedro Barros", photo: "joao_pedro_gama.png" }
+                { id: 39, name: "Isaac", photo: "isaac_gama.png", dob: "2023-05-20", guardian: "alex santana", phone: "27999456858" },
+                { id: 40, name: "Davi", photo: "davi_gama.png", dob: "", guardian: "", phone: "" },
+                { id: 41, name: "Sophia", photo: "sophia_gama.png", dob: "", guardian: "", phone: "" },
+                { id: 42, name: "Wendel", photo: "wendel_gama.png", dob: "", guardian: "", phone: "" },
+                { id: 43, name: "Isabela", photo: "isabela_gama.png", dob: "", guardian: "", phone: "" },
+                { id: 44, name: "Lauren", photo: "lauren_gama.png", dob: "", guardian: "", phone: "" },
+                { id: 45, name: "Brayan", photo: "brayan_gama.png", dob: "", guardian: "", phone: "" },
+                { id: 48, name: "Emanuelly", photo: "emanuelly_gama.png", dob: "", guardian: "", phone: "" },
+                { id: 49, name: "Kauã", photo: "kaua_gama.png", dob: "", guardian: "", phone: "" },
+                { id: 50, name: "Vicente", photo: "vicente_gama.png", dob: "", guardian: "", phone: "" },
+                { id: 51, name: "Elisa Romão", photo: "elisa_romao_gama.png", dob: "", guardian: "", phone: "" },
+                { id: 52, name: "Helena Miranda", photo: "helena_gama.png", dob: "", guardian: "", phone: "" },
+                { id: 53, name: "Ana Clara", photo: "ana_clara_gama.png", dob: "", guardian: "", phone: "" },
+                { id: 54, name: "Érick", photo: "erick_gama.png", dob: "", guardian: "", phone: "" }, 
+                { id: 55, name: "Lorenzo", photo: "lorenzo_gama.png", dob: "", guardian: "", phone: "" },
+                { id: 56, name: "Theo", photo: "theo_gama.png", dob: "", guardian: "", phone: "" },
+                { id: 57, name: "Brunelly", photo: "Brunelly_gama.png", dob: "", guardian: "", phone: "" },
+                { id: 58, name: "Vitor", photo: "Vitor_gama.png", dob: "", guardian: "", phone: "" },
+                { id: 59, name: "João Pedro Barros", photo: "joao_pedro_gama.png", dob: "", guardian: "", phone: "" }
             ],
             ômega: [ 
-                { id: 56, name: "Nicolly", photo: "nicolly_omega.png" },
-                { id: 57, name: "Saulo", photo: "saulo_omega.png" },
-                { id: 58, name: "Kemily", photo: "kemily_omega.png" },
-                { id: 59, name: "Maria Eduarda", photo: "maria_eduarda_omega.png" },
-                { id: 60, name: "Lorena", photo: "lorena_omega.png" },
-                { id: 61, name: "Laura", photo: "laura_omega.png" },
-                { id: 62, name: "Eduardo", photo: "eduardo_omega.png" },
-                { id: 63, name: "Kauã", photo: "kaua_omega.png" },
-                { id: 64, name: "Pedro Lucas", photo: "pedro_lucas_omega.png" },
-                { id: 65, name: "Italo", photo: "italo_omega.png" },
-                { id: 66, name: "Davi", photo: "davi_omega.png" },
-                { id: 67, name: "Laiz", photo: "laiz_omega.png" },
-                { id: 68, name: "Micael", photo: "micael_omega.png" },
-                { id: 69, name: "Ketelly", photo: "ketelly_omega.png" },
-                { id: 70, name: "Bernardo", photo: "bernardo_omega.png" },
-                { id: 71, name: "Asafe", photo: "asafe_omega.png" },
-                { id: 72, name: "Isabelly", photo: "isabelly_omega.png" },
-                { id: 73, name: "Heitor", photo: "heitor_omega.png" },
-                { id: 74, name: "Lívia", photo: "livya_omega.png" },
-                { id: 75, name: "Smith", photo: "smith_omega.png" },
-                { id: 76, name: "Mikeias", photo: "mikeias_omega.png" },
-                { id: 77, name: "Raphaela", photo: "raphaela_omega.png" },
-                { id: 78, name: "Éric", photo: "eric_omega.png" },
-                { id: 79, name: "Lavínia", photo: "lavinia_omega.png" },
-                { id: 80, name: "Pietra", photo: "pietra_omega.png" },
-                { id: 81, name: "Sophia", photo: "sophia_omega.png" },
-                { id: 82, name: "João Miguel", photo: "joao_miguel_omega.png" },
-                { id: 83, name: "Maria", photo: "maria_omega.png" },
-                { id: 84, name: "Pedro", photo: "pedro_omega.png" },
-                { id: 85, name: "Emilly sophia", photo: "emillysophia_omega.png" },
-                { id: 86, name: "Kethelyn Lorrana", photo: "KethelynLorrana_omega.png" },
-                { id: 87, name: "Yasmim da Silva", photo: "Yasmim_omega.png" },
-                { id: 88, name: "Saulo", photo: "saulo_omega.png" },
-                { id: 89, name: "Marlim felicio", photo: "marlim_omega.png" },
-                { id: 90, name: "Arthur Oliveira", photo: "arthuroliveira_omega.png" },
-                { id: 91, name: "Davi santana", photo: "Davisantana_omega.png" }
+                { id: 56, name: "Nicolly", photo: "nicolly_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 57, name: "Saulo", photo: "saulo_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 58, name: "Kemily", photo: "kemily_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 59, name: "Maria Eduarda", photo: "maria_eduarda_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 60, name: "Lorena", photo: "lorena_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 61, name: "Laura", photo: "laura_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 62, name: "Eduardo", photo: "eduardo_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 63, name: "Kauã", photo: "kaua_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 64, name: "Pedro Lucas", photo: "pedro_lucas_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 65, name: "Italo", photo: "italo_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 66, name: "Davi", photo: "davi_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 67, name: "Laiz", photo: "laiz_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 68, name: "Micael", photo: "micael_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 69, name: "Ketelly", photo: "ketelly_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 70, name: "Bernardo", photo: "bernardo_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 71, name: "Asafe", photo: "asafe_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 72, name: "Isabelly", photo: "isabelly_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 73, name: "Heitor", photo: "heitor_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 74, name: "Lívia", photo: "livya_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 75, name: "Smith", photo: "smith_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 76, name: "Mikeias", photo: "mikeias_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 77, name: "Raphaela", photo: "raphaela_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 78, name: "Éric", photo: "eric_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 79, name: "Lavínia", photo: "lavinia_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 80, name: "Pietra", photo: "pietra_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 81, name: "Sophia", photo: "sophia_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 82, name: "João Miguel", photo: "joao_miguel_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 83, name: "Maria", photo: "maria_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 84, name: "Pedro", photo: "pedro_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 85, name: "Emilly sophia", photo: "emillysophia_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 86, name: "Kethelyn Lorrana", photo: "KethelynLorrana_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 87, name: "Yasmim da Silva", photo: "Yasmim_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 88, name: "Saulo", photo: "saulo_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 89, name: "Marlim felicio", photo: "marlim_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 90, name: "Arthur Oliveira", photo: "arthuroliveira_omega.png", dob: "", guardian: "", phone: "" },
+                { id: 91, name: "Davi santana", photo: "Davisantana_omega.png", dob: "", guardian: "", phone: "" }
             ]
         };
-        
-        // DADOS SOMENTE DA ABA ESCALAS (Mantidos)
+
         const scheduleData = {
              berçario: {
                  ...roomsData.berçario,
@@ -1012,501 +514,105 @@
                  ]
              }
         };
-        
-        const allDates = ["07/12/2025", "14/12/2025", "21/12/2025", "28/12/2025"];
 
-        // VARIÁVEIS DE ESTADO DA ABA ESCALAS
+        const allDates = ["07/12/2025", "14/12/2025", "21/12/2025", "28/12/2025"];
         let selectedDate = null;
         let selectedRoom = null;
         let searchTerm = ''; 
-
-        // VARIÁVEIS DE ESTADO DA ABA CHAMADA
         let selectedRoomKeyChamada = null;
         let extraKidCounter = 0;
-
-        // VARIÁVEIS DE ESTADO DA ABA LIÇÕES (ATUALIZADAS)
         let selectedRoomKeyLicoes = null;
         let selectedDateLicoes = null;
         let selectedFiles = []; 
 
-
-        /* ---------------------------------- */
-        /* FUNÇÕES GERAIS (ABAS)             */
-        /* ---------------------------------- */
-
-        function openTab(tabId, element) {
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-
+        function openTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('tab-' + tabId).classList.add('active');
-            element.classList.add('active');
-            
-            if (tabId === 'chamada') {
-                if (selectedRoomKeyChamada) {
-                    const activeTab = document.querySelector(`#roomTabsCall .room-tab-call[data-room-key="${selectedRoomKeyChamada}"]`);
-                    if (activeTab) {
-                        activeTab.classList.add('active');
-                    }
-                    renderKidsList(selectedRoomKeyChamada); 
-                    document.getElementById('extraKidName').disabled = false;
-                    document.querySelector('.btn-add-kid').disabled = false;
-
-                } else {
-                    renderEmptyKidsList();
-                    document.getElementById('extraKidName').disabled = true;
-                    document.querySelector('.btn-add-kid').disabled = true;
-                }
-                checkCallFormValidity();
-            } else if (tabId === 'licoes') {
-                checkLessonFormValidity();
-                if (selectedRoomKeyLicoes && selectedDateLicoes) {
-                    displayLesson(selectedRoomKeyLicoes, selectedDateLicoes);
-                } else {
-                    displayLessonEmptyState();
-                }
-            }
+            btn.classList.add('active');
+            if (tabId === 'chamada') { updateChamadaUI(); if(selectedRoomKeyChamada) renderKidsList(selectedRoomKeyChamada); }
+            else if (tabId === 'licoes') { checkLessonFormValidity(); if(selectedRoomKeyLicoes && selectedDateLicoes) displayLesson(selectedRoomKeyLicoes, selectedDateLicoes); }
         }
 
-
-        /* ---------------------------------- */
-        /* FUNÇÕES DA ABA ESCALAS (Mantidas) */
-        /* ---------------------------------- */
-        
-        function resetDateAndRoomFilters() {
-            selectedDate = null;
-            selectedRoom = null;
-            document.querySelectorAll('#tab-escalas .date-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('#tab-escalas .room-btn').forEach(b => b.classList.remove('active'));
-        }
-        
-        function filterByTeacher(term) {
-            searchTerm = term.toUpperCase().trim();
-            
-            if (searchTerm.length > 0) {
-                resetDateAndRoomFilters(); 
-            }
-            
-            renderSchedules();
-        }
-
+        // --- ESCALAS ---
         function initializeDateButtons() {
-            const container = document.getElementById('dateButtons');
-            container.innerHTML = '';
-            
+            const container = document.getElementById('dateButtons'); container.innerHTML = '';
             allDates.forEach(date => {
-                const btn = document.createElement('button');
-                btn.className = 'date-btn';
-                btn.textContent = date;
-                btn.onclick = () => selectDate(date, btn);
+                const btn = document.createElement('div'); btn.className = 'selection-card';
+                btn.innerHTML = `<span class="selection-icon">📅</span><span class="selection-text">${date.substr(0,5)}</span>`;
+                btn.onclick = () => { document.querySelectorAll('#dateButtons .selection-card').forEach(b => b.classList.remove('active')); if(selectedDate === date) selectedDate = null; else { selectedDate = date; btn.classList.add('active'); } renderSchedules(); };
                 container.appendChild(btn);
             });
         }
-
         function initializeRoomButtons() {
-            const container = document.getElementById('roomButtons');
-            container.innerHTML = '';
-            
-            Object.keys(scheduleData).forEach(roomKey => {
-                const room = scheduleData[roomKey];
-                const btn = document.createElement('button');
-                btn.className = 'room-btn';
-                btn.innerHTML = `
-                    <span class="room-icon-btn">${room.icon}</span>
-                    <div class="room-text">
-                        <div>${room.name}</div>
-                        <div class="room-age">${room.age}</div>
-                    </div>
-                `;
-                btn.onclick = () => selectRoomEscalas(roomKey, btn);
+            const container = document.getElementById('roomButtons'); container.innerHTML = '';
+            Object.keys(scheduleData).forEach(key => {
+                const room = scheduleData[key]; const btn = document.createElement('div'); btn.className = 'selection-card';
+                btn.innerHTML = `<span class="selection-icon">${room.icon}</span><span class="selection-text">${room.name}</span>`;
+                btn.onclick = () => { document.querySelectorAll('#roomButtons .selection-card').forEach(b => b.classList.remove('active')); if(selectedRoom === key) selectedRoom = null; else { selectedRoom = key; btn.classList.add('active'); } renderSchedules(); };
                 container.appendChild(btn);
             });
         }
-
-        function selectDate(date, btn) {
-            document.querySelectorAll('#tab-escalas .date-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('#tab-escalas .room-btn').forEach(b => b.classList.remove('active'));
-            selectedRoom = null; 
-
-            if (selectedDate === date) {
-                selectedDate = null;
-            } else {
-                selectedDate = date;
-                btn.classList.add('active');
-            }
-            
-            searchTerm = ''; 
-            document.getElementById('teacherSearchInput').value = ''; 
-            renderSchedules();
-        }
-
-        function selectRoomEscalas(roomKey, btn) {
-            document.querySelectorAll('#tab-escalas .room-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('#tab-escalas .date-btn').forEach(b => b.classList.remove('active'));
-            selectedDate = null; 
-
-            if (selectedRoom === roomKey) {
-                selectedRoom = null;
-            } else {
-                selectedRoom = roomKey;
-                btn.classList.add('active');
-            }
-            
-            searchTerm = ''; 
-            document.getElementById('teacherSearchInput').value = '';
-            renderSchedules();
-        }
-
         function renderSchedules() {
-            const container = document.getElementById('scheduleGrid');
-            const resultsTitle = document.getElementById('resultsTitle');
-            container.innerHTML = '';
-
-            let allSchedules = [];
+            const container = document.getElementById('scheduleGrid'); container.innerHTML = ''; let count = 0;
             Object.keys(scheduleData).forEach(roomKey => {
                 const room = scheduleData[roomKey];
-                room.schedules.forEach(schedule => {
-                    allSchedules.push({ roomKey, room, schedule });
+                room.schedules.forEach(sc => {
+                    if (searchTerm && !sc.teachers.some(t => t.toUpperCase().includes(searchTerm.toUpperCase()))) return;
+                    if (selectedDate && sc.date !== selectedDate) return;
+                    if (selectedRoom && roomKey !== selectedRoom) return;
+                    count++; const isCeia = sc.date === '14/12/2025'; const div = document.createElement('div');
+                    div.className = `schedule-item ${isCeia ? 'santa-ceia' : ''}`;
+                    div.innerHTML = `<div class="schedule-header-row"><span class="room-badge">${room.icon} ${room.name}</span><span class="date-badge">${sc.date} • Lição ${sc.lesson}</span></div><div style="margin-top:5px;">${sc.teachers.map(t => `<div class="teacher-chip">🧑‍🏫 ${t}</div>`).join('')}</div>`;
+                    container.appendChild(div);
                 });
             });
-
-            let filteredSchedules = allSchedules.filter(item => {
-                const { roomKey, schedule } = item;
-                
-                if (searchTerm) {
-                    const teachersUpper = schedule.teachers.map(t => t.toUpperCase());
-                    return teachersUpper.some(t => t.includes(searchTerm));
-                }
-
-                if (selectedDate && schedule.date !== selectedDate) {
-                    return false;
-                }
-
-                if (selectedRoom && roomKey !== selectedRoom) {
-                    return false;
-                }
-
-                return true;
-            });
-            
-            let scheduleCount = filteredSchedules.length;
-
-            filteredSchedules.forEach(({ room, schedule }) => {
-                const isSantaCeia = schedule.date === '14/12/2025'; 
-
-                const card = document.createElement('div');
-                card.className = 'schedule-card' + (isSantaCeia ? ' santa-ceia-highlight' : '');
-                
-                card.innerHTML = `
-                    <div class="schedule-header">
-                        <div class="room-name">
-                            <span class="room-name-icon">${room.icon}</span>
-                            Sala ${room.name}
-                        </div>
-                        <div class="room-age-display">${room.age}</div>
-                        <div class="date-info">
-                            <div class="schedule-date">📅 ${schedule.date}</div>
-                            <div class="lesson-badge">Lição ${schedule.lesson}</div>
-                        </div>
-                    </div>
-                    <div class="teachers-section">
-                        <div class="teachers-label">👥 Professores:</div>
-                        <div class="teachers-list">
-                            ${schedule.teachers.filter(t => t && t.trim() !== '').map(teacher => {
-                                const isHighlighted = searchTerm && teacher.toUpperCase().includes(searchTerm);
-                                return `<div class="teacher-card" ${isHighlighted ? 'style="border: 2px solid #667eea; background: #e6e9f9;"' : ''}>👨‍🔬 ${teacher}</div>`;
-                            }).join('')}
-                        </div>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-
-            if (scheduleCount === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📭</div>
-                        <h3>Nenhuma escala encontrada</h3>
-                        <p>Verifique o nome do professor ou redefina os filtros.</p>
-                    </div>
-                `;
-            }
-
-            let titleText = 'Todas as Escalas';
-            if (searchTerm) {
-                titleText = `Resultados para "${searchTerm}" (${scheduleCount})`;
-            } else if (selectedDate && selectedRoom) {
-                titleText = `${selectedDate} - ${scheduleData[selectedRoom].name}`;
-            } else if (selectedDate) {
-                titleText = `Escalas de ${selectedDate}`;
-            } else if (selectedRoom) {
-                titleText = `Sala ${scheduleData[selectedRoom].name}`;
-            }
-            resultsTitle.textContent = titleText;
+            document.getElementById('resultsTitle').textContent = count > 0 ? `Escalas Encontradas (${count})` : "Nenhuma escala encontrada";
         }
+        function filterByTeacher(val) { searchTerm = val.trim(); if(searchTerm) { selectedDate = null; selectedRoom = null; document.querySelectorAll('.selection-card').forEach(b=>b.classList.remove('active')); } renderSchedules(); }
+        function resetFilters() { searchTerm = ''; selectedDate = null; selectedRoom = null; document.getElementById('teacherSearchInput').value = ''; document.querySelectorAll('.selection-card').forEach(b=>b.classList.remove('active')); renderSchedules(); }
+        function exportToCSV() { let csv = 'Sala,Data,Lição,Professores\n'; Object.keys(scheduleData).forEach(k => { const r = scheduleData[k]; r.schedules.forEach(s => { csv += `${r.name},${s.date},${s.lesson},"${s.teachers.join(' | ')}"\n`; }); }); const blob = new Blob([csv], { type: 'text/csv' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'escalas.csv'; link.click(); }
 
-        function resetFilters() {
-            resetDateAndRoomFilters(); 
-            searchTerm = ''; 
-            document.getElementById('teacherSearchInput').value = ''; 
-            renderSchedules();
-        }
-
-        function exportToCSV() {
-            let csv = 'Sala,Idade,Data,Lição,Professor 1,Professor 2,Professor 3\n';
-            
-            Object.keys(scheduleData).forEach(roomKey => {
-                const room = scheduleData[roomKey];
-                room.schedules.forEach(schedule => {
-                    const teachers = schedule.teachers.filter(t => t && t.trim() !== '');
-                    const t1 = teachers[0] || '';
-                    const t2 = teachers[1] || '';
-                    const t3 = teachers[2] || '';
-                    csv += `${room.name},${room.age},${schedule.date},${schedule.lesson},"${t1}","${t2}","${t3}"\n`;
-                });
-            });
-
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'escalas_ministerio_infantil.csv';
-            link.click();
-        }
-
-        /* ---------------------------------- */
-        /* FUNÇÕES DA ABA CHAMADA (Mantidas) */
-        /* ---------------------------------- */
-
-        function checkCallFormValidity() {
-            const teacherName = document.getElementById('teacherName').value.trim();
-            const date = document.getElementById('dateInput').value;
-            const submitBtn = document.querySelector('.btn-submit');
-            
-            const isValid = selectedRoomKeyChamada && teacherName && date;
-            
-            submitBtn.disabled = !isValid;
-        }
-        
+        // --- CHAMADA ---
         function initializeRoomTabsChamada() {
-            const container = document.getElementById('roomTabsCall');
-            container.innerHTML = '';
-            
-            Object.keys(roomsData).forEach(roomKey => {
-                const room = roomsData[roomKey];
-                const tab = document.createElement('div');
-                tab.className = 'room-tab-call';
-                tab.setAttribute('data-room-key', roomKey);
-                tab.innerHTML = `<div class="room-name-tab">${room.icon} ${room.name}</div><div class="room-age-tab">${room.age}</div>`;
-                tab.onclick = () => selectRoomChamada(roomKey, tab);
-                container.appendChild(tab);
+            const c = document.getElementById('roomTabsCall'); c.innerHTML = '';
+            Object.keys(roomsData).forEach(key => {
+                const r = roomsData[key]; const btn = document.createElement('div'); btn.className = 'selection-card';
+                btn.innerHTML = `<span class="selection-icon">${r.icon}</span><span class="selection-text">${r.name}</span>`;
+                btn.onclick = () => selectRoomChamada(key, btn); c.appendChild(btn);
             });
-            
-            const today = new Date();
-            const yyyy = today.getFullYear();
-            const mm = String(today.getMonth() + 1).padStart(2, '0');
-            const dd = String(today.getDate()).padStart(2, '0');
-            document.getElementById('dateInput').value = `${yyyy}-${mm}-${dd}`;
-            
-            renderEmptyKidsList();
-            checkCallFormValidity();
+            document.getElementById('dateInput').valueAsDate = new Date();
         }
-        
-        function renderEmptyKidsList() {
-            document.getElementById('kidsList').innerHTML = `
-                <div class="empty-state">
-                    Escolha uma sala para começar a lista de chamada.
-                </div>
-            `;
-            document.getElementById('chamadaTitle').innerHTML = `📝 Chamada - Selecione a Sala Acima 👆`;
+        function selectRoomChamada(key, btn) {
+            document.querySelectorAll('#roomTabsCall .selection-card').forEach(b => b.classList.remove('active')); btn.classList.add('active'); selectedRoomKeyChamada = key;
+            document.getElementById('chamadaTitle').textContent = `📝 Chamada: ${roomsData[key].name}`; document.getElementById('extraKidName').disabled = false; document.querySelector('.btn-primary').disabled = false;
+            renderKidsList(key); checkCallFormValidity();
         }
-
-        function togglePresence(element) {
-            if (element.classList.contains('extra') && element.classList.contains('present')) {
-                element.classList.remove('present');
-
-                setTimeout(() => {
-                    if (confirm(`Remover "${element.getAttribute('data-kid-name')}" da lista de extras?`)) {
-                        element.remove();
-                    } else {
-                        element.classList.add('present');
-                    }
-                    checkCallFormValidity();
-                }, 100); 
-                return;
-            }
-            
-            element.classList.toggle('present');
-            checkCallFormValidity();
+        function renderKidsList(key) {
+            const list = document.getElementById('kidsList'); const kids = kidsData[key] || [];
+            if(kids.length === 0) { list.innerHTML = '<div style="text-align:center;padding:20px;">Nenhuma criança.</div>'; return; }
+            let html = '<div class="kids-grid">';
+            kids.forEach(k => { const img = k.photo.startsWith('http') ? k.photo : `img/${k.photo}`; html += `<div class="kid-avatar-card" onclick="togglePresence(this)" data-name="${k.name}"><div class="kid-img-wrapper"><img class="kid-img" src="${img}" onerror="this.src='https://via.placeholder.com/150'"></div><div class="kid-name-tag">${k.name}</div></div>`; });
+            html += '</div>'; list.innerHTML = html;
         }
-
-        function selectRoomChamada(roomKey, tabElement) {
-            document.querySelectorAll('.room-tab-call').forEach(t => t.classList.remove('active'));
-            
-            if (tabElement) {
-                tabElement.classList.add('active');
-            }
-            selectedRoomKeyChamada = roomKey;
-            
-            const room = roomsData[roomKey];
-            document.getElementById('chamadaTitle').innerHTML = `📝 Chamada - ${room.icon} Sala ${room.name}`;
-            renderKidsList(roomKey);
-            
-            document.getElementById('extraKidName').disabled = false;
-            document.querySelector('.btn-add-kid').disabled = false;
-
-            checkCallFormValidity();
-        }
-
+        function togglePresence(el) { el.classList.toggle('present'); checkCallFormValidity(); }
         function addExtraKid() {
-            const extraKidNameInput = document.getElementById('extraKidName');
-            const name = extraKidNameInput.value.trim();
-            const kidsGrid = document.querySelector('#kidsList .kids-grid');
-
-            if (!name) {
-                alert("Por favor, digite o nome da criança!");
-                return;
-            }
-
-            if (!kidsGrid) {
-                alert("Selecione uma sala primeiro!");
-                return;
-            }
-            
-            extraKidCounter++;
-            
-            const newKidCard = document.createElement('div');
-            newKidCard.className = 'kid-card extra present';
-            newKidCard.setAttribute('onclick', 'togglePresence(this)');
-            newKidCard.setAttribute('data-kid-name', `${name} (Extra)`);
-
-            newKidCard.innerHTML = `
-                <div class="kid-photo">✨</div>
-                <div class="kid-name">${name}</div>
-            `;
-            
-            kidsGrid.appendChild(newKidCard);
-            
-            extraKidNameInput.value = '';
-            extraKidNameInput.focus();
-            
-            checkCallFormValidity();
+            const input = document.getElementById('extraKidName'); const name = input.value.trim(); if(!name) return;
+            const grid = document.querySelector('#kidsList .kids-grid'); if(!grid) { alert("Selecione a sala primeiro"); return; }
+            const div = document.createElement('div'); div.className = 'kid-avatar-card present extra'; div.dataset.name = name + " (Extra)"; div.onclick = function() { if(confirm("Remover?")) this.remove(); checkCallFormValidity(); };
+            div.innerHTML = `<div class="kid-img-wrapper" style="display:flex;align-items:center;justify-content:center;font-size:2em;background:#FFFBEB;color:#F59E0B;">✨</div><div class="kid-name-tag">${name}</div>`;
+            grid.appendChild(div); input.value = ''; checkCallFormValidity();
         }
-        
-        function renderKidsList(roomKey) {
-            const container = document.getElementById('kidsList');
-            const kids = kidsData[roomKey] || [];
-            
-            if (kids.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <h3>Lista de Crianças Vazia</h3>
-                        <p>Nenhuma criança cadastrada para esta sala.</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            let html = `<div class="form-label">👋 Toque na foto da criança que está **PRESENTE**</div>`;
-            html += `<div class="kids-grid">`;
-            
-            kids.forEach(kid => {
-                const photoUrl = kid.photo.startsWith('http') ? kid.photo : `img/${kid.photo}`;
-                
-                html += `
-                    <div class="kid-card" onclick="togglePresence(this)" data-kid-name="${kid.name}">
-                        <img class="kid-photo" src="${photoUrl}" alt="${kid.name}" onerror="this.onerror=null; this.src='https://via.placeholder.com/150/667eea/ffffff?text=👶';">
-                        <div class="kid-name">${kid.name}</div>
-                    </div>
-                `;
-            });
-
-            html += `</div>`;
-            container.innerHTML = html;
-        }
-        
+        function checkCallFormValidity() { const tName = document.getElementById('teacherName').value; const dt = document.getElementById('dateInput').value; const btn = document.querySelector('#tab-chamada .btn-success'); const valid = selectedRoomKeyChamada && tName && dt; btn.disabled = !valid; }
+        function updateChamadaUI() { if(!selectedRoomKeyChamada) { document.getElementById('chamadaTitle').textContent = "Selecione uma Sala"; } }
         async function submitCall() {
-            if (!selectedRoomKeyChamada) {
-                alert("Por favor, selecione uma Sala!");
-                return;
-            }
-
-            const submitBtn = document.querySelector('.btn-submit');
-            submitBtn.disabled = true;
-            submitBtn.textContent = '⏳ Enviando...';
-
-            const teacherName = document.getElementById('teacherName').value.trim();
-            const date = document.getElementById('dateInput').value;
-
-            if (!teacherName || !date) {
-                alert("Por favor, preencha seu nome e a data da aula!");
-                submitBtn.disabled = false;
-                submitBtn.textContent = '✅ Finalizar Chamada';
-                checkCallFormValidity();
-                return;
-            }
-            
-            const room = roomsData[selectedRoomKeyChamada];
-            
-            const presentKidsElements = document.querySelectorAll('#kidsList .kid-card.present');
-            const presentKids = Array.from(presentKidsElements).map(el => el.getAttribute('data-kid-name'));
-
-            const totalPresent = presentKids.length;
-
-            if (totalPresent === 0) {
-                alert("Nenhuma criança registrada! Por favor, toque no cartão das crianças presentes.");
-                submitBtn.disabled = false;
-                submitBtn.textContent = '✅ Finalizar Chamada';
-                checkCallFormValidity();
-                return;
-            }
-            
-            const formData = new URLSearchParams();
-            formData.append('room_name', room.name);
-            formData.append('room_age', room.age);
-            formData.append('lesson_date', date);
-            formData.append('teacher_name', teacherName);
-            formData.append('total_present', totalPresent);
-            formData.append('kids_list', presentKids.join('; '));
-
-            try {
-                const response = await fetch(SHEET_URL, {
-                    method: 'POST',
-                    mode: 'no-cors', 
-                    body: formData
-                });
-                
-                document.querySelectorAll('#kidsList .kid-card').forEach(card => {
-                    if (card.classList.contains('extra')) {
-                        card.remove();
-                    } else {
-                        card.classList.remove('present');
-                    }
-                });
-                document.getElementById('extraKidName').value = '';
-                extraKidCounter = 0;
-
-                alert(`🎉 Chamada da Sala ${room.name} concluída com sucesso! Os ${totalPresent} nomes foram enviados para a planilha.`);
-
-            } catch (error) {
-                console.error("Erro ao enviar dados para o Google Sheet:", error);
-                alert("❌ Erro ao enviar a chamada. Tente novamente ou verifique a conexão.");
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = '✅ Finalizar Chamada';
-                checkCallFormValidity();
-            }
+            const btn = document.querySelector('#tab-chamada .btn-success'); const original = btn.textContent; btn.textContent = "🚀 Enviando..."; btn.disabled = true;
+            const room = roomsData[selectedRoomKeyChamada]; const present = Array.from(document.querySelectorAll('.kid-avatar-card.present')).map(e => e.dataset.name);
+            const fd = new URLSearchParams(); fd.append('room_name', room.name); fd.append('room_age', room.age); fd.append('lesson_date', document.getElementById('dateInput').value); fd.append('teacher_name', document.getElementById('teacherName').value); fd.append('total_present', present.length); fd.append('kids_list', present.join('; '));
+            try { await fetch(SHEET_URL, { method:'POST', mode:'no-cors', body:fd }); alert("✅ Chamada registrada!"); document.querySelectorAll('.kid-avatar-card.present').forEach(k => k.classList.remove('present')); document.getElementById('teacherName').value = ''; } catch(e) { alert("Erro ao enviar."); } btn.textContent = original; btn.disabled = false;
         }
-        
-        // ======================================================================================
-        // --- FUNÇÕES DA ABA LIÇÕES 📖 (ATUALIZADAS PARA MÚLTIPLOS ARQUIVOS) 
-        // ======================================================================================
 
-        /**
-        * Função auxiliar para buscar o status do arquivo no Apps Script (Drive).
-        */
+        // --- LIÇÕES (LÓGICA RESTAURADA INTEGRALMENTE) ---
         async function fetchLessonStatus(roomKey, date) {
             if (!roomKey || !date) return { status: 'error', message: 'Dados de busca incompletos.' };
             
@@ -1534,326 +640,17 @@
             }
         }
 
-        /**
-        * ATUALIZADA: Verifica o status do formulário. 
-        */
-        function checkLessonFormValidity() {
-            const isReady = selectedRoomKeyLicoes && selectedDateLicoes;
-            const hasFilesSelected = selectedFiles.length > 0;
-            
-            // Habilita o upload se estiver pronto e tiver arquivos selecionados
-            document.getElementById('btnUploadLesson').disabled = !(isReady && hasFilesSelected);
-            
-            // Habilita download e delete se houver arquivos salvos no estado
-            const hasFilesSaved = currentLessonFiles.length > 0;
-            document.getElementById('btnDownloadLesson').disabled = !hasFilesSaved;
-            document.getElementById('btnDeleteLesson').disabled = !hasFilesSaved;
-            
-            if (hasFilesSaved) {
-                document.getElementById('fileUploadLabel').style.display = 'none';
-                document.getElementById('fileInfo').textContent = `✅ ${currentLessonFiles.length} lição(ões) salva(s) no Google Drive.`;
-            } else if (isReady) {
-                document.getElementById('fileUploadLabel').style.display = 'block';
-                
-                let totalSize = selectedFiles.reduce((sum, file) => sum + file.size, 0);
-                document.getElementById('fileInfo').textContent = hasFilesSelected ? 
-                    `✅ ${selectedFiles.length} arquivo(s) selecionado(s) para upload. Total: ${(totalSize / 1024 / 1024).toFixed(2)} MB.` : 
-                    "Nenhuma lição salva. Selecione um PDF ou Imagem e clique em 'Enviar Lição'.";
-
-            } else {
-                document.getElementById('fileUploadLabel').style.display = 'block';
-                document.getElementById('fileInfo').textContent = "Selecione a Sala e Data para gerenciar a lição.";
-            }
+        function initializeLessonsUI() {
+            const cr = document.getElementById('roomTabsLessons'); cr.innerHTML = '';
+            Object.keys(roomsData).forEach(key => { const r = roomsData[key]; const btn = document.createElement('div'); btn.className = 'selection-card'; btn.innerHTML = `<span class="selection-icon">${r.icon}</span><span class="selection-text">${r.name}</span>`; btn.onclick = () => { document.querySelectorAll('#roomTabsLessons .selection-card').forEach(b => b.classList.remove('active')); btn.classList.add('active'); selectedRoomKeyLicoes = key; reloadLessonView(); }; cr.appendChild(btn); });
+            const cd = document.getElementById('dateButtonsLessons'); cd.innerHTML = '';
+            allDates.forEach(date => { const btn = document.createElement('div'); btn.className = 'selection-card'; btn.innerHTML = `<span class="selection-icon">📅</span><span class="selection-text">${date.substr(0,5)}</span>`; btn.onclick = () => { document.querySelectorAll('#dateButtonsLessons .selection-card').forEach(b => b.classList.remove('active')); btn.classList.add('active'); selectedDateLicoes = date; reloadLessonView(); }; cd.appendChild(btn); });
         }
-
-        function initializeRoomTabsLicoes() {
-            const container = document.getElementById('roomTabsLessons');
-            container.innerHTML = '';
-            
-            Object.keys(roomsData).forEach(roomKey => {
-                const room = roomsData[roomKey];
-                const btn = document.createElement('button');
-                btn.className = 'room-btn';
-                btn.innerHTML = `
-                    <span class="room-icon-btn">${room.icon}</span>
-                    <div class="room-text">
-                        <div>${room.name}</div>
-                        <div class="room-age">${room.age}</div>
-                    </div>
-                `;
-                btn.onclick = () => selectRoomLicoes(roomKey, btn);
-                container.appendChild(btn);
-            });
-        }
+        function reloadLessonView() { if(selectedRoomKeyLicoes && selectedDateLicoes) { displayLesson(selectedRoomKeyLicoes, selectedDateLicoes); } checkLessonFormValidity(); }
+        function handleFileSelect() { const input = document.getElementById('pdfFile'); selectedFiles = Array.from(input.files); const info = document.getElementById('fileInfo'); if(selectedFiles.length > 0) { let size = selectedFiles.reduce((a,b)=>a+b.size,0)/1024/1024; if(size > 5) { alert("Max 5MB!"); selectedFiles=[]; input.value=''; return; } info.textContent = `✅ ${selectedFiles.length} arquivo(s)`; } else { info.textContent = ""; } checkLessonFormValidity(); }
+        function checkLessonFormValidity() { const ready = selectedRoomKeyLicoes && selectedDateLicoes; const hasFiles = selectedFiles.length > 0; const hasSaved = currentLessonFiles.length > 0; document.getElementById('btnUploadLesson').disabled = !(ready && hasFiles); document.getElementById('btnDownloadLesson').disabled = !hasSaved; document.getElementById('btnDeleteLesson').disabled = !hasSaved; }
         
-        function initializeDateButtonsLicoes() {
-            const container = document.getElementById('dateButtonsLessons');
-            container.innerHTML = '';
-            
-            allDates.forEach(date => {
-                const btn = document.createElement('button');
-                btn.className = 'date-btn';
-                btn.textContent = date;
-                btn.onclick = () => selectDateLicoes(date, btn);
-                container.appendChild(btn);
-            });
-        }
-        
-        function selectRoomLicoes(roomKey, btn) {
-            selectedFiles = []; 
-            document.getElementById('pdfFile').value = '';
-            
-            document.querySelectorAll('#roomTabsLessons .room-btn').forEach(b => b.classList.remove('active'));
-
-            if (selectedRoomKeyLicoes === roomKey) {
-                selectedRoomKeyLicoes = null;
-            } else {
-                selectedRoomKeyLicoes = roomKey;
-                btn.classList.add('active');
-            }
-            
-            if (selectedRoomKeyLicoes && selectedDateLicoes) {
-                displayLesson(selectedRoomKeyLicoes, selectedDateLicoes);
-            } else {
-                displayLessonEmptyState();
-            }
-            checkLessonFormValidity();
-        }
-        
-        function selectDateLicoes(date, btn) {
-            selectedFiles = []; 
-            document.getElementById('pdfFile').value = '';
-            
-            document.querySelectorAll('#dateButtonsLessons .date-btn').forEach(b => b.classList.remove('active'));
-
-            if (selectedDateLicoes === date) {
-                selectedDateLicoes = null;
-            } else {
-                selectedDateLicoes = date;
-                btn.classList.add('active');
-            }
-            
-            if (selectedRoomKeyLicoes && selectedDateLicoes) {
-                displayLesson(selectedRoomKeyLicoes, selectedDateLicoes);
-            } else {
-                displayLessonEmptyState();
-            }
-            checkLessonFormValidity();
-        }
-        
-        function handleFileSelect() {
-            const fileInput = document.getElementById('pdfFile');
-            selectedFiles = []; 
-            let totalSize = 0;
-            let hasError = false;
-
-            if (fileInput.files.length === 0) {
-                selectedFiles = [];
-            } else {
-                for (const file of fileInput.files) {
-                    if (!ALLOWED_MIMES.includes(file.type)) {
-                        alert(`Apenas arquivos PDF, JPG e PNG são permitidos. Arquivo ignorado: ${file.name}`);
-                        hasError = true;
-                        continue; 
-                    }
-                    if (file.size > MAX_FILE_SIZE_BYTES) {
-                        alert(`O arquivo ${file.name} é muito grande. O limite é de ${(MAX_FILE_SIZE_BYTES / 1024 / 1024).toFixed(0)} MB. Arquivo ignorado.`);
-                        hasError = true;
-                        continue; 
-                    }
-
-                    selectedFiles.push(file);
-                    totalSize += file.size;
-                }
-            }
-            
-            if (selectedFiles.length > 0) {
-                document.getElementById('fileInfo').textContent = 
-                    `✅ ${selectedFiles.length} arquivo(s) selecionado(s). Total: ${(totalSize / 1024 / 1024).toFixed(2)} MB.`;
-            } else if (hasError) {
-                document.getElementById('fileInfo').textContent = 
-                    `❌ Houve um erro na seleção de alguns arquivos. Por favor, tente novamente.`;
-            } else {
-                document.getElementById('fileInfo').textContent = "Nenhuma lição selecionada.";
-            }
-
-            checkLessonFormValidity();
-        }
-
-        /**
-        * CORRIGIDO: Itera sobre o array de arquivos salvos e dispara um download para cada um.
-        */
-        function downloadLesson() {
-            if (currentLessonFiles.length === 0) {
-                alert("Nenhuma lição salva para download.");
-                return;
-            }
-            
-            currentLessonFiles.forEach(fileData => {
-                const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileData.fileId}`;
-                
-                const a = document.createElement('a');
-                a.href = downloadUrl;
-                a.target = '_blank';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-            });
-            
-            alert(`🎉 Iniciando o download de ${currentLessonFiles.length} arquivo(s). Verifique se seu navegador não bloqueou pop-ups.`);
-        }
-
-        /**
-        * MUDANÇA: O payload agora usa 'uploadLessons' e envia o array 'selectedFiles'.
-        */
-        async function uploadLesson() {
-            if (selectedFiles.length === 0 || !selectedRoomKeyLicoes || !selectedDateLicoes) {
-                alert("Por favor, selecione a Sala, Data e pelo menos um arquivo (PDF/Imagem).");
-                return;
-            }
-            
-            const uploadBtn = document.getElementById('btnUploadLesson');
-            uploadBtn.disabled = true;
-            uploadBtn.textContent = '⏳ Iniciando o processamento...';
-
-            const room = roomsData[selectedRoomKeyLicoes];
-            const filesToSend = [];
-            let processedCount = 0;
-
-            const fileToBase64 = (file) => {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        const base64Data = event.target.result.split(',')[1];
-                        let fileType;
-                        if (file.type.includes('pdf')) fileType = 'pdf';
-                        else if (file.type.includes('jpeg') || file.type.includes('jpg')) fileType = 'jpg';
-                        else fileType = 'png';
-
-                        resolve({
-                            file_name: file.name,
-                            file_type: fileType,
-                            file_base64: base64Data
-                        });
-                    };
-                    reader.onerror = (error) => reject(error);
-                    reader.readAsDataURL(file);
-                });
-            };
-            
-            for (const file of selectedFiles) {
-                try {
-                    uploadBtn.textContent = `⏳ Processando ${++processedCount} de ${selectedFiles.length} arquivos...`;
-                    const fileData = await fileToBase64(file);
-                    filesToSend.push(fileData);
-                } catch (error) {
-                    alert(`Erro ao processar o arquivo ${file.name}. Upload cancelado.`);
-                    uploadBtn.disabled = false;
-                    uploadBtn.textContent = '⬆️ Enviar Lição';
-                    return;
-                }
-            }
-            
-            const payload = {
-                action: 'uploadLessons', 
-                room_name: room.name,
-                lesson_date: selectedDateLicoes,
-                files: filesToSend 
-            };
-
-            try {
-                uploadBtn.textContent = `⏳ Enviando dados para o Apps Script...`;
-                
-                const response = await fetch(SHEET_URL, {
-                    method: 'POST',
-                    mode: 'cors', 
-                    headers: {
-                        'Content-Type': 'text/plain;charset=utf-8'
-                    },
-                    body: JSON.stringify(payload)
-                });
-                
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    alert(`🎉 Upload de ${selectedFiles.length} arquivos concluído: ${result.message}`);
-                } else {
-                    alert(`❌ Erro no Apps Script: ${result.message}`);
-                    console.error(result.message);
-                }
-
-            } catch (error) {
-                console.error("Erro ao enviar dados para o Apps Script:", error);
-                alert("❌ Erro de rede ou CORS. Verifique o console e o seu Apps Script.");
-            } finally {
-                uploadBtn.textContent = '⬆️ Enviar Lição';
-                selectedFiles = []; 
-                document.getElementById('pdfFile').value = '';
-                document.getElementById('fileInfo').textContent = "Nenhuma lição selecionada.";
-                
-                await displayLesson(selectedRoomKeyLicoes, selectedDateLicoes); 
-            }
-        }
-
-        /**
-        * MANTIDA: Envia o comando de exclusão.
-        */
-        async function deleteLesson() {
-            if (currentLessonFiles.length === 0 || !selectedRoomKeyLicoes || !selectedDateLicoes) {
-                alert("Nenhuma lição salva para esta data/sala para excluir.");
-                return;
-            }
-            
-            const room = roomsData[selectedRoomKeyLicoes];
-            
-            if (!confirm(`Tem certeza que deseja EXCLUIR os ${currentLessonFiles.length} arquivos salvos para a Sala ${room.name} em ${selectedDateLicoes} do Google Drive?`)) {
-                return;
-            }
-
-            const deleteBtn = document.getElementById('btnDeleteLesson');
-            deleteBtn.disabled = true;
-            deleteBtn.textContent = '🗑️ Excluindo...';
-            
-            const payload = {
-                action: 'deleteLesson',
-                room_name: room.name,
-                lesson_date: selectedDateLicoes
-            };
-
-            try {
-                const response = await fetch(SHEET_URL, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                });
-                
-                const result = await response.json();
-
-                if (result.status === 'success') {
-                    alert(`🗑️ ${result.message}`);
-                    currentLessonFiles = []; 
-                    currentLessonFileUrl = null; 
-                    currentLessonFileType = null; 
-                } else {
-                    alert(`❌ Erro ao excluir: ${result.message}`);
-                    console.error(result.message);
-                }
-
-            } catch (error) {
-                console.error("Erro de rede ou CORS ao excluir:", error);
-                alert("❌ Erro de rede ou CORS. Verifique o console.");
-            } finally {
-                deleteBtn.textContent = '🗑️ Excluir';
-                await displayLesson(selectedRoomKeyLicoes, selectedDateLicoes); 
-            }
-        }
-
-        /**
-        * CORRIGIDO: Usa o array de arquivos e exibe o PRIMEIRO arquivo para visualização.
-        */
+        // --- FUNÇÃO DISPLAY LESSON CORRIGIDA ---
         async function displayLesson(roomKey, date) {
             const viewerContainer = document.getElementById('pdfViewerContent');
             const roomName = roomsData[roomKey].name;
@@ -1861,7 +658,9 @@
             currentLessonFiles = []; 
             currentLessonFileUrl = null; 
             currentLessonFileType = null;
-            displayLessonEmptyState(`⏳ Verificando lição para Sala ${roomName} em ${date}...`);
+            
+            // Estado de carregamento
+            viewerContainer.innerHTML = '<div style="color:white;text-align:center;padding-top:150px;">⏳ Buscando lição...</div>';
             
             const statusResponse = await fetchLessonStatus(roomKey, date); 
             
@@ -1869,7 +668,7 @@
                 
                 currentLessonFiles = statusResponse.files;
                 
-                // Pega o primeiro arquivo para a visualização principal (o mais novo ou o de menor índice)
+                // Pega o primeiro arquivo para a visualização principal
                 const fileToDisplay = currentLessonFiles[0]; 
                 const fileId = fileToDisplay.fileId; 
                 const fileType = fileToDisplay.fileType; 
@@ -1883,79 +682,308 @@
                 } else if (fileType === 'jpg' || fileType === 'png') {
                     fileUrl = `https://drive.google.com/uc?id=${fileId}&export=view`;
                 } else {
-                    displayLessonEmptyState(`Erro: Tipo de arquivo desconhecido: ${fileType}.`);
+                    viewerContainer.innerHTML = '<div style="color:red;text-align:center;padding-top:150px;">Tipo de arquivo desconhecido.</div>';
                     checkLessonFormValidity();
                     return;
                 }
                 
                 currentLessonFileUrl = fileUrl; 
 
-                // Limpa o container
+                // Limpa o container e adiciona o conteúdo
                 viewerContainer.innerHTML = ''; 
                 
                 if (fileType === 'pdf') {
                     const iframe = document.createElement('iframe');
-                    iframe.id = 'pdfViewerIframe';
-                    iframe.className = 'pdf-viewer';
+                    iframe.className = 'pdf-frame';
                     iframe.src = fileUrl; 
                     viewerContainer.appendChild(iframe);
                 } else if (fileType === 'jpg' || fileType === 'png') {
                     const div = document.createElement('div');
                     div.className = 'image-viewer';
-                    div.id = 'imageViewerDiv';
                     const img = document.createElement('img');
                     img.src = fileUrl;
                     img.alt = `Lição ${roomName} - ${date}`;
                     div.appendChild(img);
                     viewerContainer.appendChild(div);
                 }
-
-                displayLessonEmptyState(`✅ ${currentLessonFiles.length} Lição(ões) salva(s) no Drive! Exibindo o primeiro arquivo.`);
                 
+                document.getElementById('fileInfo').textContent = `✅ ${currentLessonFiles.length} lição(ões) encontrada(s)!`;
+
             } else {
                 currentLessonFiles = []; 
                 currentLessonFileUrl = null; 
                 currentLessonFileType = null;
-                displayLessonEmptyState(`Nenhuma lição salva para Sala ${roomName} em ${date}. Faça o upload de um PDF ou Imagem.`);
+                viewerContainer.innerHTML = '<div style="color:rgba(255,255,255,0.5);text-align:center;padding-top:150px;">Nenhuma lição encontrada para esta data.</div>';
+                document.getElementById('fileInfo').textContent = "Nenhum arquivo no servidor.";
             }
 
             checkLessonFormValidity();
         }
+
+        async function uploadLesson() {
+            if (selectedFiles.length === 0 || !selectedRoomKeyLicoes || !selectedDateLicoes) {
+                alert("Por favor, selecione a Sala, Data e pelo menos um arquivo.");
+                return;
+            }
             
-        function displayLessonEmptyState(message = 'Selecione uma sala e data acima.') {
-            const viewerContainer = document.getElementById('pdfViewerContent');
-            viewerContainer.innerHTML = '';
+            const uploadBtn = document.getElementById('btnUploadLesson');
+            uploadBtn.innerHTML = "⏳ Enviando..."; 
+            uploadBtn.disabled = true;
+
+            const room = roomsData[selectedRoomKeyLicoes];
+            const filesToSend = [];
+
+            const fileToBase64 = (file) => {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const base64Data = event.target.result.split(',')[1];
+                        let fileType;
+                        if (file.type.includes('pdf')) fileType = 'pdf';
+                        else if (file.type.includes('jpeg') || file.type.includes('jpg')) fileType = 'jpg';
+                        else fileType = 'png';
+                        resolve({ file_name: file.name, file_type: fileType, file_base64: base64Data });
+                    };
+                    reader.onerror = (error) => reject(error);
+                    reader.readAsDataURL(file);
+                });
+            };
             
-            const emptyState = document.createElement('div');
-            emptyState.className = 'empty-state';
-            emptyState.id = 'lessonsEmptyState';
-            emptyState.innerHTML = `
-                <h3>${message}</h3>
-                <p>O PDF ou Imagem da lição será carregado aqui, se existir.</p>
-            `;
-            viewerContainer.appendChild(emptyState);
+            for (const file of selectedFiles) {
+                try {
+                    const fileData = await fileToBase64(file);
+                    filesToSend.push(fileData);
+                } catch (error) {
+                    alert(`Erro ao processar arquivo. Cancelado.`);
+                    uploadBtn.disabled = false; uploadBtn.textContent = '⬆️ Enviar';
+                    return;
+                }
+            }
+            
+            const payload = {
+                action: 'uploadLessons', 
+                room_name: room.name,
+                lesson_date: selectedDateLicoes,
+                files: filesToSend 
+            };
+
+            try {
+                const response = await fetch(SHEET_URL, {
+                    method: 'POST',
+                    mode: 'cors', 
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    alert(`🎉 Upload concluído com sucesso!`);
+                    selectedFiles = []; 
+                    document.getElementById('pdfFile').value = '';
+                    await displayLesson(selectedRoomKeyLicoes, selectedDateLicoes); 
+                } else {
+                    alert(`❌ Erro no Script: ${result.message}`);
+                }
+            } catch (error) {
+                console.error("Erro", error);
+                alert("❌ Erro de rede.");
+            } finally {
+                uploadBtn.textContent = '⬆️ Enviar';
+                uploadBtn.disabled = false;
+            }
+        }
+        
+        function downloadLesson() {
+            if (currentLessonFiles.length === 0) { alert("Nenhuma lição para baixar."); return; }
+            currentLessonFiles.forEach(f => window.open(`https://drive.google.com/uc?export=download&id=${f.fileId}`));
+        }
+        
+        async function deleteLesson() {
+            if (currentLessonFiles.length === 0) return;
+            if(!confirm("Tem certeza que deseja apagar?")) return;
+            
+            const deleteBtn = document.getElementById('btnDeleteLesson');
+            deleteBtn.disabled = true; deleteBtn.textContent = '🗑️';
+
+            const room = roomsData[selectedRoomKeyLicoes];
+            const payload = { action: 'deleteLesson', room_name: room.name, lesson_date: selectedDateLicoes };
+            
+            try {
+                await fetch(SHEET_URL, { method:'POST', mode:'cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+                alert("Excluído com sucesso!");
+                await displayLesson(selectedRoomKeyLicoes, selectedDateLicoes); 
+            } catch(e) {
+                alert("Erro ao excluir.");
+            } finally {
+                deleteBtn.textContent = '🗑️'; deleteBtn.disabled = false;
+            }
         }
 
+        // ============================================
+        // LÓGICA DO DASHBOARD DE CADASTRO
+        // ============================================
 
-        // INICIALIZAÇÃO GERAL
-        initializeDateButtons();
-        initializeRoomButtons();
-        initializeRoomTabsChamada();
-        renderSchedules();
-        
-        // INICIALIZAÇÃO DA ABA LIÇÕES
-        initializeRoomTabsLicoes();
-        initializeDateButtonsLicoes();
-        displayLessonEmptyState();
+        function login() {
+            const u = document.getElementById('loginUser').value; const p = document.getElementById('loginPass').value;
+            if(u === 'Admin' && p === 'MM1234') {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('registryArea').style.display = 'block';
+                populateRegistryClasses();
+            } else { alert("Dados incorretos"); }
+        }
+        function logout() { document.getElementById('loginSection').style.display = 'block'; document.getElementById('registryArea').style.display = 'none'; document.getElementById('loginPass').value = ''; }
 
-        // Adiciona listeners para validar o formulário
-        document.getElementById('teacherName').addEventListener('input', checkCallFormValidity);
-        document.getElementById('dateInput').addEventListener('change', checkCallFormValidity);
+        // 1. Gera os Cards das Turmas
+        function populateRegistryClasses() {
+            const container = document.getElementById('classGridContainer'); container.innerHTML = '';
+            Object.keys(roomsData).forEach(key => {
+                const r = roomsData[key];
+                const count = kidsData[key] ? kidsData[key].length : 0;
+                const div = document.createElement('div');
+                div.className = 'class-card';
+                div.onclick = () => openClassDetail(key);
+                div.innerHTML = `
+                    <div class="class-icon-box" style="color:${r.color};background:${r.color}20;">${r.icon}</div>
+                    <div class="class-info">
+                        <h3>${r.name}</h3>
+                        <p>${r.age} • <strong>${count} Alunos</strong></p>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+            document.getElementById('registryClassSelection').classList.remove('hidden');
+            document.getElementById('registryClassDetail').classList.add('hidden');
+            document.getElementById('registryFormView').classList.add('hidden');
+        }
+
+        // 2. Abre a Lista da Turma Específica
+        function openClassDetail(key) {
+            document.getElementById('registryClassSelection').classList.add('hidden');
+            document.getElementById('registryClassDetail').classList.remove('hidden');
+            
+            const r = roomsData[key];
+            document.getElementById('detailRoomName').textContent = `Turma ${r.name}`;
+            document.getElementById('detailRoomAge').textContent = r.age;
+            
+            const list = document.getElementById('classDetailList');
+            list.innerHTML = '';
+            const kids = kidsData[key] || [];
+
+            kids.forEach(kid => {
+                const img = kid.photo.startsWith('http') ? kid.photo : `img/${kid.photo}`;
+                
+                // CÁLCULO DE IDADE REAL
+                let age = "N/I";
+                let dobDisplay = "N/I";
+
+                if (kid.dob) {
+                    const parts = kid.dob.split('-');
+                    const birthYear = parseInt(parts[0], 10);
+                    const birthMonth = parseInt(parts[1], 10) - 1; 
+                    const birthDay = parseInt(parts[2], 10);
+                    
+                    const birthDate = new Date(birthYear, birthMonth, birthDay);
+                    const today = new Date();
+                    
+                    let calculatedAge = today.getFullYear() - birthYear;
+                    const m = today.getMonth() - birthMonth;
+                    
+                    if (m < 0 || (m === 0 && today.getDate() < birthDay)) {
+                        calculatedAge--;
+                    }
+                    age = calculatedAge;
+                    dobDisplay = `${parts[2]}/${parts[1]}/${parts[0]}`; // Formato BR
+                }
+
+                const guardian = kid.guardian || "Não informado";
+                const phone = kid.phone || "Não informado";
+
+                const div = document.createElement('div');
+                div.className = 'child-detail-card';
+                
+                // ORDEM SOLICITADA: Nome -> Nasc -> Idade -> Resp -> Tel
+                div.innerHTML = `
+                    <img src="${img}" class="child-detail-img" onerror="this.src='https://via.placeholder.com/80'">
+                    <div class="child-detail-info">
+                        <h4>${kid.name}</h4>
+                        <div class="info-row"><span class="info-label">📅 Nasc:</span> ${dobDisplay}</div>
+                        <div class="info-row"><span class="info-label">🎂 Idade:</span> ${age} anos</div>
+                        <div class="info-row"><span class="info-label">🛡️ Resp:</span> ${guardian}</div>
+                        <div class="info-row"><span class="info-label">📞 Tel:</span> ${phone}</div>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function filterRegistryDetail(val) {
+            const term = val.toLowerCase();
+            document.querySelectorAll('.child-detail-card').forEach(card => {
+                const name = card.querySelector('h4').textContent.toLowerCase();
+                card.style.display = name.includes(term) ? 'flex' : 'none';
+            });
+        }
+
+        function backToClassSelection() {
+            document.getElementById('registryClassDetail').classList.add('hidden');
+            document.getElementById('registryFormView').classList.add('hidden');
+            document.getElementById('registryClassSelection').classList.remove('hidden');
+        }
+
+        function openRegistryForm() {
+            document.getElementById('registryClassSelection').classList.add('hidden');
+            document.getElementById('registryFormView').classList.remove('hidden');
+        }
+
+        // Cadastro Submit
+        function calculateAge() {
+            const dobInput = document.getElementById('regChildDob').value;
+            if(!dobInput) return;
+
+            // Divide a string "YYYY-MM-DD" para evitar problemas de fuso horário
+            const parts = dobInput.split('-');
+            const birthYear = parseInt(parts[0], 10);
+            const birthMonth = parseInt(parts[1], 10) - 1; 
+            const birthDay = parseInt(parts[2], 10);
+
+            const birthDate = new Date(birthYear, birthMonth, birthDay);
+            const today = new Date();
+            let age = today.getFullYear() - birthYear;
+
+            const m = today.getMonth() - birthMonth;
+            if (m < 0 || (m === 0 && today.getDate() < birthDay)) { age--; }
+            
+            document.getElementById('regChildAge').value = age + " anos";
+        }
+
+        async function submitRegistration() {
+            const name = document.getElementById('regChildName').value;
+            const dob = document.getElementById('regChildDob').value;
+            const age = document.getElementById('regChildAge').value;
+            const guardian = document.getElementById('regGuardianName').value;
+            const phone = document.getElementById('regGuardianPhone').value;
+            const room = document.getElementById('regRoom').value;
+
+            if(!name || !dob || !guardian) { alert("Preencha todos os campos"); return; }
+
+            const fd = new URLSearchParams();
+            fd.append('action', 'registerKid'); fd.append('child_name', name); fd.append('child_dob', dob); fd.append('child_age', age); fd.append('guardian_name', guardian); fd.append('guardian_phone', phone); fd.append('suggested_room', room);
+
+            const btn = document.querySelector('#registryFormView .btn-success');
+            const original = btn.textContent; btn.textContent = "Salvando..."; btn.disabled = true;
+
+            try {
+                await fetch(SHEET_URL, { method:'POST', mode:'no-cors', body:fd });
+                alert("✅ Cadastro realizado!");
+                document.getElementById('regChildName').value = ''; document.getElementById('regGuardianName').value = '';
+                backToClassSelection();
+            } catch(e) { alert("Erro ao salvar."); }
+            btn.textContent = original; btn.disabled = false;
+        }
+
+        // Inicialização
+        initializeDateButtons(); initializeRoomButtons(); initializeRoomTabsChamada(); initializeLessonsUI(); renderSchedules();
     </script>
 </body>
 </html>
-
-
-
-
-
