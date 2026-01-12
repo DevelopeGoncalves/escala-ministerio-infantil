@@ -11,20 +11,71 @@
             background-color: #000; 
             overflow: hidden; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex; align-items: center; justify-content: center;
-            height: 100vh;
+            display: flex; height: 100vh;
         }
 
-        /* CARD DE AVISO (Escondido por padrão) */
+        /* --- SIDEBAR PARA O OPERADOR --- */
+        #operator-panel {
+            width: 300px;
+            background: #111;
+            border-right: 1px solid #333;
+            display: flex; flex-direction: column;
+            padding: 20px;
+            color: white;
+            z-index: 2000;
+        }
+
+        .queue-title {
+            font-size: 1.2rem; font-weight: bold; margin-bottom: 20px;
+            color: #8b5cf6; text-transform: uppercase; letter-spacing: 1px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .queue-list {
+            flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+        }
+
+        .queue-item {
+            background: #222; border: 1px solid #333;
+            padding: 15px; border-radius: 10px;
+            cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .queue-item:hover { background: #333; border-color: #555; }
+        .queue-item.active { border-color: #ef4444; background: #2a1111; }
+
+        .q-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .q-info { flex: 1; }
+        .q-name { font-weight: bold; font-size: 0.9rem; }
+        .q-room { font-size: 0.75rem; color: #aaa; }
+
+        .btn-action {
+            margin-top: 10px;
+            width: 100%; padding: 8px; border: none; border-radius: 5px;
+            cursor: pointer; font-weight: bold; text-transform: uppercase;
+        }
+        .btn-show { background: #8b5cf6; color: white; }
+        .btn-show:hover { background: #7c3aed; }
+        .btn-remove { background: #333; color: #aaa; font-size: 0.8rem; margin-top: 5px; }
+        .btn-remove:hover { background: #ef4444; color: white; }
+
+        /* --- ÁREA DO PROJETOR --- */
+        #projector-screen {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            position: relative;
+            background: black;
+        }
+
+        /* CARD DE AVISO */
         #alert-box {
-            display: none; /* Começa invisível */
+            display: none; 
             background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
             border: 5px solid #fff;
             border-radius: 40px;
             padding: 40px;
-            width: 80%;
-            max-width: 900px;
-            box-shadow: 0 0 80px rgba(220, 38, 38, 0.6);
+            width: 90%;
+            max-width: 1000px;
+            box-shadow: 0 0 100px rgba(220, 38, 38, 0.8);
             text-align: center;
             color: white;
             animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -37,105 +88,185 @@
         }
 
         .alert-header {
-            font-size: 3rem; font-weight: 900; text-transform: uppercase;
-            margin-bottom: 20px; text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+            font-size: 3.5rem; font-weight: 900; text-transform: uppercase;
+            margin-bottom: 30px; text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
             display: flex; align-items: center; justify-content: center; gap: 20px;
         }
 
         .alert-content {
-            display: flex; align-items: center; justify-content: center; gap: 40px;
-            background: rgba(0,0,0,0.2); padding: 30px; border-radius: 30px;
+            display: flex; align-items: center; justify-content: center; gap: 50px;
+            background: rgba(0,0,0,0.2); padding: 40px; border-radius: 30px;
         }
 
         .kid-photo {
-            width: 250px; height: 250px;
-            border-radius: 50%; border: 8px solid white;
+            width: 300px; height: 300px;
+            border-radius: 50%; border: 10px solid white;
             object-fit: cover;
             box-shadow: 0 10px 20px rgba(0,0,0,0.3);
         }
 
         .alert-text { text-align: left; }
-        .alert-label { font-size: 1.5rem; text-transform: uppercase; opacity: 0.9; margin-bottom: 5px; }
-        .kid-name { font-size: 4rem; font-weight: 800; line-height: 1; margin-bottom: 20px; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); }
+        .alert-label { font-size: 1.8rem; text-transform: uppercase; opacity: 0.9; margin-bottom: 10px; }
+        .kid-name { font-size: 5rem; font-weight: 800; line-height: 1; margin-bottom: 25px; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); }
         .room-badge { 
             background: white; color: #b91c1c; 
-            padding: 10px 30px; border-radius: 50px; 
-            font-size: 2rem; font-weight: 800; display: inline-block;
+            padding: 15px 40px; border-radius: 60px; 
+            font-size: 2.5rem; font-weight: 800; display: inline-block;
         }
 
+        /* Botão para ativar som */
+        #sound-btn {
+            position: fixed; bottom: 20px; right: 20px;
+            background: #2563eb; color: white; border: none;
+            padding: 10px 20px; border-radius: 30px; font-weight: bold;
+            cursor: pointer; z-index: 3000;
+        }
     </style>
 </head>
 <body>
 
-    <div id="alert-box">
-        <div class="alert-header">
-            <i class="fas fa-exclamation-triangle"></i> ATENÇÃO PAIS
+    <div id="operator-panel">
+        <div class="queue-title">
+            <span><i class="fas fa-list"></i> Fila</span>
+            <span id="queue-count" style="background:#333; padding:2px 8px; border-radius:10px; font-size:0.8rem;">0</span>
         </div>
-        <div class="alert-content">
-            <img id="photo" class="kid-photo" src="" alt="Criança">
-            <div class="alert-text">
-                <div class="alert-label">Solicitamos a presença dos responsáveis por:</div>
-                <div class="kid-name" id="name">NOME DA CRIANÇA</div>
-                <div class="room-badge" id="room">SALA</div>
+        <div class="queue-list" id="queueList">
+            <div style="text-align:center; color:#555; margin-top:50px; font-size:0.9rem;">
+                Aguardando chamados...
             </div>
         </div>
     </div>
 
+    <div id="projector-screen">
+        <div id="alert-box">
+            <div class="alert-header">
+                <i class="fas fa-exclamation-triangle"></i> ATENÇÃO PAIS
+            </div>
+            <div class="alert-content">
+                <img id="photo" class="kid-photo" src="" alt="Criança">
+                <div class="alert-text">
+                    <div class="alert-label">Solicitamos a presença dos responsáveis por:</div>
+                    <div class="kid-name" id="name">NOME</div>
+                    <div class="room-badge" id="room">SALA</div>
+                </div>
+            </div>
+            <button onclick="hideAlert()" style="position:absolute; top:20px; right:20px; background:rgba(0,0,0,0.2); border:none; color:white; font-size:2rem; cursor:pointer;">&times;</button>
+        </div>
+    </div>
+
+    <button id="sound-btn" onclick="activateSound()"><i class="fas fa-volume-up"></i> Ativar Som</button>
     <audio id="alertSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
         // ============================================
-        // SISTEMA DE ESCUTA (POLLING)
+        // CONFIGURAÇÃO DO FIREBASE (COPIE AQUI TAMBÉM)
         // ============================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBpYXo6POurSeDbFKs2E_uvucAJMftcOpc",
+            authDomain: "ministerio-infantil-fcac7.firebaseapp.com",
+            databaseURL: "https://ministerio-infantil-fcac7-default-rtdb.firebaseio.com",
+            projectId: "ministerio-infantil-fcac7",
+            storageBucket: "ministerio-infantil-fcac7.firebasestorage.app",
+            messagingSenderId: "366564472501",
+            appId: "1:366564472501:web:41347abd009b1209a470fc",
+            measurementId: "G-RPCWFR7B11"
+        };
         
-        let lastTimestamp = 0;
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.database();
 
-        function checkAlert() {
-            // 1. MODO SIMULAÇÃO (LocalStorage)
-            // Lê o que o painel salvou no navegador
-            const dataStr = localStorage.getItem('kids_alert');
+        let audioEnabled = false;
+
+        function activateSound() {
+            const audio = document.getElementById('alertSound');
+            audio.play().then(() => {
+                audio.pause();
+                audio.currentTime = 0;
+                audioEnabled = true;
+                document.getElementById('sound-btn').style.display = 'none';
+            }).catch(e => alert("Clique na página para permitir o áudio."));
+        }
+
+        // ============================================
+        // LÓGICA DE FILA
+        // ============================================
+        const queueListEl = document.getElementById('queueList');
+        const countEl = document.getElementById('queue-count');
+        let queueCount = 0;
+
+        // Escuta novos chamados (child_added)
+        db.ref('chamados').on('child_added', (snapshot) => {
+            const data = snapshot.val();
+            const key = snapshot.key;
             
-            if (dataStr) {
-                const data = JSON.parse(dataStr);
-                
-                // Só mostra se for um aviso novo (baseado no horário)
-                if (data.timestamp > lastTimestamp) {
-                    lastTimestamp = data.timestamp;
-                    showAlert(data);
-                }
+            // Só toca som se for recente (últimos 5 minutos) para evitar barulho ao recarregar
+            const now = new Date().getTime();
+            if (now - data.timestamp < 300000 && audioEnabled) {
+                document.getElementById('alertSound').play();
             }
 
-            // 2. MODO REAL (Google Sheets)
-            // Se você tiver configurado o backend, descomente aqui:
-            /*
-            fetch('SEU_URL_DO_GOOGLE_SCRIPT?action=getLatestAlert')
-                .then(r => r.json())
-                .then(data => {
-                    if(data.timestamp > lastTimestamp) { ... showAlert(data) ... }
-                });
-            */
+            addToSidebar(key, data);
+        });
+
+        // Escuta remoções (child_removed)
+        db.ref('chamados').on('child_removed', (snapshot) => {
+            const key = snapshot.key;
+            const el = document.getElementById(`item-${key}`);
+            if(el) {
+                el.remove();
+                queueCount--;
+                updateCount();
+            }
+        });
+
+        function addToSidebar(key, data) {
+            // Remove mensagem de "vazio" se existir
+            if(queueCount === 0) queueListEl.innerHTML = '';
+
+            const div = document.createElement('div');
+            div.className = 'queue-item';
+            div.id = `item-${key}`;
+            div.innerHTML = `
+                <img src="${data.photoUrl}" class="q-img">
+                <div class="q-info">
+                    <div class="q-name">${data.kidName}</div>
+                    <div class="q-room">${data.roomName}</div>
+                    <button class="btn-action btn-show" onclick="showOnScreen('${data.kidName}', '${data.roomName}', '${data.photoUrl}')">Exibir</button>
+                    <button class="btn-action btn-remove" onclick="removeAlert('${key}')">Concluir</button>
+                </div>
+            `;
+            queueListEl.prepend(div); // Adiciona no topo
+            queueCount++;
+            updateCount();
         }
 
-        function showAlert(data) {
+        function updateCount() {
+            countEl.innerText = queueCount;
+            if(queueCount === 0) queueListEl.innerHTML = '<div style="text-align:center; color:#555; margin-top:50px; font-size:0.9rem;">Aguardando chamados...</div>';
+        }
+
+        // Função para mostrar no projetor (Apenas visual, não remove do banco)
+        function showOnScreen(name, room, photo) {
             const box = document.getElementById('alert-box');
-            document.getElementById('name').innerText = data.kidName;
-            document.getElementById('room').innerText = "📍 " + data.roomName;
-            document.getElementById('photo').src = data.photoUrl;
+            document.getElementById('name').innerText = name;
+            document.getElementById('room').innerText = "📍 " + room;
+            document.getElementById('photo').src = photo;
             
-            // Toca som
-            document.getElementById('alertSound').play().catch(e => console.log("Som bloqueado pelo browser"));
-
-            // Mostra o alerta
             box.style.display = 'block';
-
-            // Esconde automaticamente após 15 segundos
-            setTimeout(() => {
-                box.style.display = 'none';
-            }, 15000);
         }
 
-        // Verifica a cada 2 segundos se tem aviso novo
-        setInterval(checkAlert, 2000);
+        function hideAlert() {
+            document.getElementById('alert-box').style.display = 'none';
+        }
+
+        // Função para remover do banco (Apaga da fila de todos)
+        function removeAlert(key) {
+            hideAlert(); // Garante que saiu da tela
+            db.ref('chamados').child(key).remove();
+        }
 
     </script>
 </body>
