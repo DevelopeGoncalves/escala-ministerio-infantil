@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VISUALIZADOR TELÃO KIDS</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { 
+            margin: 0; padding: 0; 
+            background-color: #000; 
+            overflow: hidden; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh;
+        }
+
+        /* CARD DE AVISO (Escondido por padrão) */
+        #alert-box {
+            display: none; /* Começa invisível */
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            border: 5px solid #fff;
+            border-radius: 40px;
+            padding: 40px;
+            width: 80%;
+            max-width: 900px;
+            box-shadow: 0 0 80px rgba(220, 38, 38, 0.6);
+            text-align: center;
+            color: white;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .alert-header {
+            font-size: 3rem; font-weight: 900; text-transform: uppercase;
+            margin-bottom: 20px; text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+            display: flex; align-items: center; justify-content: center; gap: 20px;
+        }
+
+        .alert-content {
+            display: flex; align-items: center; justify-content: center; gap: 40px;
+            background: rgba(0,0,0,0.2); padding: 30px; border-radius: 30px;
+        }
+
+        .kid-photo {
+            width: 250px; height: 250px;
+            border-radius: 50%; border: 8px solid white;
+            object-fit: cover;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .alert-text { text-align: left; }
+        .alert-label { font-size: 1.5rem; text-transform: uppercase; opacity: 0.9; margin-bottom: 5px; }
+        .kid-name { font-size: 4rem; font-weight: 800; line-height: 1; margin-bottom: 20px; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); }
+        .room-badge { 
+            background: white; color: #b91c1c; 
+            padding: 10px 30px; border-radius: 50px; 
+            font-size: 2rem; font-weight: 800; display: inline-block;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="alert-box">
+        <div class="alert-header">
+            <i class="fas fa-exclamation-triangle"></i> ATENÇÃO PAIS
+        </div>
+        <div class="alert-content">
+            <img id="photo" class="kid-photo" src="" alt="Criança">
+            <div class="alert-text">
+                <div class="alert-label">Solicitamos a presença dos responsáveis por:</div>
+                <div class="kid-name" id="name">NOME DA CRIANÇA</div>
+                <div class="room-badge" id="room">SALA</div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="alertSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
+    <script>
+        // ============================================
+        // SISTEMA DE ESCUTA (POLLING)
+        // ============================================
+        
+        let lastTimestamp = 0;
+
+        function checkAlert() {
+            // 1. MODO SIMULAÇÃO (LocalStorage)
+            // Lê o que o painel salvou no navegador
+            const dataStr = localStorage.getItem('kids_alert');
+            
+            if (dataStr) {
+                const data = JSON.parse(dataStr);
+                
+                // Só mostra se for um aviso novo (baseado no horário)
+                if (data.timestamp > lastTimestamp) {
+                    lastTimestamp = data.timestamp;
+                    showAlert(data);
+                }
+            }
+
+            // 2. MODO REAL (Google Sheets)
+            // Se você tiver configurado o backend, descomente aqui:
+            /*
+            fetch('SEU_URL_DO_GOOGLE_SCRIPT?action=getLatestAlert')
+                .then(r => r.json())
+                .then(data => {
+                    if(data.timestamp > lastTimestamp) { ... showAlert(data) ... }
+                });
+            */
+        }
+
+        function showAlert(data) {
+            const box = document.getElementById('alert-box');
+            document.getElementById('name').innerText = data.kidName;
+            document.getElementById('room').innerText = "📍 " + data.roomName;
+            document.getElementById('photo').src = data.photoUrl;
+            
+            // Toca som
+            document.getElementById('alertSound').play().catch(e => console.log("Som bloqueado pelo browser"));
+
+            // Mostra o alerta
+            box.style.display = 'block';
+
+            // Esconde automaticamente após 15 segundos
+            setTimeout(() => {
+                box.style.display = 'none';
+            }, 15000);
+        }
+
+        // Verifica a cada 2 segundos se tem aviso novo
+        setInterval(checkAlert, 2000);
+
+    </script>
+</body>
+</html>
