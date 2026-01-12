@@ -131,6 +131,23 @@
         }
         .btn-wa-mini:hover { transform: scale(1.1); }
 
+        /* --- ANIVERSARIANTES (NOVO - DIVIDIDO) --- */
+        .birthday-group-title {
+            margin: 20px 0 10px; color: var(--primary); font-weight: 800; font-size: 1rem;
+            border-bottom: 2px solid #e5e7eb; padding-bottom: 5px; text-transform: uppercase;
+        }
+        .birthday-card {
+            background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
+            border: 1px solid #fcd34d; border-radius: 18px; padding: 15px;
+            display: flex; align-items: center; gap: 15px; margin-bottom: 10px;
+        }
+        .birthday-day {
+            background: var(--secondary); color: white; border-radius: 12px;
+            padding: 8px 12px; text-align: center; font-weight: 800;
+            display: flex; flex-direction: column; line-height: 1;
+        }
+        .birthday-day span { font-size: 0.7rem; opacity: 0.8; font-weight: 600; text-transform: uppercase; }
+        .birthday-day strong { font-size: 1.2rem; }
 
         /* CHIPS PROFESSOR (ESCALAS) */
         .teachers-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
@@ -174,15 +191,21 @@
             transition: all 0.3s ease;
         }
         
-        /* ESTILO SANTA CEIA (CARD VERMELHO CLARO) */
-        .schedule-item.santa-ceia {
-            background-color: #fff1f2; /* Vermelho muito claro */
-            border-left-color: var(--santa-ceia);
+        /* ESTILO SANTA CEIA */
+        .schedule-item.santa-ceia { background-color: #fff1f2; border-left-color: var(--santa-ceia); }
+        .schedule-item.santa-ceia .date-badge-style { background: var(--santa-ceia) !important; color: white !important; }
+
+        /* FLOATING BUTTON (COPIAR ESCALA) */
+        .fab-copy {
+            position: fixed; bottom: 90px; right: 20px;
+            background: var(--text-main); color: white;
+            padding: 12px 20px; border-radius: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            font-weight: 700; cursor: pointer; z-index: 900;
+            display: flex; align-items: center; gap: 8px;
+            border: none;
         }
-        .schedule-item.santa-ceia .date-badge-style {
-            background: var(--santa-ceia) !important;
-            color: white !important;
-        }
+        .fab-copy:active { transform: scale(0.95); }
 
         /* RESPONSIVIDADE */
         .overlay { display: none; position: fixed; inset: 0; background: rgba(30, 27, 75, 0.6); backdrop-filter: blur(4px); z-index: 1000; }
@@ -209,6 +232,7 @@
         
         <button class="menu-btn active" onclick="showSection('dashboard', this)"><i class="fas fa-chart-pie"></i> Visão Geral</button>
         <button class="menu-btn" onclick="showSection('chamada', this)"><i class="fas fa-check-circle"></i> Chamada</button>
+        <button class="menu-btn" onclick="showSection('telao', this)"><i class="fas fa-bullhorn"></i> Telão / Aviso</button>
         <button class="menu-btn" onclick="showSection('escalas', this)"><i class="fas fa-calendar-alt"></i> Escalas</button>
         <button class="menu-btn" onclick="showSection('licoes', this)"><i class="fas fa-book-open"></i> Lições</button>
         <button class="menu-btn" onclick="showSection('cadastro', this)"><i class="fas fa-users-cog"></i> Admin</button>
@@ -216,7 +240,7 @@
         <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
             <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 16px;">
                 <small style="color: #9ca3af; display: block; margin-bottom: 5px;">Sistema</small>
-                <div style="font-weight: 700; font-size:0.9rem;">v2.3 Elite</div>
+                <div style="font-weight: 700; font-size:0.9rem;">v3.3 Elite (Telão)</div>
             </div>
         </div>
     </nav>
@@ -237,6 +261,11 @@
                     <h2 id="total-kids-count">0</h2>
                     <i class="fas fa-child stat-icon"></i>
                 </div>
+                <div class="stat-card">
+                    <span>Professores</span>
+                    <h2 id="total-teachers-count">0</h2>
+                    <i class="fas fa-chalkboard-teacher stat-icon"></i>
+                </div>
                 <div class="stat-card" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white;">
                     <span style="color: rgba(255,255,255,0.8);">Próximo Culto</span>
                     <h2 style="color: white; font-size:1.5rem;" id="next-sunday-date">--/--</h2>
@@ -245,40 +274,27 @@
             </div>
 
             <div class="card-section">
-                <div class="section-title"><i class="fas fa-trophy" style="color:var(--secondary)"></i> Ranking de Frequência</div>
-                <div style="color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 20px;">
-                    Dados sendo processados...
-                </div>
+                <div class="section-title"><i class="fas fa-birthday-cake" style="color:var(--secondary)"></i> Aniversariantes do Mês</div>
+                
+                <h4 class="birthday-group-title">🎓 Alunos</h4>
+                <div id="birthdays-students-list"></div>
+
+                <h4 class="birthday-group-title">👩‍🏫 Professores</h4>
+                <div id="birthdays-teachers-list"></div>
             </div>
         </section>
 
         <section id="chamada" class="content-section hidden">
-            <div class="section-title">
-                <i class="fas fa-check-double"></i> Chamada Visual
-            </div>
-            
-            <div class="filter-bar" id="room-filters-chamada">
-                </div>
+            <div class="section-title"><i class="fas fa-check-double"></i> Chamada Visual</div>
+            <div class="filter-bar" id="room-filters-chamada"></div>
 
             <div class="card-section">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                    <div>
-                        <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">Data</label>
-                        <input type="date" id="dateInput">
-                    </div>
-                    <div>
-                        <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">Professores</label>
-                        <input type="text" id="teacherName" placeholder="Ex: Ana e Bia" oninput="checkCallFormValidity()">
-                    </div>
+                    <div><label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">Data</label><input type="date" id="dateInput"></div>
+                    <div><label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">Professores</label><input type="text" id="teacherName" placeholder="Ex: Ana e Bia" oninput="checkCallFormValidity()"></div>
                 </div>
-
                 <h4 style="margin: 0; color: var(--text-muted);">Toque na foto para marcar:</h4>
-                
-                <div id="kidsList" class="kids-grid">
-                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #9ca3af;">
-                        Selecione uma sala acima 👆
-                    </div>
-                </div>
+                <div id="kidsList" class="kids-grid"><div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #9ca3af;">Selecione uma sala acima 👆</div></div>
 
                 <div style="margin-top: 30px; border-top: 1px solid #f3f4f6; padding-top: 20px;">
                     <div style="background: #fff7ed; padding: 15px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #ffedd5;">
@@ -287,40 +303,45 @@
                             <button class="btn btn-primary" style="width: auto; background: var(--secondary);" onclick="addExtraKid()">Add</button>
                         </div>
                     </div>
-                    
-                    <button class="btn btn-success" id="btn-submit-chamada" onclick="submitCall()" disabled>
-                        <i class="fas fa-paper-plane"></i> Enviar Chamada
-                    </button>
+                    <button class="btn btn-success" id="btn-submit-chamada" onclick="submitCall()" disabled><i class="fas fa-paper-plane"></i> Enviar Chamada</button>
                 </div>
+            </div>
+        </section>
+
+        <section id="telao" class="content-section hidden">
+            <div class="section-title"><i class="fas fa-bullhorn"></i> Chamar Pais no Telão</div>
+            <p style="color:var(--text-muted);">Selecione a criança para enviar um aviso instantâneo para a projeção da igreja.</p>
+            
+            <div class="form-group">
+                <label style="font-size: 0.8rem; font-weight: 700;">Sala</label>
+                <div class="filter-bar" id="room-filters-telao"></div>
+            </div>
+
+            <div class="card-section">
+                <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">Buscar Criança</label>
+                <input type="text" id="searchTelao" placeholder="🔍 Digite o nome da criança..." oninput="renderTelaoList()">
+                
+                <div id="telaoList" class="people-grid" style="margin-top:20px;"></div>
             </div>
         </section>
 
         <section id="escalas" class="content-section hidden">
             <div class="section-title"><i class="fas fa-calendar-alt"></i> Escalas</div>
-            
+            <button class="fab-copy" onclick="copyScheduleToClipboard()"><i class="fas fa-copy"></i> Copiar Texto</button>
+            <div class="form-group"><label style="font-size: 0.8rem; font-weight: 700;">Filtrar por Sala</label><div class="filter-bar" id="room-filters-escala"></div></div>
             <div class="form-group">
-                <input type="text" id="teacherSearchInput" placeholder="🔍 Buscar professor..." oninput="filterByTeacher(this.value)">
+                <label style="font-size: 0.8rem; font-weight: 700;">Buscar ou Filtrar por Data</label>
+                <input type="text" id="teacherSearchInput" placeholder="🔍 Buscar professor..." oninput="filterByTeacher(this.value)" style="margin-bottom: 10px;">
+                <div class="filter-bar" id="date-filters-escala"></div>
             </div>
-            
-            <div class="filter-bar" id="date-filters-escala"></div>
-            
             <div id="scheduleGrid" style="display: flex; flex-direction: column; gap: 10px;"></div>
         </section>
 
         <section id="licoes" class="content-section hidden">
             <div class="section-title"><i class="fas fa-folder-open"></i> Material Didático</div>
-            
             <div class="card-section">
-                <div class="form-group">
-                    <label style="font-size: 0.8rem; font-weight: 700;">Sala</label>
-                    <div class="filter-bar" id="room-filters-licoes"></div>
-                </div>
-                
-                <div class="form-group">
-                    <label style="font-size: 0.8rem; font-weight: 700;">Data</label>
-                    <div class="filter-bar" id="date-filters-licoes"></div>
-                </div>
-                
+                <div class="form-group"><label style="font-size: 0.8rem; font-weight: 700;">Sala</label><div class="filter-bar" id="room-filters-licoes"></div></div>
+                <div class="form-group"><label style="font-size: 0.8rem; font-weight: 700;">Data</label><div class="filter-bar" id="date-filters-licoes"></div></div>
                 <label for="pdfFile" class="upload-area" id="fileUploadLabel">
                     <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; margin-bottom: 10px; color: var(--primary);"></i>
                     <div style="font-weight: 700;">Toque para enviar PDF/Foto</div>
@@ -328,39 +349,29 @@
                 </label>
                 <input type="file" id="pdfFile" accept="application/pdf,image/jpeg,image/png" onchange="handleFileSelect()" multiple style="display:none;">
                 <div id="fileInfo" style="text-align:center; margin-top:10px; font-weight:700; color:var(--success);"></div>
-
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px;">
                     <button class="btn btn-primary" id="btnUploadLesson" onclick="uploadLesson()" disabled>Enviar</button>
                     <button class="btn btn-success" id="btnDownloadLesson" onclick="downloadLesson()" disabled>Baixar</button>
                     <button class="btn btn-danger" id="btnDeleteLesson" onclick="deleteLesson()" disabled><i class="fas fa-trash"></i></button>
                 </div>
-
-                <div id="pdfViewerContent" style="margin-top: 20px; background: #1e1b4b; border-radius: 20px; min-height: 400px; padding: 10px; display: flex; align-items: center; justify-content: center;">
-                    <span style="color: rgba(255,255,255,0.3);">Visualizador</span>
-                </div>
+                <div id="pdfViewerContent" style="margin-top: 20px; background: #1e1b4b; border-radius: 20px; min-height: 400px; padding: 10px; display: flex; align-items: center; justify-content: center;"><span style="color: rgba(255,255,255,0.3);">Visualizador</span></div>
             </div>
         </section>
 
         <section id="cadastro" class="content-section hidden">
             <div class="section-title"><i class="fas fa-users-cog"></i> Gestão de Pessoas</div>
-            
             <div class="filter-bar">
                 <button class="pill-btn active" onclick="toggleAdminTab('alunos', this)">👦 Alunos</button>
                 <button class="pill-btn" onclick="toggleAdminTab('professores', this)">👩‍🏫 Professores</button>
             </div>
-
             <div style="display: flex; gap: 10px; margin-bottom: 20px;">
                 <input type="text" id="adminSearch" placeholder="🔍 Buscar por nome..." oninput="filterAdminList()" style="margin-bottom:0;">
-                <button class="btn btn-primary" style="width: auto; padding: 10px 20px;" onclick="toggleNewForm()">
-                    <i class="fas fa-plus"></i> Novo
-                </button>
+                <button class="btn btn-primary" style="width: auto; padding: 10px 20px;" onclick="toggleNewForm()"><i class="fas fa-plus"></i> Novo</button>
             </div>
-
             <div id="adminFormContainer" class="card-section hidden" style="border: 2px dashed var(--primary); background: #fdfbff;">
                 <h3 style="margin-top:0;">Novo Cadastro</h3>
                 <div class="form-group"><label>Nome Completo</label><input type="text" id="regName"></div>
                 <div class="form-group"><label>Data Nascimento</label><input type="date" id="regDob"></div>
-                
                 <div id="studentFields">
                     <div class="form-group"><label>Responsável</label><input type="text" id="regGuardian"></div>
                     <div class="form-group"><label>WhatsApp Resp.</label><input type="tel" id="regPhone" placeholder="DDD+Número"></div>
@@ -374,26 +385,19 @@
                         </select>
                     </div>
                 </div>
-                
-                <div id="teacherFields" class="hidden">
-                     <div class="form-group"><label>WhatsApp Professor</label><input type="tel" id="regTeacherPhone" placeholder="DDD+Número"></div>
-                </div>
-
+                <div id="teacherFields" class="hidden"><div class="form-group"><label>WhatsApp Professor</label><input type="tel" id="regTeacherPhone" placeholder="DDD+Número"></div></div>
                 <div style="display:flex; gap:10px;">
                     <button class="btn btn-danger" onclick="toggleNewForm()">Cancelar</button>
                     <button class="btn btn-success" onclick="submitRegistration()">Salvar</button>
                 </div>
             </div>
-
-            <div id="adminListContainer" class="people-grid">
-                </div>
+            <div id="adminListContainer" class="people-grid"></div>
         </section>
-
     </main>
 
     <script>
         // ============================================
-        // 1. DADOS (ORIGINAIS E COMPLETOS)
+        // 1. DADOS
         // ============================================
         const SHEET_URL = 'https://script.google.com/macros/s/AKfycbz-zw2zwET3iSgtNKasbc4NuCIrmJuJ3k3gPk9YhtFW3oNx1YbyQGe0zbXeUre0uBxxIg/exec';
         
@@ -405,6 +409,7 @@
             ômega: { name: "Ômega", age: "9-11 anos", icon: "📚", color: "#ED8936" }
         };
 
+        // Dados Alunos
         const kidsData = {
             berçario: [ 
                 { id: 1, name: "Maria Eduarda", photo: "m_eduarda.png", dob: "2023-05-20", guardian: "Mãe da Maria", phone: "27999999999" },
@@ -516,35 +521,83 @@
 
         const allDates = ["04/01/2026", "11/01/2026", "18/01/2026", "25/01/2026"];
 
-        // --- PROFESSORES (LISTA GERADA AUTOMATICAMENTE DAS ESCALAS PARA O ADMIN) ---
-        // Extrai nomes únicos das escalas para popular a lista de professores
-        const teachersRegistry = [];
-        const uniqueTeachers = new Set();
-        Object.values(scheduleData).forEach(room => {
-            room.schedules.forEach(s => {
-                s.teachers.forEach(t => {
-                    if (!uniqueTeachers.has(t) && t !== "..." && t !== "....") {
-                        uniqueTeachers.add(t);
-                        teachersRegistry.push({ name: t, dob: "", phone: "" });
-                    }
-                });
-            });
-        });
+        // LISTA FIXA DE PROFESSORES (ADMIN)
+        const fixedTeachersData = [
+            { name: "Leidiane Lopes dos Santos da Silva", dob: "", phone: "" },
+            { name: "Adriana Lopes dos Santos Martins ", dob: "", phone: "" },
+            { name: "Sarah dos santos Tomaz", dob: "", phone: "" },
+            { name: "MAIARA", dob: "", phone: "" },
+            { name: "Jussimere Pacheco da Silva", dob: "", phone: "" },
+            { name: "Kemelly Ribeiro Dos Santos", dob: "", phone: "" },
+            { name: "Ingrid Silva Coelho", dob: "", phone: "" },
+            { name: "Damares", dob: "", phone: "" },
+            { name: "ANA RAFAELA", dob: "", phone: "" },
+            { name: "Arthur dos Santos da conceição", dob: "", phone: "" },
+            { name: "ESTER ", dob: "", phone: "" },
+            { name: "Anna Victória Bebiano de Carvalho", dob: "", phone: "" },
+            { name: "Iandra Jesus de Novais Santana", dob: "", phone: "" },
+            { name: "Paulo Henrique Mendes Dias", dob: "", phone: "" },
+            { name: "KETTLEY ", dob: "", phone: "" },
+            { name: "Roseane Jadyvsky", dob: "", phone: "" },
+            { name: "Nathalia", dob: "", phone: "" },
+            { name: "RYAN", dob: "", phone: "" },
+            { name: "Ana Crysthina Martins Lyrio", dob: "", phone: "" },
+            { name: "Mirian Pereira da Cruz da Cunha", dob: "", phone: "" },
+            { name: "DOUGLAS", dob: "", phone: "" },
+            { name: "Maxsuel Oliveira da Silva", dob: "", phone: "" },
+            { name: "Núbia Nascimento de Medeiros Dos Santos", dob: "", phone: "" },
+            { name: "SOPHIA", dob: "", phone: "" },
+            { name: "JEAN ", dob: "", phone: "" },
+            { name: "Elaine Pereira Rocha Anacleto", dob: "", phone: "" },
+            { name: "HELOISA", dob: "", phone: "" },
+            { name: "ARTHUR ", dob: "", phone: "" },
+            { name: "Ana Beatriz Rodrigues de Souza", dob: "", phone: "" },
+            { name: "Ramon de Oliveira Correa", dob: "", phone: "" },
+            { name: "Ana Clara Silva Petersen", dob: "", phone: "" },
+            { name: "Lucas de Souza Fernandes", dob: "", phone: "" },
+            { name: "Libhya da Silva Souza Gonçalves Victorino", dob: "", phone: "" },
+            { name: "Jackson Jadyvysky", dob: "", phone: "" },
+            { name: "Luiz Felipe Oliveira dos Santos", dob: "", phone: "" },
+            { name: "Diego Pimenta", dob: "", phone: "" },
+            { name: "Raiara da Conceição Viana Pimenta", dob: "", phone: "" },
+            { name: "Brenda Rodrigues de Souza", dob: "", phone: "" },
+            { name: "JOICE", dob: "", phone: "" },
+            { name: "Alex Gonçalves Victorino", dob: "20/11/1997", phone: "27999064068" }
+        ];
 
-        // ============================================
-        // 2. ESTADO
-        // ============================================
         let selectedRoomKeyChamada = null;
+        let selectedRoomKeyTelao = null; // Novo
         let selectedRoomKeyLicoes = null;
         let selectedDateLicoes = null;
         let selectedFiles = [];
         let searchTerm = '';
         let currentLessonFiles = []; 
         let currentAdminTab = 'alunos';
+        let selectedRoomEscala = null;
+
+        // ============================================
+        // 3. FUNÇÕES AUXILIARES E INICIALIZAÇÃO
+        // ============================================
+        
+        function getTeacherPhotoUrl(teacherName) {
+            if (!teacherName) return '';
+            const firstName = teacherName.trim().split(' ')[0].toLowerCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+            return `img/professor/${firstName}.png`;
+        }
 
         window.onload = () => {
             generateRoomFilters('room-filters-chamada', selectRoomChamada);
+            generateRoomFilters('room-filters-telao', (k, b) => { selectedRoomKeyTelao = k; togglePill(b); renderTelaoList(); }); // Novo
             generateRoomFilters('room-filters-licoes', (k, b) => { selectedRoomKeyLicoes = k; togglePill(b); reloadLessonView(); });
+            generateRoomFilters('room-filters-escala', (k, b) => { 
+                const btns = document.querySelectorAll('#room-filters-escala .pill-btn');
+                btns.forEach(btnEl => btnEl.classList.remove('active'));
+                if(selectedRoomEscala === k) { selectedRoomEscala = null; } 
+                else { selectedRoomEscala = k; b.classList.add('active'); }
+                renderSchedules(); 
+            });
+
             generateDateFilters('date-filters-licoes', (d, b) => { selectedDateLicoes = d; togglePill(b); reloadLessonView(); });
             generateDateFilters('date-filters-escala', (d, b) => { searchTerm = ''; document.getElementById('teacherSearchInput').value=''; filterSchedulesByDate(d, b); });
 
@@ -552,6 +605,7 @@
             updateDashboard();
             renderSchedules();
             renderAdminPeople();
+            renderBirthdays();
         };
 
         function toggleMenu() {
@@ -568,12 +622,13 @@
         }
 
         // ============================================
-        // 3. DASHBOARD
+        // 4. DASHBOARD (COM CORREÇÃO DE DATAS)
         // ============================================
         function updateDashboard() {
             let total = 0;
             Object.values(kidsData).forEach(arr => total += arr.length);
             document.getElementById('total-kids-count').innerText = total;
+            document.getElementById('total-teachers-count').innerText = fixedTeachersData.length;
 
             const next = allDates.find(d => {
                 const [day, month, year] = d.split('/');
@@ -582,8 +637,71 @@
             document.getElementById('next-sunday-date').innerText = next ? next.substr(0,5) : "Fim";
         }
 
+        function renderBirthdays() {
+            const listStudents = document.getElementById('birthdays-students-list');
+            const listTeachers = document.getElementById('birthdays-teachers-list');
+            listStudents.innerHTML = '';
+            listTeachers.innerHTML = '';
+            
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+            
+            const upcomingStudents = [];
+            Object.values(kidsData).forEach(room => {
+                room.forEach(kid => {
+                    if(kid.dob) {
+                        const parts = kid.dob.split('-');
+                        const birthMonth = parseInt(parts[1]) - 1;
+                        const birthDay = parseInt(parts[2]);
+                        if(birthMonth === currentMonth) upcomingStudents.push({...kid, day: birthDay});
+                    }
+                });
+            });
+            upcomingStudents.sort((a,b) => a.day - b.day);
+
+            if(upcomingStudents.length === 0) listStudents.innerHTML = '<div style="text-align:center; color:#9ca3af; padding:10px;">Nenhum aluno aniversariante em ' + monthNames[currentMonth] + '</div>';
+            else {
+                upcomingStudents.forEach(kid => {
+                    const img = kid.photo.startsWith('http') ? kid.photo : `img/${kid.photo}`;
+                    const div = document.createElement('div'); div.className = 'birthday-card';
+                    div.innerHTML = `<div class="birthday-day"><span>DIA</span><strong>${kid.day}</strong></div><img src="${img}" style="width:50px; height:50px; border-radius:50%; object-fit:cover;" onerror="this.src='https://ui-avatars.com/api/?name=${kid.name}&background=random'"><div style="flex:1;"><div style="font-weight:800; color:var(--text-main);">${kid.name}</div><div style="font-size:0.8rem; color:var(--text-muted);">🎂 Parabéns!</div></div><button class="btn-wa-mini" onclick="window.open('https://wa.me/55${kid.phone}?text=Parabéns ${kid.name}! O Ministério Kids ama você! 🎉')"><i class="fab fa-whatsapp"></i></button>`;
+                    listStudents.appendChild(div);
+                });
+            }
+
+            const upcomingTeachers = [];
+            fixedTeachersData.forEach(t => {
+                if(t.dob) {
+                    let birthMonth, birthDay;
+                    if (t.dob.includes('/')) {
+                        const parts = t.dob.split('/');
+                        birthDay = parseInt(parts[0]);
+                        birthMonth = parseInt(parts[1]) - 1;
+                    } else {
+                        const parts = t.dob.split('-');
+                        birthDay = parseInt(parts[2]);
+                        birthMonth = parseInt(parts[1]) - 1;
+                    }
+
+                    if(birthMonth === currentMonth) upcomingTeachers.push({...t, day: birthDay});
+                }
+            });
+            upcomingTeachers.sort((a,b) => a.day - b.day);
+
+            if(upcomingTeachers.length === 0) listTeachers.innerHTML = '<div style="text-align:center; color:#9ca3af; padding:10px;">Nenhum professor aniversariante em ' + monthNames[currentMonth] + '</div>';
+            else {
+                upcomingTeachers.forEach(t => {
+                    const img = getTeacherPhotoUrl(t.name);
+                    const div = document.createElement('div'); div.className = 'birthday-card';
+                    div.innerHTML = `<div class="birthday-day"><span>DIA</span><strong>${t.day}</strong></div><img src="${img}" style="width:50px; height:50px; border-radius:50%; object-fit:cover;" onerror="this.src='https://ui-avatars.com/api/?name=${t.name}&background=random'"><div style="flex:1;"><div style="font-weight:800; color:var(--text-main);">${t.name}</div><div style="font-size:0.8rem; color:var(--text-muted);">🎂 Parabéns Liderança!</div></div><button class="btn-wa-mini" onclick="window.open('https://wa.me/55${t.phone}?text=Parabéns ${t.name}! Gratidão pela sua vida e dedicação! 🎉')"><i class="fab fa-whatsapp"></i></button>`;
+                    listTeachers.appendChild(div);
+                });
+            }
+        }
+
         // ============================================
-        // 4. CHAMADA
+        // 5. CHAMADA
         // ============================================
         function generateRoomFilters(containerId, callback) {
             const container = document.getElementById(containerId);
@@ -594,8 +712,10 @@
                 btn.className = 'pill-btn';
                 btn.innerHTML = `${r.icon} ${r.name}`;
                 btn.onclick = () => {
-                    container.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
+                    if (!containerId.includes('escala')) {
+                        container.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                    }
                     callback(key, btn);
                 };
                 container.appendChild(btn);
@@ -661,12 +781,90 @@
         }
 
         // ============================================
-        // 5. ESCALAS
+        // NOVO: LÓGICA DO TELÃO (EMISSOR)
         // ============================================
-        function getTeacherPhotoUrl(teacherName) {
-            const firstName = teacherName.trim().split(' ')[0].toLowerCase();
-            return `img/professores/${firstName}.png`;
+        
+        function renderTelaoList() {
+            const container = document.getElementById('telaoList');
+            container.innerHTML = '';
+            const search = document.getElementById('searchTelao').value.toLowerCase();
+            
+            // Se nenhuma sala selecionada, mostra aviso ou busca global
+            let listToRender = [];
+            
+            if (selectedRoomKeyTelao) {
+                listToRender = kidsData[selectedRoomKeyTelao] || [];
+            } else {
+                // Se não tem sala, busca em todos (útil se souber só o nome)
+                Object.keys(kidsData).forEach(key => {
+                    kidsData[key].forEach(k => {
+                        k.roomKey = key; // Marca a sala original
+                        listToRender.push(k); 
+                    });
+                });
+            }
+
+            if (listToRender.length === 0) {
+                 container.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:#9ca3af;">Nenhuma criança encontrada</div>';
+                 return;
+            }
+
+            listToRender.forEach(kid => {
+                if (search && !kid.name.toLowerCase().includes(search)) return;
+                
+                const roomName = kid.roomKey ? roomsData[kid.roomKey].name : roomsData[selectedRoomKeyTelao].name;
+                const img = kid.photo.startsWith('http') ? kid.photo : `img/${kid.photo}`;
+                
+                const div = document.createElement('div');
+                div.className = 'person-card';
+                div.style.cursor = 'pointer';
+                div.onclick = () => sendAlertToTelao(kid.name, roomName, img);
+                
+                div.innerHTML = `
+                    <img src="${img}" class="person-img" onerror="this.src='https://ui-avatars.com/api/?name=${kid.name}&background=random'">
+                    <div class="person-info">
+                        <h4 style="font-size:1.1rem;">${kid.name}</h4>
+                        <p style="color:var(--primary); font-weight:800;">${roomName}</p>
+                    </div>
+                    <div class="person-actions">
+                        <button class="btn btn-primary" style="width:auto; padding:8px 15px; border-radius:50px;">
+                            <i class="fas fa-bullhorn"></i> CHAMAR
+                        </button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
         }
+
+        async function sendAlertToTelao(name, room, photo) {
+            if(!confirm(`Deseja chamar os pais de ${name} no telão?`)) return;
+            
+            // 1. MODO SIMULAÇÃO (Se o telão estiver no mesmo computador/navegador)
+            const alertData = {
+                kidName: name,
+                roomName: room,
+                photoUrl: photo,
+                timestamp: new Date().getTime()
+            };
+            localStorage.setItem('kids_alert', JSON.stringify(alertData));
+            
+            // 2. MODO REAL (Via Google Sheets) - O código abaixo envia para o servidor
+            /*
+            const fd = new URLSearchParams();
+            fd.append('action', 'sendAlert');
+            fd.append('kidName', name);
+            fd.append('roomName', room);
+            // etc...
+            await fetch(SHEET_URL, { method:'POST', mode:'no-cors', body:fd });
+            */
+
+            alert(`📢 Aviso enviado para o telão!\n\nAluno: ${name}\nSala: ${room}`);
+        }
+
+        // ============================================
+        // 6. ESCALAS (COM COPY TEXT E FOTOS CORRIGIDAS)
+        // ============================================
+        
         function generateDateFilters(containerId, callback) {
             const container = document.getElementById(containerId);
             container.innerHTML = '';
@@ -675,9 +873,11 @@
             if(containerId.includes('escala')) container.appendChild(btnAll);
             allDates.forEach(date => { const btn = document.createElement('button'); btn.className = 'pill-btn'; btn.innerText = date.substr(0,5); btn.onclick = () => callback(date, btn); container.appendChild(btn); });
         }
+        
         function renderSchedules(filterDate = null) {
             const container = document.getElementById('scheduleGrid'); container.innerHTML = '';
             Object.keys(scheduleData).forEach(roomKey => {
+                if (selectedRoomEscala && roomKey !== selectedRoomEscala) return;
                 const room = scheduleData[roomKey];
                 room.schedules.forEach(sc => {
                     if (filterDate && sc.date !== filterDate) return;
@@ -694,8 +894,23 @@
         function filterByTeacher(val) { searchTerm = val.trim(); document.querySelectorAll('#date-filters-escala .pill-btn').forEach(b => b.classList.remove('active')); renderSchedules(); }
         function filterSchedulesByDate(date, btn) { togglePill(btn); renderSchedules(date); }
 
+        function copyScheduleToClipboard() {
+            let text = "*📅 ESCALA KIDS - JANEIRO 2026*\n\n";
+            Object.keys(scheduleData).forEach(key => {
+                const room = scheduleData[key];
+                if (selectedRoomEscala && selectedRoomEscala !== key) return;
+                text += `*${room.icon} ${room.name.toUpperCase()}*\n`;
+                room.schedules.forEach(sc => {
+                    const obs = sc.date === "11/01/2026" ? " (Santa Ceia 🍷)" : "";
+                    text += `🗓️ ${sc.date}: ${sc.teachers.join(', ')}${obs}\n`;
+                });
+                text += "\n";
+            });
+            navigator.clipboard.writeText(text).then(() => { alert("📋 Escala copiada com sucesso! Cole no WhatsApp."); });
+        }
+
         // ============================================
-        // 6. LIÇÕES
+        // 7. LIÇÕES
         // ============================================
         function handleFileSelect() { const input = document.getElementById('pdfFile'); selectedFiles = Array.from(input.files); document.getElementById('fileInfo').textContent = selectedFiles.length > 0 ? `✅ ${selectedFiles.length} arquivo(s)` : ""; checkLessonState(); }
         function checkLessonState() { document.getElementById('btnUploadLesson').disabled = !(selectedRoomKeyLicoes && selectedDateLicoes && selectedFiles.length > 0); document.getElementById('btnDownloadLesson').disabled = currentLessonFiles.length === 0; document.getElementById('btnDeleteLesson').disabled = currentLessonFiles.length === 0; }
@@ -724,106 +939,70 @@
         async function deleteLesson() { if(!confirm("Apagar?")) return; await fetch(SHEET_URL, { method:'POST', mode:'cors', body: JSON.stringify({ action: 'deleteLesson', room_name: roomsData[selectedRoomKeyLicoes].name, lesson_date: selectedDateLicoes }) }); alert("Apagado."); reloadLessonView(); }
 
         // ============================================
-        // 7. ADMIN (GESTÃO DE PESSOAS)
+        // 8. ADMIN (GESTÃO DE PESSOAS)
         // ============================================
         function toggleAdminTab(tab, btn) {
             currentAdminTab = tab;
             document.querySelectorAll('#cadastro .pill-btn').forEach(b => b.classList.remove('active'));
             if(btn) btn.classList.add('active');
-            
-            // Toggle Campos Formulário
-            if(tab === 'alunos') {
-                document.getElementById('studentFields').classList.remove('hidden');
-                document.getElementById('teacherFields').classList.add('hidden');
-            } else {
-                document.getElementById('studentFields').classList.add('hidden');
-                document.getElementById('teacherFields').classList.remove('hidden');
-            }
+            if(tab === 'alunos') { document.getElementById('studentFields').classList.remove('hidden'); document.getElementById('teacherFields').classList.add('hidden'); } 
+            else { document.getElementById('studentFields').classList.add('hidden'); document.getElementById('teacherFields').classList.remove('hidden'); }
             renderAdminPeople();
         }
 
-        function toggleNewForm() {
-            const form = document.getElementById('adminFormContainer');
-            form.classList.toggle('hidden');
-        }
+        function toggleNewForm() { const form = document.getElementById('adminFormContainer'); form.classList.toggle('hidden'); }
 
         function filterAdminList() {
             const term = document.getElementById('adminSearch').value.toLowerCase();
             const cards = document.querySelectorAll('.person-card');
-            cards.forEach(card => {
-                const name = card.dataset.name.toLowerCase();
-                card.style.display = name.includes(term) ? 'flex' : 'none';
-            });
+            cards.forEach(card => { const name = card.dataset.name.toLowerCase(); card.style.display = name.includes(term) ? 'flex' : 'none'; });
         }
 
         function renderAdminPeople() {
-            const container = document.getElementById('adminListContainer');
+            const container = document.getElementById('adminListContainer'); 
             container.innerHTML = '';
             const search = document.getElementById('adminSearch').value.toLowerCase();
 
+            const formatDisplayDate = (dateStr) => {
+                if (!dateStr) return 'N/I';
+                if (dateStr.includes('/')) return dateStr;
+                if (dateStr.includes('-')) {
+                    const [ano, mes, dia] = dateStr.split('-');
+                    return `${dia}/${mes}/${ano}`;
+                }
+                return dateStr;
+            };
+
             if (currentAdminTab === 'alunos') {
-                // ALUNOS
                 Object.values(kidsData).forEach(roomArray => {
                     roomArray.forEach(kid => {
                         if (search && !kid.name.toLowerCase().includes(search)) return;
                         
                         const img = kid.photo.startsWith('http') ? kid.photo : `img/${kid.photo}`;
-                        const dob = kid.dob ? new Date(kid.dob).toLocaleDateString('pt-BR') : 'N/I';
+                        const dob = formatDisplayDate(kid.dob);
                         
-                        // Formatar Data para calcular idade
                         let ageStr = "";
-                        if(kid.dob) {
-                             const birth = new Date(kid.dob); const today = new Date();
-                             let age = today.getFullYear() - birth.getFullYear();
-                             const m = today.getMonth() - birth.getMonth();
-                             if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
-                             ageStr = `(${age} anos)`;
+                        if(kid.dob && kid.dob.includes('-')) { 
+                            const birth = new Date(kid.dob); 
+                            const today = new Date(); 
+                            let age = today.getFullYear() - birth.getFullYear(); 
+                            const m = today.getMonth() - birth.getMonth(); 
+                            if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--; 
+                            ageStr = `(${age} anos)`; 
                         }
 
-                        const div = document.createElement('div');
-                        div.className = 'person-card';
-                        div.dataset.name = kid.name;
-                        div.innerHTML = `
-                            <img src="${img}" class="person-img" onerror="this.src='https://ui-avatars.com/api/?name=${kid.name}&background=random'">
-                            <div class="person-info">
-                                <h4>${kid.name}</h4>
-                                <p><i class="fas fa-birthday-cake"></i> ${dob} ${ageStr}</p>
-                                <p><i class="fas fa-user-shield"></i> Resp: ${kid.guardian || 'N/I'}</p>
-                            </div>
-                            <div class="person-actions">
-                                <button class="btn-wa-mini" onclick="window.open('https://wa.me/55${kid.phone || ''}')">
-                                    <i class="fab fa-whatsapp"></i>
-                                </button>
-                            </div>
-                        `;
+                        const div = document.createElement('div'); div.className = 'person-card'; div.dataset.name = kid.name;
+                        div.innerHTML = `<img src="${img}" class="person-img" onerror="this.src='https://ui-avatars.com/api/?name=${kid.name}&background=random'"><div class="person-info"><h4>${kid.name}</h4><p><i class="fas fa-birthday-cake"></i> ${dob} ${ageStr}</p><p><i class="fas fa-user-shield"></i> Resp: ${kid.guardian || 'N/I'}</p></div><div class="person-actions"><button class="btn-wa-mini" onclick="window.open('https://wa.me/55${kid.phone || ''}')"><i class="fab fa-whatsapp"></i></button></div>`;
                         container.appendChild(div);
                     });
                 });
             } else {
-                // PROFESSORES
-                teachersRegistry.forEach(t => {
+                fixedTeachersData.forEach(t => {
                     if (search && !t.name.toLowerCase().includes(search)) return;
-
-                    const firstName = t.name.split(' ')[0].toLowerCase();
-                    const img = `img/professores/${firstName}.png`;
-                    const dob = t.dob ? new Date(t.dob).toLocaleDateString('pt-BR') : 'N/I';
-
-                    const div = document.createElement('div');
-                    div.className = 'person-card';
-                    div.dataset.name = t.name;
-                    div.innerHTML = `
-                        <img src="${img}" class="person-img" onerror="this.src='https://ui-avatars.com/api/?name=${t.name}&background=random'">
-                        <div class="person-info">
-                            <h4>${t.name}</h4>
-                            <p><i class="fas fa-birthday-cake"></i> ${dob}</p>
-                            <p style="color:var(--primary); font-weight:700; font-size:0.8rem;">Professor(a)</p>
-                        </div>
-                        <div class="person-actions">
-                            <button class="btn-wa-mini" onclick="window.open('https://wa.me/55${t.phone || ''}')">
-                                <i class="fab fa-whatsapp"></i>
-                            </button>
-                        </div>
-                    `;
+                    const img = getTeacherPhotoUrl(t.name);
+                    const dob = formatDisplayDate(t.dob);
+                    const div = document.createElement('div'); div.className = 'person-card'; div.dataset.name = t.name;
+                    div.innerHTML = `<img src="${img}" class="person-img" onerror="this.src='https://ui-avatars.com/api/?name=${t.name}&background=random'"><div class="person-info"><h4>${t.name}</h4><p><i class="fas fa-birthday-cake"></i> ${dob}</p><p style="color:var(--primary); font-weight:700; font-size:0.8rem;">Professor(a)</p></div><div class="person-actions"><button class="btn-wa-mini" onclick="window.open('https://wa.me/55${t.phone || ''}')"><i class="fab fa-whatsapp"></i></button></div>`;
                     container.appendChild(div);
                 });
             }
