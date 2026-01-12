@@ -154,7 +154,7 @@
         </div>
     </div>
 
-    <button id="sound-btn" onclick="activateSound()"><i class="fas fa-volume-up"></i> Ativar Som</button>
+    <button id="sound-btn" onclick="activateSound()"><i class="fas fa-volume-up"></i> Ativar Som / Voz</button>
     <audio id="alertSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -162,7 +162,7 @@
 
     <script>
         // ============================================
-        // CONFIGURAÇÃO DO FIREBASE (COPIE AQUI TAMBÉM)
+        // CONFIGURAÇÃO DO FIREBASE
         // ============================================
         const firebaseConfig = {
             apiKey: "AIzaSyBpYXo6POurSeDbFKs2E_uvucAJMftcOpc",
@@ -180,14 +180,55 @@
 
         let audioEnabled = false;
 
+        // --- SISTEMA DE VOZ (TEXT-TO-SPEECH) ---
+        const synth = window.speechSynthesis;
+        
         function activateSound() {
+            // Toca um beep silencioso e tenta carregar vozes para desbloquear o áudio
             const audio = document.getElementById('alertSound');
             audio.play().then(() => {
                 audio.pause();
                 audio.currentTime = 0;
                 audioEnabled = true;
+                
+                // Força o carregamento das vozes
+                if (synth.onvoiceschanged !== undefined) {
+                    synth.onvoiceschanged = getVoices;
+                }
+                getVoices();
+
                 document.getElementById('sound-btn').style.display = 'none';
             }).catch(e => alert("Clique na página para permitir o áudio."));
+        }
+
+        function getVoices() {
+            // Tenta buscar vozes em PT-BR (Google, Microsoft, etc)
+            const voices = synth.getVoices();
+            return voices.find(v => v.lang.includes('pt-BR')) || voices[0];
+        }
+
+        function speakAnnouncement(kidName, roomName) {
+            if (!audioEnabled) return;
+
+            // 1. Toca o Beep primeiro (atenção imediata)
+            const audio = document.getElementById('alertSound');
+            audio.volume = 1.0; // Volume máximo do Beep
+            audio.play();
+
+            // 2. Aguarda 1.5 segundos para a voz falar
+            setTimeout(() => {
+                // Texto personalizável
+                const text = `Atenção. O Ministério Infantil, solicita a presença do responsável por ${kidName}, na sala ${roomName}.`;
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.voice = getVoices(); // Pega voz brasileira se tiver
+                utterance.lang = 'pt-BR';
+                utterance.rate = 0.9;  // Velocidade um pouco mais lenta para clareza
+                utterance.pitch = 1;   // Tom normal
+                utterance.volume = 1;  // Volume máximo (1.0)
+
+                synth.speak(utterance); // Fala
+            }, 1500);
         }
 
         // ============================================
@@ -197,21 +238,21 @@
         const countEl = document.getElementById('queue-count');
         let queueCount = 0;
 
-        // Escuta novos chamados (child_added)
+        // Escuta novos chamados
         db.ref('chamados').on('child_added', (snapshot) => {
             const data = snapshot.val();
             const key = snapshot.key;
             
-            // Só toca som se for recente (últimos 5 minutos) para evitar barulho ao recarregar
+            // Só toca/fala se for recente (últimos 5 minutos)
             const now = new Date().getTime();
             if (now - data.timestamp < 300000 && audioEnabled) {
-                document.getElementById('alertSound').play();
+                // Ao chegar um novo chamado, ele já fala automaticamente
+                speakAnnouncement(data.kidName, data.roomName);
             }
 
             addToSidebar(key, data);
         });
 
-        // Escuta remoções (child_removed)
         db.ref('chamados').on('child_removed', (snapshot) => {
             const key = snapshot.key;
             const el = document.getElementById(`item-${key}`);
@@ -223,7 +264,6 @@
         });
 
         function addToSidebar(key, data) {
-            // Remove mensagem de "vazio" se existir
             if(queueCount === 0) queueListEl.innerHTML = '';
 
             const div = document.createElement('div');
@@ -238,7 +278,7 @@
                     <button class="btn-action btn-remove" onclick="removeAlert('${key}')">Concluir</button>
                 </div>
             `;
-            queueListEl.prepend(div); // Adiciona no topo
+            queueListEl.prepend(div);
             queueCount++;
             updateCount();
         }
@@ -248,23 +288,24 @@
             if(queueCount === 0) queueListEl.innerHTML = '<div style="text-align:center; color:#555; margin-top:50px; font-size:0.9rem;">Aguardando chamados...</div>';
         }
 
-        // Função para mostrar no projetor (Apenas visual, não remove do banco)
         function showOnScreen(name, room, photo) {
             const box = document.getElementById('alert-box');
             document.getElementById('name').innerText = name;
             document.getElementById('room').innerText = "📍 " + room;
             document.getElementById('photo').src = photo;
-            
             box.style.display = 'block';
+            
+            // Opcional: Se quiser que o operador possa repetir a fala clicando em "Exibir":
+            speakAnnouncement(name, room);
         }
 
         function hideAlert() {
             document.getElementById('alert-box').style.display = 'none';
+            synth.cancel(); // Para a fala se fechar a janela
         }
 
-        // Função para remover do banco (Apaga da fila de todos)
         function removeAlert(key) {
-            hideAlert(); // Garante que saiu da tela
+            hideAlert();
             db.ref('chamados').child(key).remove();
         }
 
