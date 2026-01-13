@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ministério Kids | Painel Elite</title>
+    <title>Ministério Infantil | Painel Elite</title>
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -32,7 +32,6 @@
             --radius-btn: 14px;
             
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
         * { box-sizing: border-box; font-family: 'Nunito', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -105,7 +104,7 @@
         .kid-card.present .kid-img { border-color: var(--success); transform: scale(1.05); }
         .kid-name { font-size: 0.8rem; font-weight: 700; line-height: 1.2; color: var(--text-main); }
 
-        /* --- CARDS DE PESSOAS (ADMIN) --- */
+        /* --- CARDS DE PESSOAS (ADMIN & TELÃO) --- */
         .people-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; margin-top: 20px; }
         
         .person-card {
@@ -122,6 +121,13 @@
         .person-info { flex: 1; }
         .person-info h4 { margin: 0; color: var(--text-main); font-size: 1rem; font-weight: 800; }
         .person-info p { margin: 4px 0; color: var(--text-muted); font-size: 0.85rem; display: flex; align-items: center; gap: 5px; }
+        
+        .room-tag {
+            font-size: 0.75rem; padding: 4px 10px; border-radius: 12px; 
+            font-weight: 800; text-transform: uppercase; margin-top: 5px;
+            display: inline-block;
+        }
+
         .person-actions { margin-left: auto; display: flex; flex-direction: column; gap: 5px; }
         .btn-wa-mini {
             width: 40px; height: 40px; background: var(--whatsapp); color: white;
@@ -131,7 +137,7 @@
         }
         .btn-wa-mini:hover { transform: scale(1.1); }
 
-        /* --- ANIVERSARIANTES (NOVO - DIVIDIDO) --- */
+        /* --- ANIVERSARIANTES --- */
         .birthday-group-title {
             margin: 20px 0 10px; color: var(--primary); font-weight: 800; font-size: 1rem;
             border-bottom: 2px solid #e5e7eb; padding-bottom: 5px; text-transform: uppercase;
@@ -189,11 +195,37 @@
             background: white; padding: 20px; border-radius: 18px; margin-bottom: 15px;
             border-left: 5px solid var(--primary); box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 5px;
             transition: all 0.3s ease;
+            position: relative;
         }
         
         /* ESTILO SANTA CEIA */
         .schedule-item.santa-ceia { background-color: #fff1f2; border-left-color: var(--santa-ceia); }
         .schedule-item.santa-ceia .date-badge-style { background: var(--santa-ceia) !important; color: white !important; }
+
+        .schedule-actions {
+            display: none; /* Escondido por padrão */
+            justify-content: flex-end; gap: 10px; margin-top: 10px; border-top: 1px solid #f3f4f6; padding-top: 10px;
+        }
+        .admin-mode .schedule-actions { display: flex; }
+        
+        .btn-edit-sm { background: var(--secondary); color: white; border: none; padding: 5px 10px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; }
+        .btn-del-sm { background: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; }
+
+        /* SELEÇÃO DE PROFESSORES NO MODAL */
+        .teacher-select-list {
+            max-height: 250px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: var(--radius-btn);
+            background: #f9fafb; display: flex; flex-direction: column;
+        }
+        .teacher-select-item {
+            display: flex; align-items: center; gap: 10px; padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; transition:0.2s; user-select: none;
+        }
+        .teacher-select-item:last-child { border-bottom: none; }
+        .teacher-select-item:hover { background: #eff6ff; }
+        .teacher-select-item input[type="checkbox"] { width: 22px; height: 22px; margin: 0; cursor: pointer; accent-color: var(--primary); }
+        .teacher-select-item img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+        .teacher-select-item span { font-size: 0.9rem; font-weight: 700; color: var(--text-main); }
+        .teacher-select-item small { color: #9ca3af; margin-left: auto; font-size: 0.75rem; }
+
 
         /* FLOATING BUTTON (COPIAR ESCALA) */
         .fab-copy {
@@ -206,6 +238,18 @@
             border: none;
         }
         .fab-copy:active { transform: scale(0.95); }
+
+        /* MODALS */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000;
+            align-items: center; justify-content: center; backdrop-filter: blur(5px);
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-content {
+            background: white; width: 90%; max-width: 500px; padding: 25px; border-radius: var(--radius-card);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         /* RESPONSIVIDADE */
         .overlay { display: none; position: fixed; inset: 0; background: rgba(30, 27, 75, 0.6); backdrop-filter: blur(4px); z-index: 1000; }
@@ -224,6 +268,57 @@
 
     <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
+    <div id="passwordModal" class="modal-overlay">
+        <div class="modal-content" style="text-align:center;">
+            <i class="fas fa-key" style="font-size:3rem; color:var(--primary); margin-bottom:20px;"></i>
+            <h3>Acesso Restrito</h3>
+            <p style="color:var(--text-muted); margin-bottom:20px;">Digite a senha numérica.</p>
+            
+            <input type="tel" id="adminPasswordInput" placeholder="Senha (ex: 1234)" style="text-align:center; font-size:1.5rem; letter-spacing: 5px; font-weight:800;" maxlength="4">
+            
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn btn-danger" onclick="closePasswordModal()">Cancelar</button>
+                <button class="btn btn-success" onclick="checkAdminPassword()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="scheduleFormModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="margin-top:0;" id="modalFormTitle">✏️ Gerenciar Escala</h3>
+            
+            <input type="hidden" id="editRoomKey">
+            <input type="hidden" id="editIndex">
+            <input type="hidden" id="formMode"> <div class="form-group">
+                <label>Turma / Sala</label>
+                <select id="modalRoomSelect" onchange="updateTeacherListByRoomSelect()">
+                    <option value="">Selecione a Sala...</option>
+                    </select>
+            </div>
+
+            <div class="form-group">
+                <label>Data</label>
+                <input type="date" id="modalDate" style="font-weight:700; color:var(--primary);">
+            </div>
+            
+            <div class="form-group">
+                <label>Lição / Tema</label>
+                <input type="text" id="modalLesson" placeholder="Ex: A Criação">
+            </div>
+            
+            <div class="form-group">
+                <label>Selecionar Professores</label>
+                <div id="teacherSelectionList" class="teacher-select-list">
+                    </div>
+            </div>
+            
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn btn-danger" onclick="closeScheduleFormModal()">Cancelar</button>
+                <button class="btn btn-success" onclick="saveScheduleForm()">Salvar Escala</button>
+            </div>
+        </div>
+    </div>
+
     <nav class="sidebar" id="sidebar">
         <div class="brand">
             <i class="fas fa-shapes"></i>
@@ -240,7 +335,7 @@
         <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
             <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 16px;">
                 <small style="color: #9ca3af; display: block; margin-bottom: 5px;">Sistema</small>
-                <div style="font-weight: 700; font-size:0.9rem;">v3.5 Firebase</div>
+                <div style="font-weight: 700; font-size:0.9rem;">v4.4 Final</div>
             </div>
         </div>
     </nav>
@@ -310,7 +405,7 @@
 
         <section id="telao" class="content-section hidden">
             <div class="section-title"><i class="fas fa-bullhorn"></i> Chamar Pais no Telão</div>
-            <p style="color:var(--text-muted);">Selecione a criança para enviar um aviso instantâneo para a projeção da igreja.</p>
+            <p style="color:var(--text-muted);">Selecione a turma e depois a criança.</p>
             
             <div class="form-group">
                 <label style="font-size: 0.8rem; font-weight: 700;">Sala</label>
@@ -321,13 +416,26 @@
                 <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">Buscar Criança</label>
                 <input type="text" id="searchTelao" placeholder="🔍 Digite o nome da criança..." oninput="renderTelaoList()">
                 
-                <div id="telaoList" class="people-grid" style="margin-top:20px;"></div>
+                <div id="telaoList" class="people-grid" style="margin-top:20px;">
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #9ca3af;">Selecione uma sala acima 👆</div>
+                </div>
             </div>
         </section>
 
         <section id="escalas" class="content-section hidden">
-            <div class="section-title"><i class="fas fa-calendar-alt"></i> Escalas</div>
+            <div class="section-title" style="justify-content:space-between;">
+                <span><i class="fas fa-calendar-alt"></i> Escalas</span>
+                <button class="btn btn-primary" style="width:auto; padding: 8px 15px; font-size:0.8rem;" onclick="openPasswordModal()">🔐 Gerenciar Escalas</button>
+            </div>
+
+            <div id="adminSchedulePanel" class="card-section hidden" style="border: 2px dashed var(--secondary); background: #fffbeb;">
+                <h4 style="margin-top:0; color:var(--secondary);">🛠️ Modo Edição Ativo</h4>
+                <p style="font-size:0.9rem;">Crie escalas completas rapidamente ou edite as existentes.</p>
+                <button class="btn btn-success" onclick="openNewScheduleModal()"><i class="fas fa-plus-circle"></i> Adicionar Nova Data</button>
+            </div>
+
             <button class="fab-copy" onclick="copyScheduleToClipboard()"><i class="fas fa-copy"></i> Copiar Texto</button>
+            
             <div class="form-group"><label style="font-size: 0.8rem; font-weight: 700;">Filtrar por Sala</label><div class="filter-bar" id="room-filters-escala"></div></div>
             <div class="form-group">
                 <label style="font-size: 0.8rem; font-weight: 700;">Buscar ou Filtrar por Data</label>
@@ -400,9 +508,8 @@
 
     <script>
         // ============================================
-        // 0. FIREBASE CONFIG (ATENÇÃO: COLOQUE SEUS DADOS AQUI)
+        // 0. FIREBASE CONFIG 
         // ============================================
-        // 🚨 VOCÊ PRECISA PEGAR ESSES DADOS NO CONSOLE DO FIREBASE 🚨
         const firebaseConfig = {
             apiKey: "AIzaSyBpYXo6POurSeDbFKs2E_uvucAJMftcOpc",
             authDomain: "ministerio-infantil-fcac7.firebaseapp.com",
@@ -414,12 +521,8 @@
             measurementId: "G-RPCWFR7B11"
         };
         
-        // Inicializa o Firebase
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.database();
-
 
         // ============================================
         // 1. DADOS
@@ -434,10 +537,9 @@
             ômega: { name: "Ômega", age: "9-11 anos", icon: "📚", color: "#ED8936" }
         };
 
-        // Dados Alunos
         const kidsData = {
             berçario: [ 
-                { id: 1, name: "Maria Eduarda", photo: "m_eduarda.png", dob: "2023-05-20", guardian: "Mãe da Maria", phone: "27999999999" },
+                { id: 1, name: "Maria Eduarda", photo: "m_eduarda.png", dob: "2023-05-20", guardian: "Leidiane", phone: "27999999999" },
                 { id: 2, name: "João Pedro", photo: "j_pedro.png", dob: "2024-01-10", guardian: "Pai do João", phone: "27988888888" },
                 { id: 3, name: "Sophia R.", photo: "sophia.png", dob: "", guardian: "", phone: "" },
                 { id: 4, name: "Benício L.", photo: "benicio.png", dob: "", guardian: "", phone: "" },
@@ -511,7 +613,8 @@
             ]
         };
 
-        const scheduleData = {
+        // ESCALAS
+        let scheduleData = {
              berçario: { ...roomsData.berçario, schedules: [
                  { date: "04/01/2026", lesson: "LIVRE", teachers: ["Leidiane Lopes dos Santos da Silva", "Adriana Lopes dos Santos Martins ", "Sarah dos santos Tomaz"] },
                  { date: "11/01/2026", lesson: "LIVRE", teachers: ["MAIARA", "Jussimere Pacheco da Silva", "Kemelly Ribeiro Dos Santos"] },
@@ -546,48 +649,57 @@
 
         const allDates = ["04/01/2026", "11/01/2026", "18/01/2026", "25/01/2026"];
 
-        // LISTA FIXA DE PROFESSORES (ADMIN)
+        // PROFESSORES
         const fixedTeachersData = [
-            { name: "Leidiane Lopes dos Santos da Silva", dob: "", phone: "" },
-            { name: "Adriana Lopes dos Santos Martins ", dob: "", phone: "" },
-            { name: "Sarah dos santos Tomaz", dob: "", phone: "" },
-            { name: "MAIARA", dob: "", phone: "" },
-            { name: "Jussimere Pacheco da Silva", dob: "", phone: "" },
-            { name: "Kemelly Ribeiro Dos Santos", dob: "", phone: "" },
-            { name: "Ingrid Silva Coelho", dob: "", phone: "" },
-            { name: "Damares", dob: "", phone: "" },
-            { name: "ANA RAFAELA", dob: "", phone: "" },
-            { name: "Arthur dos Santos da conceição", dob: "", phone: "" },
-            { name: "ESTER ", dob: "", phone: "" },
-            { name: "Anna Victória Bebiano de Carvalho", dob: "", phone: "" },
-            { name: "Iandra Jesus de Novais Santana", dob: "", phone: "" },
-            { name: "Paulo Henrique Mendes Dias", dob: "", phone: "" },
-            { name: "KETTLEY ", dob: "", phone: "" },
-            { name: "Roseane Jadyvsky", dob: "", phone: "" },
-            { name: "Nathalia", dob: "", phone: "" },
-            { name: "RYAN", dob: "", phone: "" },
-            { name: "Ana Crysthina Martins Lyrio", dob: "", phone: "" },
-            { name: "Mirian Pereira da Cruz da Cunha", dob: "", phone: "" },
-            { name: "DOUGLAS", dob: "", phone: "" },
-            { name: "Maxsuel Oliveira da Silva", dob: "", phone: "" },
-            { name: "Núbia Nascimento de Medeiros Dos Santos", dob: "", phone: "" },
-            { name: "SOPHIA", dob: "", phone: "" },
-            { name: "JEAN ", dob: "", phone: "" },
-            { name: "Elaine Pereira Rocha Anacleto", dob: "", phone: "" },
-            { name: "HELOISA", dob: "", phone: "" },
-            { name: "ARTHUR ", dob: "", phone: "" },
-            { name: "Ana Beatriz Rodrigues de Souza", dob: "", phone: "" },
-            { name: "Ramon de Oliveira Correa", dob: "", phone: "" },
-            { name: "Ana Clara Silva Petersen", dob: "", phone: "" },
-            { name: "Lucas de Souza Fernandes", dob: "", phone: "" },
-            { name: "Libhya da Silva Souza Gonçalves Victorino", dob: "", phone: "" },
-            { name: "Jackson Jadyvysky", dob: "", phone: "" },
-            { name: "Luiz Felipe Oliveira dos Santos", dob: "", phone: "" },
-            { name: "Diego Pimenta", dob: "", phone: "" },
-            { name: "Raiara da Conceição Viana Pimenta", dob: "", phone: "" },
-            { name: "Brenda Rodrigues de Souza", dob: "", phone: "" },
-            { name: "JOICE", dob: "", phone: "" },
-            { name: "Alex Gonçalves Victorino", dob: "20/11/1997", phone: "27999064068" }
+            // BERÇÁRIO
+            { name: "Leidiane Lopes dos Santos da Silva", room: "Berçário", dob: "20/12", phone: "" },
+            { name: "Adriana Lopes dos Santos Martins ", room: "Berçário", dob: "", phone: "" },
+            { name: "Sarah dos santos Tomaz", room: "Berçário", dob: "", phone: "" },
+            { name: "MAIARA", room: "Berçário", dob: "", phone: "" },
+            { name: "Jussimere Pacheco da Silva", room: "Berçário", dob: "", phone: "" },
+            { name: "Kemelly Ribeiro Dos Santos", room: "Berçário", dob: "", phone: "" },
+            { name: "Ingrid Silva Coelho", room: "Berçário", dob: "", phone: "" },
+            { name: "Damares", room: "Berçário", dob: "", phone: "" },
+            { name: "ANA RAFAELA", room: "Berçário", dob: "", phone: "" },
+            
+            // ALFA
+            { name: "Arthur dos Santos da conceição", room: "Alfa", dob: "", phone: "" },
+            { name: "ESTER ", room: "Alfa", dob: "", phone: "" },
+            { name: "Anna Victória Bebiano de Carvalho", room: "Alfa", dob: "", phone: "" },
+            { name: "Iandra Jesus de Novais Santana", room: "Alfa", dob: "", phone: "" },
+            { name: "Paulo Henrique Mendes Dias", room: "Alfa", dob: "", phone: "" },
+            { name: "KETTLEY ", room: "Alfa", dob: "", phone: "" },
+            { name: "Roseane Jadyvsky", room: "Alfa", dob: "", phone: "" },
+            { name: "Nathalia", room: "Alfa", dob: "", phone: "" },
+            { name: "RYAN", room: "Alfa", dob: "", phone: "" },
+
+            // BETA
+            { name: "Ana Crysthina Martins Lyrio", room: "Beta", dob: "", phone: "" },
+            { name: "Mirian Pereira da Cruz da Cunha", room: "Beta", dob: "", phone: "" },
+            { name: "DOUGLAS", room: "Beta", dob: "", phone: "" },
+            { name: "Maxsuel Oliveira da Silva", room: "Beta", dob: "", phone: "" },
+            { name: "Núbia Nascimento de Medeiros Dos Santos", room: "Beta", dob: "", phone: "" },
+            { name: "SOPHIA", room: "Beta", dob: "", phone: "" },
+            { name: "JEAN ", room: "Beta", dob: "", phone: "" },
+            { name: "Elaine Pereira Rocha Anacleto", room: "Beta", dob: "", phone: "" },
+            { name: "HELOISA", room: "Beta", dob: "", phone: "" },
+
+            // GAMA
+            { name: "ARTHUR ", room: "Gama", dob: "", phone: "" },
+            { name: "Ana Beatriz Rodrigues de Souza", room: "Gama", dob: "", phone: "" },
+            { name: "Ramon de Oliveira Correa", room: "Gama", dob: "", phone: "" },
+            { name: "Ana Clara Silva Petersen", room: "Gama", dob: "", phone: "" },
+            { name: "Lucas de Souza Fernandes", room: "Gama", dob: "", phone: "" },
+            { name: "Libhya da Silva Souza Gonçalves Victorino", room: "Gama", dob: "", phone: "" },
+            { name: "Alex Gonçalves Victorino", room: "Gama", dob: "20/11/1997", phone: "27999064068" },
+
+            // ÔMEGA
+            { name: "Jackson Jadyvysky", room: "Ômega", dob: "", phone: "" },
+            { name: "Luiz Felipe Oliveira dos Santos", room: "Ômega", dob: "", phone: "" },
+            { name: "Diego Pimenta", room: "Ômega", dob: "", phone: "" },
+            { name: "Raiara da Conceição Viana Pimenta", room: "Ômega", dob: "", phone: "" },
+            { name: "Brenda Rodrigues de Souza", room: "Ômega", dob: "", phone: "" },
+            { name: "JOICE", room: "Ômega", dob: "", phone: "" }
         ];
 
         let selectedRoomKeyChamada = null;
@@ -599,21 +711,32 @@
         let currentLessonFiles = []; 
         let currentAdminTab = 'alunos';
         let selectedRoomEscala = null;
+        let isAdminMode = false;
 
-        // ============================================
-        // 3. FUNÇÕES AUXILIARES E INICIALIZAÇÃO
-        // ============================================
-        
+        // UTILS
         function getTeacherPhotoUrl(teacherName) {
             if (!teacherName) return '';
-            const firstName = teacherName.trim().split(' ')[0].toLowerCase()
-                .normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+            const firstName = teacherName.trim().split(' ')[0].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
             return `img/professor/${firstName}.png`;
+        }
+        function formatDateToInput(dateStr) {
+            if (!dateStr) return '';
+            const [d, m, y] = dateStr.split('/');
+            return `${y}-${m}-${d}`;
+        }
+        function formatDateFromInput(dateInput) {
+            if (!dateInput) return '';
+            const [y, m, d] = dateInput.split('-');
+            return `${d}/${m}/${y}`;
         }
 
         window.onload = () => {
             generateRoomFilters('room-filters-chamada', selectRoomChamada);
-            generateRoomFilters('room-filters-telao', (k, b) => { selectedRoomKeyTelao = k; togglePill(b); renderTelaoList(); });
+            generateRoomFilters('room-filters-telao', (k, b) => { 
+                selectedRoomKeyTelao = k; 
+                togglePill(b); 
+                renderTelaoList(); 
+            });
             generateRoomFilters('room-filters-licoes', (k, b) => { selectedRoomKeyLicoes = k; togglePill(b); reloadLessonView(); });
             generateRoomFilters('room-filters-escala', (k, b) => { 
                 const btns = document.querySelectorAll('#room-filters-escala .pill-btn');
@@ -622,9 +745,18 @@
                 else { selectedRoomEscala = k; b.classList.add('active'); }
                 renderSchedules(); 
             });
-
+            
             generateDateFilters('date-filters-licoes', (d, b) => { selectedDateLicoes = d; togglePill(b); reloadLessonView(); });
             generateDateFilters('date-filters-escala', (d, b) => { searchTerm = ''; document.getElementById('teacherSearchInput').value=''; filterSchedulesByDate(d, b); });
+
+            // Preenche o Select de Salas do Modal
+            const selectRoom = document.getElementById('modalRoomSelect');
+            Object.keys(roomsData).forEach(key => {
+                const opt = document.createElement('option');
+                opt.value = key;
+                opt.innerText = roomsData[key].name;
+                selectRoom.appendChild(opt);
+            });
 
             document.getElementById('dateInput').valueAsDate = new Date();
             updateDashboard();
@@ -646,22 +778,19 @@
             if(window.innerWidth <= 768) toggleMenu();
         }
 
-        // ============================================
-        // 4. DASHBOARD (COM CORREÇÃO DE DATAS)
-        // ============================================
+        // --- DASHBOARD ---
         function updateDashboard() {
             let total = 0;
             Object.values(kidsData).forEach(arr => total += arr.length);
             document.getElementById('total-kids-count').innerText = total;
             document.getElementById('total-teachers-count').innerText = fixedTeachersData.length;
-
             const next = allDates.find(d => {
                 const [day, month, year] = d.split('/');
                 return new Date(year, month-1, day) >= new Date().setHours(0,0,0,0);
             });
             document.getElementById('next-sunday-date').innerText = next ? next.substr(0,5) : "Fim";
         }
-
+        
         function renderBirthdays() {
             const listStudents = document.getElementById('birthdays-students-list');
             const listTeachers = document.getElementById('birthdays-teachers-list');
@@ -725,11 +854,9 @@
             }
         }
 
-        // ============================================
-        // 5. CHAMADA
-        // ============================================
+        // --- CHAMADA ---
         function generateRoomFilters(containerId, callback) {
-            const container = document.getElementById(containerId);
+             const container = document.getElementById(containerId);
             container.innerHTML = '';
             Object.keys(roomsData).forEach(key => {
                 const r = roomsData[key];
@@ -746,15 +873,13 @@
                 container.appendChild(btn);
             });
         }
-
         function togglePill(btn) {
             const parent = btn.parentNode;
             parent.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
         }
-
         function selectRoomChamada(key) {
-            selectedRoomKeyChamada = key;
+             selectedRoomKeyChamada = key;
             const grid = document.getElementById('kidsList');
             grid.innerHTML = '';
             const kids = kidsData[key] || [];
@@ -771,7 +896,6 @@
             });
             checkCallFormValidity();
         }
-
         function addExtraKid() {
             const name = document.getElementById('extraKidName').value;
             if(!name) return;
@@ -785,14 +909,13 @@
             document.getElementById('extraKidName').value = '';
             checkCallFormValidity();
         }
-
         function checkCallFormValidity() {
             const tName = document.getElementById('teacherName').value;
             const dt = document.getElementById('dateInput').value;
             const hasRoom = selectedRoomKeyChamada !== null;
             document.getElementById('btn-submit-chamada').disabled = !(tName && dt && hasRoom);
         }
-
+        
         async function submitCall() {
             const btn = document.getElementById('btn-submit-chamada');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...'; btn.disabled = true;
@@ -805,85 +928,68 @@
             btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Chamada'; btn.disabled = false;
         }
 
-        // ============================================
-        // NOVO: LÓGICA DO TELÃO (EMISSOR COM FILA/PUSH)
-        // ============================================
-        
+        // --- TELÃO ---
         function renderTelaoList() {
             const container = document.getElementById('telaoList');
             container.innerHTML = '';
             const search = document.getElementById('searchTelao').value.toLowerCase();
             
-            // Se nenhuma sala selecionada, mostra aviso ou busca global
             let listToRender = [];
             
             if (selectedRoomKeyTelao) {
-                listToRender = kidsData[selectedRoomKeyTelao] || [];
+                listToRender = (kidsData[selectedRoomKeyTelao] || []).map(k => ({...k, roomName: roomsData[selectedRoomKeyTelao].name}));
             } else {
-                // Se não tem sala, busca em todos (útil se souber só o nome)
                 Object.keys(kidsData).forEach(key => {
                     kidsData[key].forEach(k => {
-                        k.roomKey = key; // Marca a sala original
-                        listToRender.push(k); 
+                        listToRender.push({...k, roomName: roomsData[key].name}); 
                     });
                 });
             }
 
-            if (listToRender.length === 0) {
-                 container.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:#9ca3af;">Nenhuma criança encontrada</div>';
+            if (!search && !selectedRoomKeyTelao) {
+                 container.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:#9ca3af;">Selecione uma sala ou use a busca.</div>';
                  return;
             }
 
+            let found = false;
             listToRender.forEach(kid => {
                 if (search && !kid.name.toLowerCase().includes(search)) return;
-                
-                const roomName = kid.roomKey ? roomsData[kid.roomKey].name : roomsData[selectedRoomKeyTelao].name;
+                found = true;
                 const img = kid.photo.startsWith('http') ? kid.photo : `img/${kid.photo}`;
                 
                 const div = document.createElement('div');
                 div.className = 'person-card';
                 div.style.cursor = 'pointer';
-                div.onclick = () => sendAlertToTelao(kid.name, roomName, img);
+                div.onclick = () => sendAlertToTelao(kid.name, kid.roomName, img);
                 
                 div.innerHTML = `
                     <img src="${img}" class="person-img" onerror="this.src='https://ui-avatars.com/api/?name=${kid.name}&background=random'">
                     <div class="person-info">
                         <h4 style="font-size:1.1rem;">${kid.name}</h4>
-                        <p style="color:var(--primary); font-weight:800;">${roomName}</p>
+                        <p style="color:var(--primary); font-weight:800;">${kid.roomName}</p>
                     </div>
                     <div class="person-actions">
                         <button class="btn btn-primary" style="width:auto; padding:8px 15px; border-radius:50px;">
-                            <i class="fas fa-bullhorn"></i> CHAMAR
+                            <i class="fas fa-bullhorn"></i>
                         </button>
                     </div>
                 `;
                 container.appendChild(div);
             });
-        }
 
+            if(!found) {
+                container.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:#9ca3af;">Nenhuma criança encontrada</div>';
+            }
+        }
+        
         async function sendAlertToTelao(name, room, photo) {
             if(!confirm(`Deseja chamar os pais de ${name} no telão?`)) return;
-            
-            const alertData = {
-                kidName: name,
-                roomName: room,
-                photoUrl: photo,
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            };
-            
-            // ATENÇÃO: Mudança aqui de 'set' para 'push' para criar uma fila
-            db.ref('chamados').push(alertData)
-                .then(() => {
-                    alert(`📢 Enviado para a fila do telão!\n\nAluno: ${name}`);
-                })
-                .catch((error) => {
-                    console.error("Erro Firebase:", error);
-                    alert("Erro ao enviar. Verifique a internet.");
-                });
+            const alertData = { kidName: name, roomName: room, photoUrl: photo, timestamp: firebase.database.ServerValue.TIMESTAMP };
+            db.ref('chamados').push(alertData).then(() => alert(`📢 Enviado: ${name}`)).catch(e => alert("Erro ao enviar."));
         }
 
         // ============================================
-        // 6. ESCALAS
+        // 6. ESCALAS (LÓGICA UNIFICADA E CORRIGIDA)
         // ============================================
         
         function generateDateFilters(containerId, callback) {
@@ -896,27 +1002,49 @@
         }
         
         function renderSchedules(filterDate = null) {
-            const container = document.getElementById('scheduleGrid'); container.innerHTML = '';
+            const container = document.getElementById('scheduleGrid'); 
+            container.innerHTML = '';
+            
+            if (isAdminMode) container.classList.add('admin-mode');
+            else container.classList.remove('admin-mode');
+
             Object.keys(scheduleData).forEach(roomKey => {
                 if (selectedRoomEscala && roomKey !== selectedRoomEscala) return;
                 const room = scheduleData[roomKey];
-                room.schedules.forEach(sc => {
+                
+                room.schedules.forEach((sc, index) => {
                     if (filterDate && sc.date !== filterDate) return;
                     if (searchTerm && !sc.teachers.some(t => t.toUpperCase().includes(searchTerm.toUpperCase()))) return;
+                    
                     const div = document.createElement('div');
                     const isSantaCeia = sc.date === "11/01/2026";
                     div.className = `schedule-item ${isSantaCeia ? 'santa-ceia' : ''}`;
+                    if(isAdminMode) div.classList.add('admin-mode');
+
                     const teachersHtml = sc.teachers.map(t => `<div class="teacher-chip"><img src="${getTeacherPhotoUrl(t)}" class="teacher-img" onerror="this.src='https://ui-avatars.com/api/?name=${t}&background=random&color=fff&size=40'"><span class="teacher-name">${t}</span></div>`).join('');
-                    div.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-weight:800; color:var(--text-main); display:flex; gap:8px; align-items:center;">${room.icon} ${room.name}</span><span class="date-badge-style" style="background:#e0e7ff; color:var(--primary); padding:2px 8px; border-radius:8px; font-size:0.75rem; font-weight:700;">${sc.date}</span></div><div style="font-size:0.9rem; color:var(--text-muted); margin-bottom:10px;">Lição: <strong>${sc.lesson}</strong></div><div class="teachers-container">${teachersHtml}</div>`;
+                    
+                    div.innerHTML = `
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-weight:800; color:var(--text-main); display:flex; gap:8px; align-items:center;">${room.icon} ${room.name}</span>
+                            <span class="date-badge-style" style="background:#e0e7ff; color:var(--primary); padding:2px 8px; border-radius:8px; font-size:0.75rem; font-weight:700;">${sc.date}</span>
+                        </div>
+                        <div style="font-size:0.9rem; color:var(--text-muted); margin-bottom:10px;">Lição: <strong>${sc.lesson}</strong></div>
+                        <div class="teachers-container">${teachersHtml}</div>
+                        
+                        <div class="schedule-actions">
+                            <button class="btn-edit-sm" onclick="openEditScheduleModal('${roomKey}', ${index})"><i class="fas fa-pencil-alt"></i> Editar</button>
+                            <button class="btn-del-sm" onclick="deleteScheduleItem('${roomKey}', ${index})"><i class="fas fa-trash"></i></button>
+                        </div>
+                    `;
                     container.appendChild(div);
                 });
             });
         }
         function filterByTeacher(val) { searchTerm = val.trim(); document.querySelectorAll('#date-filters-escala .pill-btn').forEach(b => b.classList.remove('active')); renderSchedules(); }
         function filterSchedulesByDate(date, btn) { togglePill(btn); renderSchedules(date); }
-
+        
         function copyScheduleToClipboard() {
-            let text = "*📅 ESCALA KIDS - JANEIRO 2026*\n\n";
+            let text = "*📅 ESCALA KIDS*\n\n";
             Object.keys(scheduleData).forEach(key => {
                 const room = scheduleData[key];
                 if (selectedRoomEscala && selectedRoomEscala !== key) return;
@@ -930,11 +1058,146 @@
             navigator.clipboard.writeText(text).then(() => { alert("📋 Escala copiada com sucesso! Cole no WhatsApp."); });
         }
 
-        // ============================================
-        // 7. LIÇÕES
-        // ============================================
-        function handleFileSelect() { const input = document.getElementById('pdfFile'); selectedFiles = Array.from(input.files); document.getElementById('fileInfo').textContent = selectedFiles.length > 0 ? `✅ ${selectedFiles.length} arquivo(s)` : ""; checkLessonState(); }
-        function checkLessonState() { document.getElementById('btnUploadLesson').disabled = !(selectedRoomKeyLicoes && selectedDateLicoes && selectedFiles.length > 0); document.getElementById('btnDownloadLesson').disabled = currentLessonFiles.length === 0; document.getElementById('btnDeleteLesson').disabled = currentLessonFiles.length === 0; }
+        // --- SENHA ---
+        function openPasswordModal() {
+            document.getElementById('passwordModal').classList.add('active');
+            document.getElementById('adminPasswordInput').value = '';
+            document.getElementById('adminPasswordInput').focus();
+        }
+        function closePasswordModal() {
+            document.getElementById('passwordModal').classList.remove('active');
+        }
+        function checkAdminPassword() {
+            const pass = document.getElementById('adminPasswordInput').value;
+            if (pass === '1234') {
+                isAdminMode = true;
+                closePasswordModal();
+                document.getElementById('adminSchedulePanel').classList.remove('hidden');
+                alert("🔓 Modo Edição Ativado!");
+                renderSchedules();
+            } else {
+                alert("❌ Senha incorreta!");
+            }
+        }
+
+        // --- MODAL UNIFICADO ---
+        function openNewScheduleModal() {
+            document.getElementById('modalFormTitle').innerText = "➕ Criar Nova Escala";
+            document.getElementById('formMode').value = "create";
+            document.getElementById('modalRoomSelect').value = "";
+            document.getElementById('modalRoomSelect').disabled = false;
+            document.getElementById('modalDate').value = "";
+            document.getElementById('modalLesson').value = "";
+            document.getElementById('teacherSelectionList').innerHTML = '<div style="padding:15px; text-align:center; color:#aaa;">Selecione uma sala primeiro.</div>';
+            document.getElementById('scheduleFormModal').classList.add('active');
+        }
+
+        function openEditScheduleModal(roomKey, index) {
+            document.getElementById('modalFormTitle').innerText = "✏️ Editar Escala";
+            document.getElementById('formMode').value = "edit";
+            const item = scheduleData[roomKey].schedules[index];
+            document.getElementById('modalRoomSelect').value = roomKey;
+            document.getElementById('modalRoomSelect').disabled = true;
+            document.getElementById('editRoomKey').value = roomKey;
+            document.getElementById('editIndex').value = index;
+            document.getElementById('modalDate').value = formatDateToInput(item.date);
+            document.getElementById('modalLesson').value = item.lesson;
+            const roomName = roomsData[roomKey].name;
+            renderTeacherSelectionList(item.teachers, roomName);
+            document.getElementById('scheduleFormModal').classList.add('active');
+        }
+
+        function closeScheduleFormModal() {
+            document.getElementById('scheduleFormModal').classList.remove('active');
+        }
+
+        function updateTeacherListByRoomSelect() {
+            const roomKey = document.getElementById('modalRoomSelect').value;
+            if(!roomKey) {
+                document.getElementById('teacherSelectionList').innerHTML = '<div style="padding:15px; text-align:center; color:#aaa;">Selecione uma sala.</div>';
+                return;
+            }
+            const roomName = roomsData[roomKey].name;
+            renderTeacherSelectionList([], roomName);
+        }
+
+        function renderTeacherSelectionList(selectedTeachers = [], filterRoomName = null) {
+            const container = document.getElementById('teacherSelectionList');
+            container.innerHTML = '';
+            
+            const sortedTeachers = [...fixedTeachersData].sort((a,b) => a.name.localeCompare(b.name));
+            let hasTeacher = false;
+
+            sortedTeachers.forEach(t => {
+                if (filterRoomName && t.room !== filterRoomName) return;
+                hasTeacher = true;
+                const isChecked = selectedTeachers.includes(t.name) ? 'checked' : '';
+                const img = getTeacherPhotoUrl(t.name);
+                
+                const label = document.createElement('label');
+                label.className = 'teacher-select-item';
+                label.innerHTML = `<input type="checkbox" class="chk-teacher" value="${t.name}" ${isChecked}><img src="${img}" onerror="this.src='https://ui-avatars.com/api/?name=${t.name}&background=random'"><span>${t.name}</span><small>${t.room}</small>`;
+                container.appendChild(label);
+            });
+
+            if(!hasTeacher) {
+                container.innerHTML = `<div style="padding:20px; text-align:center; color:#aaa;">Nenhum professor encontrado para <b>${filterRoomName}</b>.</div>`;
+            }
+        }
+
+        function saveScheduleForm() {
+            const mode = document.getElementById('formMode').value;
+            const roomKey = document.getElementById('modalRoomSelect').value;
+            const rawDate = document.getElementById('modalDate').value;
+            const lesson = document.getElementById('modalLesson').value;
+            
+            const checkboxes = document.querySelectorAll('.chk-teacher:checked');
+            const teachersArr = Array.from(checkboxes).map(cb => cb.value);
+
+            if (!roomKey) return alert("Selecione a sala!");
+            if (!rawDate) return alert("Selecione a data!");
+            
+            const dateFormatted = formatDateFromInput(rawDate);
+
+            const scheduleItem = { date: dateFormatted, lesson: lesson || "LIVRE", teachers: teachersArr };
+
+            if (mode === 'create') {
+                scheduleData[roomKey].schedules.push(scheduleItem);
+                if (!allDates.includes(dateFormatted)) {
+                    allDates.push(dateFormatted);
+                    generateDateFilters('date-filters-escala', (d, b) => { filterSchedulesByDate(d, b); });
+                }
+                alert("✅ Nova escala criada com sucesso!");
+            } else {
+                const index = parseInt(document.getElementById('editIndex').value);
+                scheduleData[roomKey].schedules[index] = scheduleItem;
+                alert("✅ Escala atualizada!");
+            }
+            closeScheduleFormModal();
+            renderSchedules();
+        }
+
+        function deleteScheduleItem(roomKey, index) {
+            if(confirm("Tem certeza que deseja apagar este item da escala?")) {
+                scheduleData[roomKey].schedules.splice(index, 1);
+                renderSchedules();
+            }
+        }
+
+        // --- LIÇÕES (RESTAURADO COMPLETO) ---
+        function handleFileSelect() { 
+            const input = document.getElementById('pdfFile'); 
+            selectedFiles = Array.from(input.files); 
+            document.getElementById('fileInfo').textContent = selectedFiles.length > 0 ? `✅ ${selectedFiles.length} arquivo(s)` : ""; 
+            checkLessonState(); 
+        }
+        
+        function checkLessonState() { 
+            document.getElementById('btnUploadLesson').disabled = !(selectedRoomKeyLicoes && selectedDateLicoes && selectedFiles.length > 0); 
+            document.getElementById('btnDownloadLesson').disabled = currentLessonFiles.length === 0; 
+            document.getElementById('btnDeleteLesson').disabled = currentLessonFiles.length === 0; 
+        }
+        
         async function reloadLessonView() {
             if(!selectedRoomKeyLicoes || !selectedDateLicoes) return;
             document.getElementById('pdfViewerContent').innerHTML = '<span style="color:white;">⏳ Buscando...</span>';
@@ -950,33 +1213,43 @@
             } catch(e) { document.getElementById('pdfViewerContent').innerHTML = '<span style="color:#ef4444;">Erro.</span>'; }
             checkLessonState();
         }
+        
         async function uploadLesson() {
             const btn = document.getElementById('btnUploadLesson'); btn.innerText = '⏳'; btn.disabled = true;
             const fileToBase64 = (file) => { return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = (event) => resolve({ file_name: file.name, file_type: file.type.includes('pdf') ? 'pdf' : 'jpg', file_base64: event.target.result.split(',')[1] }); reader.readAsDataURL(file); }); };
             const filesToSend = []; for (const file of selectedFiles) { filesToSend.push(await fileToBase64(file)); }
             try { await fetch(SHEET_URL, { method: 'POST', mode: 'cors', body: JSON.stringify({ action: 'uploadLessons', room_name: roomsData[selectedRoomKeyLicoes].name, lesson_date: selectedDateLicoes, files: filesToSend }) }); alert("Upload OK!"); selectedFiles = []; document.getElementById('pdfFile').value = ''; reloadLessonView(); } catch(e) { alert("Erro."); } btn.innerText = 'Enviar';
         }
+        
         function downloadLesson() { currentLessonFiles.forEach(f => window.open(`https://drive.google.com/uc?export=download&id=${f.fileId}`)); }
+        
         async function deleteLesson() { if(!confirm("Apagar?")) return; await fetch(SHEET_URL, { method:'POST', mode:'cors', body: JSON.stringify({ action: 'deleteLesson', room_name: roomsData[selectedRoomKeyLicoes].name, lesson_date: selectedDateLicoes }) }); alert("Apagado."); reloadLessonView(); }
-
-        // ============================================
-        // 8. ADMIN (GESTÃO DE PESSOAS)
-        // ============================================
-        function toggleAdminTab(tab, btn) {
+        
+        // --- ADMIN (CORRIGIDO) ---
+        function toggleAdminTab(tab, btn) { 
             currentAdminTab = tab;
             document.querySelectorAll('#cadastro .pill-btn').forEach(b => b.classList.remove('active'));
             if(btn) btn.classList.add('active');
-            if(tab === 'alunos') { document.getElementById('studentFields').classList.remove('hidden'); document.getElementById('teacherFields').classList.add('hidden'); } 
-            else { document.getElementById('studentFields').classList.add('hidden'); document.getElementById('teacherFields').classList.remove('hidden'); }
-            renderAdminPeople();
+            
+            if(tab === 'alunos') {
+                document.getElementById('studentFields').classList.remove('hidden');
+                document.getElementById('teacherFields').classList.add('hidden');
+            } else {
+                document.getElementById('studentFields').classList.add('hidden');
+                document.getElementById('teacherFields').classList.remove('hidden');
+            }
+            renderAdminPeople(); 
         }
-
-        function toggleNewForm() { const form = document.getElementById('adminFormContainer'); form.classList.toggle('hidden'); }
-
+        
+        function toggleNewForm() { document.getElementById('adminFormContainer').classList.toggle('hidden'); }
+        
         function filterAdminList() {
             const term = document.getElementById('adminSearch').value.toLowerCase();
-            const cards = document.querySelectorAll('.person-card');
-            cards.forEach(card => { const name = card.dataset.name.toLowerCase(); card.style.display = name.includes(term) ? 'flex' : 'none'; });
+            const cards = document.querySelectorAll('#adminListContainer .person-card');
+            cards.forEach(card => {
+                const name = card.dataset.name.toLowerCase();
+                card.style.display = name.includes(term) ? 'flex' : 'none';
+            });
         }
 
         function renderAdminPeople() {
@@ -984,56 +1257,65 @@
             container.innerHTML = '';
             const search = document.getElementById('adminSearch').value.toLowerCase();
 
-            const formatDisplayDate = (dateStr) => {
-                if (!dateStr) return 'N/I';
-                if (dateStr.includes('/')) return dateStr;
-                if (dateStr.includes('-')) {
-                    const [ano, mes, dia] = dateStr.split('-');
-                    return `${dia}/${mes}/${ano}`;
-                }
-                return dateStr;
+            const formatDisplayDate = (d) => {
+               if(!d) return 'N/I';
+               if(d.includes('/')) return d;
+               const [y, m, day] = d.split('-');
+               return `${day}/${m}/${y}`;
             };
 
             if (currentAdminTab === 'alunos') {
-                Object.values(kidsData).forEach(roomArray => {
+                Object.keys(kidsData).forEach(roomKey => {
+                    const roomArray = kidsData[roomKey];
+                    const roomName = roomsData[roomKey].name;
+
                     roomArray.forEach(kid => {
                         if (search && !kid.name.toLowerCase().includes(search)) return;
                         
                         const img = kid.photo.startsWith('http') ? kid.photo : `img/${kid.photo}`;
-                        const dob = formatDisplayDate(kid.dob);
+                        const div = document.createElement('div'); div.className = 'person-card';
+                        div.dataset.name = kid.name;
                         
-                        let ageStr = "";
-                        if(kid.dob && kid.dob.includes('-')) { 
-                            const birth = new Date(kid.dob); 
-                            const today = new Date(); 
-                            let age = today.getFullYear() - birth.getFullYear(); 
-                            const m = today.getMonth() - birth.getMonth(); 
-                            if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--; 
-                            ageStr = `(${age} anos)`; 
-                        }
-
-                        const div = document.createElement('div'); div.className = 'person-card'; div.dataset.name = kid.name;
-                        div.innerHTML = `<img src="${img}" class="person-img" onerror="this.src='https://ui-avatars.com/api/?name=${kid.name}&background=random'"><div class="person-info"><h4>${kid.name}</h4><p><i class="fas fa-birthday-cake"></i> ${dob} ${ageStr}</p><p><i class="fas fa-user-shield"></i> Resp: ${kid.guardian || 'N/I'}</p></div><div class="person-actions"><button class="btn-wa-mini" onclick="window.open('https://wa.me/55${kid.phone || ''}')"><i class="fab fa-whatsapp"></i></button></div>`;
+                        div.innerHTML = `
+                            <img src="${img}" class="person-img" onerror="this.src='https://ui-avatars.com/api/?name=${kid.name}&background=random'">
+                            <div class="person-info">
+                                <h4>${kid.name}</h4>
+                                <p><i class="fas fa-user-shield"></i> Resp: ${kid.guardian || 'N/I'}</p>
+                                <span class="room-tag" style="background:#e0e7ff; color:var(--primary);">${roomName}</span>
+                            </div>
+                            <div class="person-actions">
+                                <button class="btn-wa-mini" onclick="window.open('https://wa.me/55${kid.phone || ''}')"><i class="fab fa-whatsapp"></i></button>
+                            </div>
+                        `;
                         container.appendChild(div);
                     });
                 });
             } else {
                 fixedTeachersData.forEach(t => {
                     if (search && !t.name.toLowerCase().includes(search)) return;
+                    
                     const img = getTeacherPhotoUrl(t.name);
                     const dob = formatDisplayDate(t.dob);
-                    const div = document.createElement('div'); div.className = 'person-card'; div.dataset.name = t.name;
-                    div.innerHTML = `<img src="${img}" class="person-img" onerror="this.src='https://ui-avatars.com/api/?name=${t.name}&background=random'"><div class="person-info"><h4>${t.name}</h4><p><i class="fas fa-birthday-cake"></i> ${dob}</p><p style="color:var(--primary); font-weight:700; font-size:0.8rem;">Professor(a)</p></div><div class="person-actions"><button class="btn-wa-mini" onclick="window.open('https://wa.me/55${t.phone || ''}')"><i class="fab fa-whatsapp"></i></button></div>`;
+                    
+                    const div = document.createElement('div'); div.className = 'person-card';
+                    div.dataset.name = t.name;
+
+                    div.innerHTML = `
+                        <img src="${img}" class="person-img" onerror="this.src='https://ui-avatars.com/api/?name=${t.name}&background=random'">
+                        <div class="person-info">
+                            <h4>${t.name}</h4>
+                            <p><i class="fas fa-birthday-cake"></i> ${dob}</p>
+                            <span class="room-tag" style="background:#e0e7ff; color:var(--primary);">${t.room || 'Geral'}</span>
+                        </div>
+                        <div class="person-actions">
+                            <button class="btn-wa-mini" onclick="window.open('https://wa.me/55${t.phone || ''}')"><i class="fab fa-whatsapp"></i></button>
+                        </div>
+                    `;
                     container.appendChild(div);
                 });
             }
         }
-
-        async function submitRegistration() {
-            alert("Cadastro enviado com sucesso! (Simulação)");
-            toggleNewForm();
-            document.getElementById('regName').value = '';
-        }
+        async function submitRegistration() { alert("Cadastro enviado com sucesso! (Simulação)"); toggleNewForm(); }
     </script>
 </body>
 </html>
