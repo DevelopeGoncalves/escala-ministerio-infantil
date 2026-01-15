@@ -276,6 +276,7 @@
         .modal-content {
             background: white; width: 90%; max-width: 500px; padding: 25px; border-radius: var(--radius-card);
             box-shadow: 0 20px 50px rgba(0,0,0,0.3); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            /* Garantir que cabe na tela pequena */
             max-height: 90vh; 
             overflow-y: auto; 
         }
@@ -394,7 +395,7 @@
         <button class="menu-btn" onclick="showSection('cadastro', this)"><i class="fas fa-users-cog"></i> Admin</button>
 
         <div class="sidebar-footer">
-            <a href="https://developegoncalves.github.io/meu-portifolio" target="_blank" class="btn-website-row">
+            <a href="https://seusite.com.br" target="_blank" class="btn-website-row">
                 <img src="img/logo.png" class="mini-logo" alt="Logo">
                 <span>Acessar Site</span>
             </a>
@@ -621,6 +622,40 @@
             ]
         };
 
+        // ESCALAS
+        let scheduleData = {
+             berçario: { ...roomsData.berçario, schedules: [
+                 { date: "04/01/2026", lesson: "LIVRE", teachers: ["Leidiane Lopes dos Santos da Silva", "Adriana Lopes dos Santos Martins ", "Sarah dos santos Tomaz"] },
+                 { date: "11/01/2026", lesson: "LIVRE", teachers: ["MAIARA", "Jussimere Pacheco da Silva", "Kemelly Ribeiro Dos Santos"] },
+                 { date: "18/01/2026", lesson: "LIVRE", teachers: ["...", "....", "..."] },
+                 { date: "25/01/2026", lesson: "LIVRE", teachers: ["Ingrid Silva Coelho", "Damares", "ANA RAFAELA"] }
+             ]},
+             alfa: { ...roomsData.alfa, schedules: [
+                 { date: "04/01/2026", lesson: "LIVRE", teachers: ["Arthur dos Santos da conceição", "ESTER ", "Anna Victória Bebiano de Carvalho"] },
+                 { date: "11/01/2026", lesson: "LIVRE", teachers: ["Iandra Jesus de Novais Santana", "Paulo Henrique Mendes Dias", "KETTLEY "] },
+                 { date: "18/01/2026", lesson: "LIVRE", teachers: ["....", "....", "... "] },
+                 { date: "25/01/2026", lesson: "LIVRE", teachers: ["Roseane Jadyvsky", "Nathalia", "RYAN"] }
+             ]},
+             beta: { ...roomsData.beta, schedules: [
+                 { date: "04/01/2026", lesson: "LIVRE", teachers: ["Ana Crysthina Martins Lyrio", "Mirian Pereira da Cruz da Cunha", "DOUGLAS"] },
+                 { date: "11/01/2026", lesson: "LIVRE", teachers: ["Maxsuel Oliveira da Silva", "Núbia Nascimento de Medeiros Dos Santos", "SOPHIA"] },
+                 { date: "18/01/2026", lesson: "LIVRE", teachers: ["...", "...", "..."] },
+                 { date: "25/01/2026", lesson: "LIVRE", teachers: ["JEAN ", "Elaine Pereira Rocha Anacleto", "HELOISA"] }
+             ]},
+             gama: { ...roomsData.gama, schedules: [
+                 { date: "04/01/2026", lesson: "LIVRE", teachers: ["ARTHUR ", "Ana Beatriz Rodrigues de Souza"] },
+                 { date: "11/01/2026", lesson: "LIVRE", teachers: ["Ramon de Oliveira Correa", "Ana Clara Silva Petersen"] },
+                 { date: "18/01/2026", lesson: "LIVRE", teachers: ["...", "..."] },
+                 { date: "25/01/2026", lesson: "LIVRE", teachers: ["Lucas de Souza Fernandes", "Libhya da Silva Souza Gonçalves Victorino"] }
+             ]},
+             ômega: { ...roomsData.ômega, schedules: [
+                 { date: "04/01/2026", lesson: "LIVRE", teachers: ["Jackson Jadyvysky", "Luiz Felipe Oliveira dos Santos"] },
+                 { date: "11/01/2026", lesson: "LIVRE", teachers: ["Diego Pimenta", "Raiara da Conceição Viana Pimenta"] },
+                 { date: "18/01/2026", lesson: "LIVRE", teachers: ["...", "..."] },
+                 { date: "25/01/2026", lesson: "LIVRE", teachers: ["Brenda Rodrigues de Souza", "JOICE"] }
+             ]}
+        };
+
         const allDates = ["04/01/2026", "11/01/2026", "18/01/2026", "25/01/2026"];
 
         // ============================================
@@ -670,7 +705,7 @@
             { name: "HELOISA", photo: "heloisa.png", room: "Beta", dob: "", phone: "27998144193" },
             { name: "Ana Paula Nogueira Tongo", photo: "ana_paula.png", room: "Beta", dob: "01/10", phone: "27988017044" },
             { name: "Marcia Reis ", photo: "marcia.png", room: "Beta", dob: "06/09", phone: "27998741710" },
-            { name: "Sophia Gois ", photo: "sophia.png", room: "Beta", dob: "??", phone: "27998270304" },
+            { name: "Sophia Gois ", photo: "sophia.png", room: "Beta", dob: "", phone: "27998270304" },
 
             // GAMA
             { name: "Arthur dos santos da Conceição  ", photo: "arthur_gamap1.png", room: "Gama", dob: "26/04", phone: "27996412271" },
