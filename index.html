@@ -471,6 +471,10 @@
                 <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom:5px; display:block;">Tipo de Culto:</label>
                 <div class="filter-bar"><button class="pill-btn active" onclick="setHistoryType('all', this)">Tudo</button><button class="pill-btn" onclick="setHistoryType('ceia', this)"><i class="fas fa-wine-glass-alt"></i> Santa Ceia</button></div>
                 <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom:5px; display:block;">Filtrar por Sala:</label><div class="filter-bar" id="room-filters-history"></div>
+                
+                <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom:5px; display:block; margin-top:10px;">Filtrar por Mês:</label>
+                <div class="filter-bar" id="month-filters-history"></div>
+
                 <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:15px; margin-top:10px;"><i class="fas fa-info-circle"></i> A Santa Ceia ocorre automaticamente no <b>2º domingo</b> de cada mês.</p>
                 <div id="historyGrid"></div>
             </div>
@@ -742,6 +746,7 @@
         
         let selectedHistoryType = 'all';
         let selectedHistoryRoom = null;
+        let selectedHistoryMonth = 'all'; // NOVO: Filtro Mes
         
         let isAdminMode = false;
 
@@ -812,6 +817,12 @@
                 btns.forEach(btnEl => btnEl.classList.remove('active'));
                 if(selectedHistoryRoom === k) { selectedHistoryRoom = null; }
                 else { selectedHistoryRoom = k; b.classList.add('active'); }
+                renderHistory();
+            });
+
+            // NOVO: Gerar Filtro de Mes
+            generateMonthFilters('month-filters-history', (val) => {
+                selectedHistoryMonth = val;
                 renderHistory();
             });
 
@@ -940,6 +951,35 @@
                 container.appendChild(btn);
             });
         }
+
+        // NOVO: GERADOR DE FILTROS DE MES
+        function generateMonthFilters(containerId, callback) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            const months = [
+                { name: "Todos", val: "all" },
+                { name: "Jan", val: "01" }, { name: "Fev", val: "02" },
+                { name: "Mar", val: "03" }, { name: "Abr", val: "04" },
+                { name: "Mai", val: "05" }, { name: "Jun", val: "06" },
+                { name: "Jul", val: "07" }, { name: "Ago", val: "08" },
+                { name: "Set", val: "09" }, { name: "Out", val: "10" },
+                { name: "Nov", val: "11" }, { name: "Dez", val: "12" }
+            ];
+            months.forEach((m, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'pill-btn';
+                if (index === 0) btn.classList.add('active');
+                btn.innerText = m.name;
+                btn.onclick = () => {
+                    const parent = btn.parentNode;
+                    parent.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    callback(m.val);
+                };
+                container.appendChild(btn);
+            });
+        }
+
         function togglePill(btn) {
             const parent = btn.parentNode;
             parent.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
@@ -1196,6 +1236,7 @@
 
         function setHistoryType(type, btn) { selectedHistoryType = type; togglePill(btn); renderHistory(); }
 
+        // ATUALIZADO: RENDER HISTORY COM FILTRO DE MES
         function renderHistory() {
             const container = document.getElementById('historyGrid');
             container.innerHTML = '';
@@ -1210,9 +1251,14 @@
                 return db.localeCompare(da);
             });
             allSchedules.forEach(item => {
+                const [day, month, year] = item.date.split('/');
                 const isCeia = isSantaCeiaDate(item.date);
+                
+                // Filtros
                 if (selectedHistoryType === 'ceia' && !isCeia) return;
                 if (selectedHistoryRoom && item.roomKey !== selectedHistoryRoom) return;
+                if (selectedHistoryMonth !== 'all' && month !== selectedHistoryMonth) return;
+                
                 const div = document.createElement('div');
                 div.className = `history-card ${isCeia ? 'ceia' : ''}`;
                 const teachersString = item.teachers.join(', ');
@@ -1364,4 +1410,3 @@
     </script>
 </body>
 </html>
-
