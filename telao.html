@@ -64,6 +64,7 @@
             flex: 1; display: flex; align-items: center; justify-content: center;
             position: relative;
             background: black;
+            background-image: radial-gradient(circle at center, #1a1a1a 0%, #000 70%);
         }
 
         /* CARD DE AVISO */
@@ -103,6 +104,7 @@
             border-radius: 50%; border: 10px solid white;
             object-fit: cover;
             box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            background: white;
         }
 
         .alert-text { text-align: left; }
@@ -118,21 +120,24 @@
         #sound-btn {
             position: fixed; bottom: 20px; right: 20px;
             background: #2563eb; color: white; border: none;
-            padding: 10px 20px; border-radius: 30px; font-weight: bold;
+            padding: 15px 30px; border-radius: 50px; font-weight: bold; font-size: 1.2rem;
             cursor: pointer; z-index: 3000;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+            animation: pulse 2s infinite;
         }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
 
     <div id="operator-panel">
         <div class="queue-title">
-            <span><i class="fas fa-list"></i> Fila</span>
+            <span><i class="fas fa-list"></i> Fila de Chamada</span>
             <span id="queue-count" style="background:#333; padding:2px 8px; border-radius:10px; font-size:0.8rem;">0</span>
         </div>
         <div class="queue-list" id="queueList">
             <div style="text-align:center; color:#555; margin-top:50px; font-size:0.9rem;">
-                Aguardando chamados...
+                Aguardando chamados do painel...
             </div>
         </div>
     </div>
@@ -150,11 +155,12 @@
                     <div class="room-badge" id="room">SALA</div>
                 </div>
             </div>
-            <button onclick="hideAlert()" style="position:absolute; top:20px; right:20px; background:rgba(0,0,0,0.2); border:none; color:white; font-size:2rem; cursor:pointer;">&times;</button>
+            <button onclick="hideAlert()" style="position:absolute; top:20px; right:20px; background:rgba(0,0,0,0.2); border:none; color:white; font-size:2rem; cursor:pointer; width:50px; height:50px; border-radius:50%;">&times;</button>
         </div>
     </div>
 
-    <button id="sound-btn" onclick="activateSound()"><i class="fas fa-volume-up"></i> Ativar Som / Voz</button>
+    <button id="sound-btn" onclick="activateSound()"><i class="fas fa-volume-up"></i> CLIQUE PARA ATIVAR O SOM</button>
+    
     <audio id="alertSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -162,17 +168,17 @@
 
     <script>
         // ============================================
-        // CONFIGURAÇÃO DO FIREBASE
+        // CONFIGURAÇÃO DO FIREBASE (CORRETA)
         // ============================================
         const firebaseConfig = {
-            apiKey: "AIzaSyBpYXo6POurSeDbFKs2E_uvucAJMftcOpc",
-            authDomain: "ministerio-infantil-fcac7.firebaseapp.com",
-            databaseURL: "https://ministerio-infantil-fcac7-default-rtdb.firebaseio.com",
-            projectId: "ministerio-infantil-fcac7",
-            storageBucket: "ministerio-infantil-fcac7.firebasestorage.app",
-            messagingSenderId: "366564472501",
-            appId: "1:366564472501:web:41347abd009b1209a470fc",
-            measurementId: "G-RPCWFR7B11"
+            apiKey: "AIzaSyBI5S5ciZioheWabi0W0Ii_r0e3RsYm3iw",
+            authDomain: "cadastro-final-cc77f.firebaseapp.com",
+            databaseURL: "https://cadastro-final-cc77f-default-rtdb.firebaseio.com",
+            projectId: "cadastro-final-cc77f",
+            storageBucket: "cadastro-final-cc77f.firebasestorage.app",
+            messagingSenderId: "229086987694",
+            appId: "1:229086987694:web:52f1a32f4b1a9f5be2743f",
+            measurementId: "G-9F9WBCMH6Y"
         };
         
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
@@ -184,8 +190,9 @@
         const synth = window.speechSynthesis;
         
         function activateSound() {
-            // Toca um beep silencioso e tenta carregar vozes para desbloquear o áudio
+            // Toca um beep silencioso e tenta carregar vozes para desbloquear o áudio do navegador
             const audio = document.getElementById('alertSound');
+            audio.volume = 0.1;
             audio.play().then(() => {
                 audio.pause();
                 audio.currentTime = 0;
@@ -198,61 +205,72 @@
                 getVoices();
 
                 document.getElementById('sound-btn').style.display = 'none';
-            }).catch(e => alert("Clique na página para permitir o áudio."));
+                // Fala de teste silenciosa para garantir que o mecanismo está pronto
+                const utterance = new SpeechSynthesisUtterance("");
+                synth.speak(utterance);
+            }).catch(e => alert("Erro ao ativar áudio. Tente clicar novamente."));
         }
 
         function getVoices() {
-            // Tenta buscar vozes em PT-BR (Google, Microsoft, etc)
             const voices = synth.getVoices();
-            return voices.find(v => v.lang.includes('pt-BR')) || voices[0];
+            // Tenta pegar a voz "Google Português do Brasil" ou a primeira pt-BR que achar
+            return voices.find(v => v.name.includes('Google') && v.lang.includes('pt-BR')) || 
+                   voices.find(v => v.lang.includes('pt-BR')) || 
+                   voices[0];
         }
 
         function speakAnnouncement(kidName, roomName) {
             if (!audioEnabled) return;
 
-            // 1. Toca o Beep primeiro (atenção imediata)
+            // 1. Toca o Beep primeiro para chamar atenção
             const audio = document.getElementById('alertSound');
-            audio.volume = 1.0; // Volume máximo do Beep
+            audio.volume = 1.0; 
             audio.play();
 
-            // 2. Aguarda 1.5 segundos para a voz falar
+            // 2. Aguarda o bip terminar para a voz falar
             setTimeout(() => {
-                // Texto personalizável
-                const text = `Atenção. O Ministério Infantil, solicita a presença do responsável por ${kidName}, na sala ${roomName}.`;
+                // Cancela falas anteriores para não encavalar
+                synth.cancel();
+
+                const text = `Atenção pais. Solicitamos a presença do responsável por ${kidName}, na sala ${roomName}.`;
                 
                 const utterance = new SpeechSynthesisUtterance(text);
-                utterance.voice = getVoices(); // Pega voz brasileira se tiver
+                utterance.voice = getVoices(); 
                 utterance.lang = 'pt-BR';
-                utterance.rate = 0.9;  // Velocidade um pouco mais lenta para clareza
-                utterance.pitch = 1;   // Tom normal
-                utterance.volume = 1;  // Volume máximo (1.0)
+                utterance.rate = 1.0; 
+                utterance.pitch = 1; 
+                utterance.volume = 1;
 
-                synth.speak(utterance); // Fala
-            }, 1500);
+                synth.speak(utterance); 
+            }, 1200);
         }
 
         // ============================================
-        // LÓGICA DE FILA
+        // LÓGICA DE FILA (Ouvindo o Firebase)
         // ============================================
         const queueListEl = document.getElementById('queueList');
         const countEl = document.getElementById('queue-count');
         let queueCount = 0;
 
-        // Escuta novos chamados
+        // Escuta quando o 'index.html' envia algo para 'chamados'
         db.ref('chamados').on('child_added', (snapshot) => {
             const data = snapshot.val();
             const key = snapshot.key;
             
-            // Só toca/fala se for recente (últimos 5 minutos)
+            // Só toca/fala se o chamado foi feito nos últimos 5 minutos (evita falar chamados velhos ao abrir a tela)
             const now = new Date().getTime();
-            if (now - data.timestamp < 300000 && audioEnabled) {
-                // Ao chegar um novo chamado, ele já fala automaticamente
-                speakAnnouncement(data.kidName, data.roomName);
+            // Se o timestamp não existir (dados antigos), assume que é velho. Se existir, checa a diferença.
+            const isRecent = data.timestamp && (now - data.timestamp < 300000);
+
+            if (isRecent && audioEnabled) {
+                // Abre na tela automaticamente se for recente
+                showOnScreen(data.kidName, data.roomName, data.photoUrl);
             }
 
             addToSidebar(key, data);
         });
 
+        // Escuta quando um item é removido (Concluído)
         db.ref('chamados').on('child_removed', (snapshot) => {
             const key = snapshot.key;
             const el = document.getElementById(`item-${key}`);
@@ -264,20 +282,31 @@
         });
 
         function addToSidebar(key, data) {
-            if(queueCount === 0) queueListEl.innerHTML = '';
+            // Remove msg de "vazio"
+            if(queueListEl.querySelector('div[style*="text-align:center"]')) {
+                queueListEl.innerHTML = '';
+            }
 
             const div = document.createElement('div');
             div.className = 'queue-item';
             div.id = `item-${key}`;
+            
+            // Corrige caminho da imagem se for local
+            let imgUrl = data.photoUrl;
+            if(!imgUrl.startsWith('http') && !imgUrl.startsWith('data:')) {
+                imgUrl = 'img/' + imgUrl; // Assume pasta img se for nome de arquivo
+            }
+
             div.innerHTML = `
-                <img src="${data.photoUrl}" class="q-img">
+                <img src="${imgUrl}" class="q-img" onerror="this.src='https://ui-avatars.com/api/?name=${data.kidName}&background=random'">
                 <div class="q-info">
                     <div class="q-name">${data.kidName}</div>
                     <div class="q-room">${data.roomName}</div>
-                    <button class="btn-action btn-show" onclick="showOnScreen('${data.kidName}', '${data.roomName}', '${data.photoUrl}')">Exibir</button>
+                    <button class="btn-action btn-show" onclick="showOnScreen('${data.kidName}', '${data.roomName}', '${imgUrl}')">Exibir Novamente</button>
                     <button class="btn-action btn-remove" onclick="removeAlert('${key}')">Concluir</button>
                 </div>
             `;
+            // Adiciona no topo
             queueListEl.prepend(div);
             queueCount++;
             updateCount();
@@ -285,17 +314,25 @@
 
         function updateCount() {
             countEl.innerText = queueCount;
-            if(queueCount === 0) queueListEl.innerHTML = '<div style="text-align:center; color:#555; margin-top:50px; font-size:0.9rem;">Aguardando chamados...</div>';
+            if(queueCount === 0) queueListEl.innerHTML = '<div style="text-align:center; color:#555; margin-top:50px; font-size:0.9rem;">Aguardando chamados do painel...</div>';
         }
 
         function showOnScreen(name, room, photo) {
             const box = document.getElementById('alert-box');
+            
             document.getElementById('name').innerText = name;
-            document.getElementById('room').innerText = "📍 " + room;
-            document.getElementById('photo').src = photo;
+            document.getElementById('room').innerText = room;
+            
+            // Garante que a foto exiba algo mesmo se der erro
+            const imgEl = document.getElementById('photo');
+            imgEl.src = photo;
+            imgEl.onerror = function() {
+                this.src = `https://ui-avatars.com/api/?name=${name}&background=random&size=300`;
+            };
+
             box.style.display = 'block';
             
-            // Opcional: Se quiser que o operador possa repetir a fala clicando em "Exibir":
+            // Sempre fala ao exibir
             speakAnnouncement(name, room);
         }
 
@@ -305,10 +342,16 @@
         }
 
         function removeAlert(key) {
-            hideAlert();
-            db.ref('chamados').child(key).remove();
+            // Remove do banco de dados (o listener child_removed vai limpar da tela depois)
+            db.ref('chamados').child(key).remove()
+            .then(() => {
+                // Se o que foi removido é o que está no telão agora, fecha o telão
+                if(document.getElementById('alert-box').style.display === 'block') {
+                    // Opcional: só fecha se for o mesmo nome. Por simplicidade, fecha o alerta.
+                    hideAlert();
+                }
+            });
         }
-
     </script>
 </body>
 </html>
