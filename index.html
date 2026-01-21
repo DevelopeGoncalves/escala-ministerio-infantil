@@ -409,8 +409,13 @@
                 <h4 style="margin-top:0; color:var(--secondary);">🛠️ Modo Edição Ativo</h4><p style="font-size:0.9rem;">Para <b>trocar professores</b> de uma escala existente, clique em "Editar".</p><button class="btn btn-success" onclick="openNewScheduleModal()"><i class="fas fa-plus-circle"></i> Adicionar Nova Data</button>
             </div>
             <button class="fab-copy" onclick="copyScheduleToClipboard()"><i class="fas fa-copy"></i> Copiar Texto</button>
+            
             <div class="form-group"><label style="font-size: 0.8rem; font-weight: 700;">Filtrar por Sala</label><div class="filter-bar" id="room-filters-escala"></div></div>
-            <div class="form-group"><label style="font-size: 0.8rem; font-weight: 700;">Buscar ou Filtrar por Data</label><input type="text" id="teacherSearchInput" placeholder="🔍 Buscar professor..." oninput="filterByTeacher(this.value)" style="margin-bottom: 10px;"><div class="filter-bar" id="date-filters-escala"></div></div>
+            
+            <div class="form-group"><label style="font-size: 0.8rem; font-weight: 700;">Filtrar por Mês</label><div class="filter-bar" id="month-filters-escala"></div></div>
+            
+            <div class="form-group"><label style="font-size: 0.8rem; font-weight: 700;">Buscar ou Filtrar por Data Específica</label><input type="text" id="teacherSearchInput" placeholder="🔍 Buscar professor..." oninput="filterByTeacher(this.value)" style="margin-bottom: 10px;"><div class="filter-bar" id="date-filters-escala"></div></div>
+            
             <div id="scheduleGrid" style="display: flex; flex-direction: column; gap: 10px;"></div>
         </section>
 
@@ -687,15 +692,24 @@
                     return da.localeCompare(db);
                 });
 
-                renderSchedules();
-                renderHistory();
-                updateDashboard();
-                
+                // Atualiza Filtros e Tela
+                generateMonthFilters('month-filters-escala', (m) => {
+                    selectedEscalaMonth = m;
+                    selectedEscalaDate = null; // Reset dia específico ao trocar mês
+                    // Limpa filtro de dia visualmente
+                    document.querySelectorAll('#date-filters-escala .pill-btn').forEach(b => b.classList.remove('active'));
+                    renderSchedules();
+                });
+
                 generateDateFilters('date-filters-escala', (d, b) => { 
                     searchTerm = ''; 
                     document.getElementById('teacherSearchInput').value=''; 
                     filterSchedulesByDate(d, b); 
                 });
+
+                renderSchedules(); // Renderiza inicial
+                renderHistory();
+                updateDashboard();
 
             }, (error) => {
                 console.error("Erro ao ler escalas:", error);
@@ -711,7 +725,12 @@
         let searchTerm = '';
         let currentLessonFiles = []; 
         let currentAdminTab = 'alunos';
+        
+        // ESTADO DE FILTROS (ESCALA)
         let selectedRoomEscala = null;
+        let selectedEscalaMonth = 'all'; // Novo filtro de mês para escala
+        let selectedEscalaDate = null;   // Filtro de data específica
+
         let selectedAdminTeacherRoom = null;
         let selectedAdminStudentRoom = null; 
         
@@ -1046,13 +1065,31 @@
         function generateDateFilters(containerId, callback) {
             const container = document.getElementById(containerId);
             container.innerHTML = '';
-            const btnAll = document.createElement('button'); btnAll.className = 'pill-btn'; btnAll.innerText = 'Todos';
-            btnAll.onclick = () => { togglePill(btnAll); renderSchedules(); }; 
+            
+            // Botão "Todos" para resetar data específica
+            const btnAll = document.createElement('button'); 
+            btnAll.className = 'pill-btn active'; // Padrão ativo
+            btnAll.innerText = 'Todas as Datas';
+            btnAll.onclick = () => { 
+                selectedEscalaDate = null; // Reseta filtro de data
+                togglePill(btnAll); 
+                renderSchedules(); 
+            }; 
             if(containerId.includes('escala')) container.appendChild(btnAll);
-            allDates.forEach(date => { const btn = document.createElement('button'); btn.className = 'pill-btn'; btn.innerText = date.substr(0,5); btn.onclick = () => callback(date, btn); container.appendChild(btn); });
+
+            allDates.forEach(date => { 
+                const btn = document.createElement('button'); 
+                btn.className = 'pill-btn'; 
+                btn.innerText = date.substr(0,5); 
+                btn.onclick = () => {
+                    selectedEscalaDate = date; // Seta data específica
+                    callback(date, btn); 
+                }; 
+                container.appendChild(btn); 
+            });
         }
         
-        function renderSchedules(filterDate = null) {
+        function renderSchedules() {
             const container = document.getElementById('scheduleGrid'); 
             container.innerHTML = '';
             if (isAdminMode) container.classList.add('admin-mode');
@@ -1071,8 +1108,17 @@
                 });
 
                 sortedSchedules.forEach((sc, index) => {
-                    if (filterDate && sc.date !== filterDate) return;
+                    // FILTRO DE DATA ESPECÍFICA (SE TIVER CLICADO EM ALGUM DIA)
+                    if (selectedEscalaDate && sc.date !== selectedEscalaDate) return;
+                    
+                    // FILTRO DE MÊS (NOVO!)
+                    if (selectedEscalaMonth !== 'all') {
+                        const month = sc.date.split('/')[1];
+                        if (month !== selectedEscalaMonth) return;
+                    }
+
                     if (searchTerm && !sc.teachers.some(t => t.toUpperCase().includes(searchTerm.toUpperCase()))) return;
+                    
                     hasItems = true;
 
                     const div = document.createElement('div');
@@ -1094,7 +1140,12 @@
             }
         }
         function filterByTeacher(val) { searchTerm = val.trim(); document.querySelectorAll('#date-filters-escala .pill-btn').forEach(b => b.classList.remove('active')); renderSchedules(); }
-        function filterSchedulesByDate(date, btn) { togglePill(btn); renderSchedules(date); }
+        
+        function filterSchedulesByDate(date, btn) { 
+            togglePill(btn); 
+            // A renderização já é chamada pelo clique que define selectedEscalaDate
+            renderSchedules(); 
+        }
         
         function copyScheduleToClipboard() {
             let text = "*📅 ESCALA KIDS*\n\n";
@@ -1179,10 +1230,6 @@
             renderTeacherSelectionList([], roomName);
         }
 
-        // ==================================================================
-        // SUBSTITUA A FUNÇÃO 'renderTeacherSelectionList' POR ESTA NOVA:
-        // ==================================================================
-
         function renderTeacherSelectionList(selectedTeachers = [], filterRoomName = null) {
             const container = document.getElementById('teacherSelectionList');
             container.innerHTML = '';
@@ -1192,11 +1239,6 @@
             let count = 0;
 
             sortedTeachers.forEach(t => {
-                // LÓGICA DO FILTRO:
-                // 1. Se tiver um filtro de sala (filterRoomName)
-                // 2. E a sala do professor NÃO for essa sala
-                // 3. E o professor NÃO estiver já selecionado (caso seja um substituto antigo)
-                // ENTÃO: Pula este professor (não mostra na lista)
                 if (filterRoomName && t.room !== filterRoomName && !selectedTeachers.includes(t.name)) {
                     return; 
                 }
@@ -1205,23 +1247,13 @@
                 const isFromRoom = t.room === filterRoomName;
                 const isChecked = selectedTeachers.includes(t.name) ? 'checked' : '';
                 const img = getTeacherPhotoUrl(t);
-                
-                // Estilo visual simples
                 const bgStyle = 'background: #fff;'; 
-                
                 const label = document.createElement('label');
                 label.className = 'teacher-select-item';
                 label.style = bgStyle;
-                
-                // Destaque visual se for substituto (de outra sala)
                 const roomBadge = !isFromRoom ? `<small style="color:var(--secondary); font-weight:bold;">(${t.room})</small>` : `<small>${t.room || 'Geral'}</small>`;
 
-                label.innerHTML = `
-                    <input type="checkbox" class="chk-teacher" value="${t.name}" ${isChecked}>
-                    <img src="${img}" onerror="this.src='https://ui-avatars.com/api/?name=${t.name}&background=random'">
-                    <span style="color:var(--text-main);">${t.name}</span>
-                    ${roomBadge}
-                `;
+                label.innerHTML = `<input type="checkbox" class="chk-teacher" value="${t.name}" ${isChecked}><img src="${img}" onerror="this.src='https://ui-avatars.com/api/?name=${t.name}&background=random'"><span style="color:var(--text-main);">${t.name}</span>${roomBadge}`;
                 container.appendChild(label);
             });
 
