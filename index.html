@@ -845,20 +845,50 @@
         }
 
         function updateDashboard() {
+            // 1. Atualiza contadores
             let total = 0;
-            Object.values(kidsData).forEach(arr => total += arr.length);
+            if (kidsData) Object.values(kidsData).forEach(arr => total += arr.length);
             document.getElementById('total-kids-count').innerText = total;
-            document.getElementById('total-teachers-count').innerText = fixedTeachersData.length;
+            document.getElementById('total-teachers-count').innerText = fixedTeachersData ? fixedTeachersData.length : 0;
             
-            if(allDates.length > 0) {
-                 const next = allDates.find(d => {
-                    const [day, month, year] = d.split('/');
-                    return new Date(year, month-1, day) >= new Date().setHours(0,0,0,0);
+            // 2. Lógica Inteligente do Próximo Culto
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            
+            let nextDateStr = "--/--";
+            
+            // Tenta encontrar uma data de escala futura na lista carregada do banco
+            if (allDates && allDates.length > 0) {
+                 // Ordena as datas para garantir (crescente)
+                 const sortedDates = [...allDates].sort((a, b) => {
+                    const da = a.split('/').reverse().join('');
+                    const db = b.split('/').reverse().join('');
+                    return da.localeCompare(db);
+                 });
+
+                 const found = sortedDates.find(d => {
+                    const parts = d.split('/');
+                    const dateObj = new Date(parseInt(parts[2]), parseInt(parts[1])-1, parseInt(parts[0]));
+                    return dateObj >= today;
                 });
-                document.getElementById('next-sunday-date').innerText = next ? next.substr(0,5) : "--/--";
-            } else {
-                 document.getElementById('next-sunday-date').innerText = "--/--";
+                
+                if (found) nextDateStr = found.substr(0, 5);
             }
+
+            // FALLBACK: Se não achou escala (ou banco vazio), calcula o próximo domingo do calendário
+            if (nextDateStr === "--/--") {
+                const nextSunday = new Date();
+                const dayOfWeek = nextSunday.getDay(); // 0 = Domingo
+                // Se hoje é domingo (0), mostra hoje. Se não, calcula quanto falta.
+                const daysUntilSunday = dayOfWeek === 0 ? 0 : (7 - dayOfWeek);
+                nextSunday.setDate(nextSunday.getDate() + daysUntilSunday);
+                
+                const d = String(nextSunday.getDate()).padStart(2, '0');
+                const m = String(nextSunday.getMonth() + 1).padStart(2, '0');
+                nextDateStr = `${d}/${m}`;
+            }
+
+            document.getElementById('next-sunday-date').innerText = nextDateStr;
         }
         
         function renderBirthdays() {
