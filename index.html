@@ -404,17 +404,32 @@
         </section>
 
         <section id="escalas" class="content-section hidden">
-            <div class="section-title" style="justify-content:space-between;"><span><i class="fas fa-calendar-alt"></i> Escalas</span><button class="btn btn-primary" style="width:auto; padding: 8px 15px; font-size:0.8rem;" onclick="openPasswordModal()">🔐 Gerenciar / Editar</button></div>
-            <div id="adminSchedulePanel" class="card-section hidden" style="border: 2px dashed var(--secondary); background: #fffbeb;">
-                <h4 style="margin-top:0; color:var(--secondary);">🛠️ Modo Edição Ativo</h4><p style="font-size:0.9rem;">Para <b>trocar professores</b> de uma escala existente, clique em "Editar".</p><button class="btn btn-success" onclick="openNewScheduleModal()"><i class="fas fa-plus-circle"></i> Adicionar Nova Data</button>
+            <div class="section-title" style="flex-direction: column; align-items: flex-start; gap: 10px;">
+                <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                    <span><i class="fas fa-calendar-alt"></i> Escalas</span>
+                    <button class="btn btn-primary" style="width:auto; padding: 8px 15px; font-size:0.8rem;" onclick="openPasswordModal()">🔐 Gerenciar</button>
+                </div>
+                <button class="btn" style="background: #374151; color: white; width: 100%; padding: 10px;" onclick="copyScheduleToClipboard()">
+                    <i class="fas fa-copy"></i> Copiar Texto para WhatsApp
+                </button>
             </div>
-            <button class="fab-copy" onclick="copyScheduleToClipboard()"><i class="fas fa-copy"></i> Copiar Texto</button>
+
+            <div id="adminSchedulePanel" class="card-section hidden" style="border: 2px dashed var(--secondary); background: #fffbeb;">
+                <h4 style="margin-top:0; color:var(--secondary);">🛠️ Modo Edição Ativo</h4>
+                <p style="font-size:0.9rem;">Para <b>trocar professores</b> de uma escala existente, clique em "Editar".</p>
+                <button class="btn btn-success" onclick="openNewScheduleModal()"><i class="fas fa-plus-circle"></i> Adicionar Nova Data</button>
+            </div>
             
-            <div class="form-group"><label style="font-size: 0.8rem; font-weight: 700;">Filtrar por Sala</label><div class="filter-bar" id="room-filters-escala"></div></div>
+            <div class="form-group">
+                <label style="font-size: 0.8rem; font-weight: 700;">Filtrar por Sala</label>
+                <div class="filter-bar" id="room-filters-escala"></div>
+            </div>
             
-            <div class="form-group"><label style="font-size: 0.8rem; font-weight: 700;">Filtrar por Mês</label><div class="filter-bar" id="month-filters-escala"></div></div>
-            
-            <div class="form-group"><label style="font-size: 0.8rem; font-weight: 700;">Buscar ou Filtrar por Data Específica</label><input type="text" id="teacherSearchInput" placeholder="🔍 Buscar professor..." oninput="filterByTeacher(this.value)" style="margin-bottom: 10px;"><div class="filter-bar" id="date-filters-escala"></div></div>
+            <div class="form-group">
+                <label style="font-size: 0.8rem; font-weight: 700;">Buscar ou Filtrar por Data</label>
+                <input type="text" id="teacherSearchInput" placeholder="🔍 Buscar professor..." oninput="filterByTeacher(this.value)" style="margin-bottom: 10px;">
+                <div class="filter-bar" id="date-filters-escala"></div>
+            </div>
             
             <div id="scheduleGrid" style="display: flex; flex-direction: column; gap: 10px;"></div>
         </section>
@@ -686,28 +701,24 @@
                     });
                 }
                 
+                // Ordena datas
                 allDates.sort((a, b) => {
                     const da = a.split('/').reverse().join('');
                     const db = b.split('/').reverse().join('');
                     return da.localeCompare(db);
                 });
 
-                // Atualiza Filtros e Tela
-                generateMonthFilters('month-filters-escala', (m) => {
-                    selectedEscalaMonth = m;
-                    selectedEscalaDate = null; // Reset dia específico ao trocar mês
-                    // Limpa filtro de dia visualmente
-                    document.querySelectorAll('#date-filters-escala .pill-btn').forEach(b => b.classList.remove('active'));
-                    renderSchedules();
-                });
+                // --- RESET TOTAL ---
+                selectedEscalaDate = null; // Garante que começa mostrando TUDO
 
+                // Gera apenas os filtros de Data
                 generateDateFilters('date-filters-escala', (d, b) => { 
                     searchTerm = ''; 
                     document.getElementById('teacherSearchInput').value=''; 
                     filterSchedulesByDate(d, b); 
                 });
 
-                renderSchedules(); // Renderiza inicial
+                renderSchedules(); 
                 renderHistory();
                 updateDashboard();
 
@@ -772,6 +783,48 @@
 
         window.onload = () => {
             startFirebaseListener();
+            // ======================================================================
+            // FILTRO DE SALAS (ESCALA) - Lógica Limpa
+            // ======================================================================
+            const containerEscala = document.getElementById('room-filters-escala');
+            containerEscala.innerHTML = '';
+
+            // Botão "Todas as Turmas"
+            const btnAllRooms = document.createElement('button');
+            btnAllRooms.className = 'pill-btn active'; 
+            btnAllRooms.innerText = "Todas as Turmas";
+            btnAllRooms.onclick = () => {
+                containerEscala.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+                btnAllRooms.classList.add('active');
+                selectedRoomEscala = null;
+                
+                // Reset Filtro de data ao trocar para todas as turmas
+                selectedEscalaDate = null;
+                resetDateFiltersVisuals();
+                renderSchedules();
+            };
+            containerEscala.appendChild(btnAllRooms);
+
+            // Botões das Salas Individuais
+            Object.keys(roomsData).forEach(key => {
+                const r = roomsData[key];
+                const btn = document.createElement('button');
+                btn.className = 'pill-btn';
+                btn.innerHTML = `${r.icon} ${r.name}`;
+                btn.onclick = () => {
+                    containerEscala.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    selectedRoomEscala = key;
+                    
+                    // Reset Filtro de data ao selecionar turma específica
+                    selectedEscalaDate = null; 
+                    resetDateFiltersVisuals();
+                    renderSchedules();
+                };
+                containerEscala.appendChild(btn);
+            });
+            
+
 
             generateRoomFilters('room-filters-chamada', selectRoomChamada);
             generateRoomFilters('room-filters-telao', (k, b) => { 
@@ -780,13 +833,6 @@
                 renderTelaoList(); 
             });
             generateRoomFilters('room-filters-licoes', (k, b) => { selectedRoomKeyLicoes = k; togglePill(b); reloadLessonView(); });
-            generateRoomFilters('room-filters-escala', (k, b) => { 
-                const btns = document.querySelectorAll('#room-filters-escala .pill-btn');
-                btns.forEach(btnEl => btnEl.classList.remove('active'));
-                if(selectedRoomEscala === k) { selectedRoomEscala = null; } 
-                else { selectedRoomEscala = k; b.classList.add('active'); }
-                renderSchedules(); 
-            });
             
             generateRoomFilters('room-filters-admin-teachers', (k, b) => {
                 const btns = document.querySelectorAll('#room-filters-admin-teachers .pill-btn');
@@ -831,6 +877,18 @@
             renderBirthdays();
         };
 
+        function resetDateFiltersVisuals() {
+            // Reset Meses
+            const monthBtns = document.querySelectorAll('#month-filters-escala .pill-btn');
+            monthBtns.forEach(b => b.classList.remove('active'));
+            if(monthBtns[0]) monthBtns[0].classList.add('active'); // O primeiro é "Todos"
+
+            // Reset Datas
+            const dateBtns = document.querySelectorAll('#date-filters-escala .pill-btn');
+            dateBtns.forEach(b => b.classList.remove('active'));
+            if(dateBtns[0]) dateBtns[0].classList.add('active'); // O primeiro é "Todas"
+        }
+
         function toggleMenu() {
             document.getElementById('sidebar').classList.toggle('active');
             document.getElementById('overlay').classList.toggle('active');
@@ -845,21 +903,17 @@
         }
 
         function updateDashboard() {
-            // 1. Atualiza contadores
             let total = 0;
             if (kidsData) Object.values(kidsData).forEach(arr => total += arr.length);
             document.getElementById('total-kids-count').innerText = total;
             document.getElementById('total-teachers-count').innerText = fixedTeachersData ? fixedTeachersData.length : 0;
             
-            // 2. Lógica Inteligente do Próximo Culto
             const today = new Date();
             today.setHours(0,0,0,0);
             
             let nextDateStr = "--/--";
             
-            // Tenta encontrar uma data de escala futura na lista carregada do banco
             if (allDates && allDates.length > 0) {
-                 // Ordena as datas para garantir (crescente)
                  const sortedDates = [...allDates].sort((a, b) => {
                     const da = a.split('/').reverse().join('');
                     const db = b.split('/').reverse().join('');
@@ -875,11 +929,9 @@
                 if (found) nextDateStr = found.substr(0, 5);
             }
 
-            // FALLBACK: Se não achou escala (ou banco vazio), calcula o próximo domingo do calendário
             if (nextDateStr === "--/--") {
                 const nextSunday = new Date();
-                const dayOfWeek = nextSunday.getDay(); // 0 = Domingo
-                // Se hoje é domingo (0), mostra hoje. Se não, calcula quanto falta.
+                const dayOfWeek = nextSunday.getDay(); 
                 const daysUntilSunday = dayOfWeek === 0 ? 0 : (7 - dayOfWeek);
                 nextSunday.setDate(nextSunday.getDate() + daysUntilSunday);
                 
@@ -1128,7 +1180,9 @@
             let hasItems = false;
 
             Object.keys(scheduleData).forEach(roomKey => {
+                // Filtro de Sala
                 if (selectedRoomEscala && roomKey !== selectedRoomEscala) return;
+                
                 const room = scheduleData[roomKey];
                 
                 const sortedSchedules = [...room.schedules].sort((a,b) => {
@@ -1138,15 +1192,12 @@
                 });
 
                 sortedSchedules.forEach((sc, index) => {
-                    // FILTRO DE DATA ESPECÍFICA (SE TIVER CLICADO EM ALGUM DIA)
-                    if (selectedEscalaDate && sc.date !== selectedEscalaDate) return;
-                    
-                    // FILTRO DE MÊS (NOVO!)
-                    if (selectedEscalaMonth !== 'all') {
-                        const month = sc.date.split('/')[1];
-                        if (month !== selectedEscalaMonth) return;
-                    }
+                    // LÓGICA SIMPLIFICADA:
+                    // Se houver uma data selecionada E a data da escala for diferente -> Esconde.
+                    // Caso contrário -> Mostra.
+                    if (selectedEscalaDate !== null && sc.date !== selectedEscalaDate) return;
 
+                    // Filtro de busca por nome
                     if (searchTerm && !sc.teachers.some(t => t.toUpperCase().includes(searchTerm.toUpperCase()))) return;
                     
                     hasItems = true;
@@ -1155,6 +1206,7 @@
                     const isSantaCeia = isSantaCeiaDate(sc.date);
                     div.className = `schedule-item ${isSantaCeia ? 'santa-ceia' : ''}`;
                     if(isAdminMode) div.classList.add('admin-mode');
+                    
                     const teachersHtml = sc.teachers.map(t => `<div class="teacher-chip"><img src="${getTeacherPhotoUrl(t)}" class="teacher-img" onerror="this.src='https://ui-avatars.com/api/?name=${t}&background=random&color=fff&size=40'"><span class="teacher-name">${t}</span></div>`).join('');
                     const santaCeiaBadge = isSantaCeia ? '<span class="badge-ceia">CEIA</span>' : '';
                     
@@ -1166,7 +1218,7 @@
             });
 
             if(!hasItems) {
-                container.innerHTML = '<div style="text-align:center; padding:30px; color:#aaa;">Nenhuma escala encontrada.</div>';
+                container.innerHTML = '<div style="text-align:center; padding:30px; color:#aaa;">Nenhuma escala encontrada para os filtros atuais.</div>';
             }
         }
         function filterByTeacher(val) { searchTerm = val.trim(); document.querySelectorAll('#date-filters-escala .pill-btn').forEach(b => b.classList.remove('active')); renderSchedules(); }
