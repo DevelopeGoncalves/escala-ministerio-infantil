@@ -344,7 +344,7 @@
         <button class="menu-btn" onclick="showSection('cadastro', this)"><i class="fas fa-users-cog"></i> Admin</button>
 
         <div class="sidebar-footer">
-            <a href="https://developegoncalves.github.io/meu-portifolio/" target="_blank" class="btn-website-row">
+            <a href="https://victorinoeng.com.br/" target="_blank" class="btn-website-row">
                 <img src="img/logo.png" class="mini-logo" alt="Logo">
                 <span>Acessar Site</span>
             </a>
@@ -426,7 +426,7 @@
             </div>
             
             <div class="form-group">
-                <label style="font-size: 0.8rem; font-weight: 700;">Buscar ou Filtrar por Data</label>
+                <label style="font-size: 0.8rem; font-weight: 700;">Filtrar por Data</label>
                 <input type="text" id="teacherSearchInput" placeholder="🔍 Buscar professor..." oninput="filterByTeacher(this.value)" style="margin-bottom: 10px;">
                 <div class="filter-bar" id="date-filters-escala"></div>
             </div>
@@ -521,7 +521,7 @@
 
         const kidsData = {
             berçario: [ 
-                { id: 1, name: "Maria Eduarda", photo: "m_eduarda.png", dob: "2023-05-20", guardian: "Leidiane", phone: "27999999999" },
+                { id: 1, name: "Maria Eduarda", photo: "m_eduarda.png", dob: "2023-05-20", guardian: "Leidiane", phone: "27999752858" },
                 { id: 2, name: "João Pedro", photo: "j_pedro.png", dob: "2024-01-10", guardian: "Pai do João", phone: "27988888888" },
                 { id: 3, name: "Sophia R.", photo: "sophia.png", dob: "", guardian: "", phone: "" },
                 { id: 4, name: "Benício L.", photo: "benicio.png", dob: "", guardian: "", phone: "" },
@@ -708,10 +708,10 @@
                     return da.localeCompare(db);
                 });
 
-                // --- RESET TOTAL ---
-                selectedEscalaDate = null; // Garante que começa mostrando TUDO
+                // Seleciona a data automaticamente (HOJE ou PROXIMA)
+                autoSelectCurrentDate();
 
-                // Gera apenas os filtros de Data
+                // Gera os filtros de Data DINAMICAMENTE
                 generateDateFilters('date-filters-escala', (d, b) => { 
                     searchTerm = ''; 
                     document.getElementById('teacherSearchInput').value=''; 
@@ -728,6 +728,29 @@
             });
         }
 
+        function autoSelectCurrentDate() {
+            if (allDates.length === 0) {
+                selectedEscalaDate = null;
+                return;
+            }
+
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            // Tenta achar a primeira data maior ou igual a hoje
+            const nextDate = allDates.find(d => {
+                const parts = d.split('/');
+                const dateObj = new Date(parseInt(parts[2]), parseInt(parts[1])-1, parseInt(parts[0]));
+                return dateObj >= today;
+            });
+
+            // Se a data que estava selecionada ainda existe, mantém ela.
+            // Se não existe mais ou se nada estava selecionado, pega a próxima.
+            if (!selectedEscalaDate || !allDates.includes(selectedEscalaDate)) {
+                selectedEscalaDate = nextDate || allDates[allDates.length - 1]; 
+            }
+        }
+
         let selectedRoomKeyChamada = null;
         let selectedRoomKeyTelao = null;
         let selectedRoomKeyLicoes = null;
@@ -739,7 +762,6 @@
         
         // ESTADO DE FILTROS (ESCALA)
         let selectedRoomEscala = null;
-        let selectedEscalaMonth = 'all'; // Novo filtro de mês para escala
         let selectedEscalaDate = null;   // Filtro de data específica
 
         let selectedAdminTeacherRoom = null;
@@ -783,13 +805,11 @@
 
         window.onload = () => {
             startFirebaseListener();
-            // ======================================================================
-            // FILTRO DE SALAS (ESCALA) - Lógica Limpa
-            // ======================================================================
+            
+            // FILTRO DE SALAS (ESCALA)
             const containerEscala = document.getElementById('room-filters-escala');
             containerEscala.innerHTML = '';
 
-            // Botão "Todas as Turmas"
             const btnAllRooms = document.createElement('button');
             btnAllRooms.className = 'pill-btn active'; 
             btnAllRooms.innerText = "Todas as Turmas";
@@ -797,15 +817,10 @@
                 containerEscala.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
                 btnAllRooms.classList.add('active');
                 selectedRoomEscala = null;
-                
-                // Reset Filtro de data ao trocar para todas as turmas
-                selectedEscalaDate = null;
-                resetDateFiltersVisuals();
                 renderSchedules();
             };
             containerEscala.appendChild(btnAllRooms);
 
-            // Botões das Salas Individuais
             Object.keys(roomsData).forEach(key => {
                 const r = roomsData[key];
                 const btn = document.createElement('button');
@@ -815,16 +830,10 @@
                     containerEscala.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     selectedRoomEscala = key;
-                    
-                    // Reset Filtro de data ao selecionar turma específica
-                    selectedEscalaDate = null; 
-                    resetDateFiltersVisuals();
                     renderSchedules();
                 };
                 containerEscala.appendChild(btn);
             });
-            
-
 
             generateRoomFilters('room-filters-chamada', selectRoomChamada);
             generateRoomFilters('room-filters-telao', (k, b) => { 
@@ -877,18 +886,6 @@
             renderBirthdays();
         };
 
-        function resetDateFiltersVisuals() {
-            // Reset Meses
-            const monthBtns = document.querySelectorAll('#month-filters-escala .pill-btn');
-            monthBtns.forEach(b => b.classList.remove('active'));
-            if(monthBtns[0]) monthBtns[0].classList.add('active'); // O primeiro é "Todos"
-
-            // Reset Datas
-            const dateBtns = document.querySelectorAll('#date-filters-escala .pill-btn');
-            dateBtns.forEach(b => b.classList.remove('active'));
-            if(dateBtns[0]) dateBtns[0].classList.add('active'); // O primeiro é "Todas"
-        }
-
         function toggleMenu() {
             document.getElementById('sidebar').classList.toggle('active');
             document.getElementById('overlay').classList.toggle('active');
@@ -914,30 +911,12 @@
             let nextDateStr = "--/--";
             
             if (allDates && allDates.length > 0) {
-                 const sortedDates = [...allDates].sort((a, b) => {
-                    const da = a.split('/').reverse().join('');
-                    const db = b.split('/').reverse().join('');
-                    return da.localeCompare(db);
-                 });
-
-                 const found = sortedDates.find(d => {
+                 const found = allDates.find(d => {
                     const parts = d.split('/');
                     const dateObj = new Date(parseInt(parts[2]), parseInt(parts[1])-1, parseInt(parts[0]));
                     return dateObj >= today;
                 });
-                
                 if (found) nextDateStr = found.substr(0, 5);
-            }
-
-            if (nextDateStr === "--/--") {
-                const nextSunday = new Date();
-                const dayOfWeek = nextSunday.getDay(); 
-                const daysUntilSunday = dayOfWeek === 0 ? 0 : (7 - dayOfWeek);
-                nextSunday.setDate(nextSunday.getDate() + daysUntilSunday);
-                
-                const d = String(nextSunday.getDate()).padStart(2, '0');
-                const m = String(nextSunday.getMonth() + 1).padStart(2, '0');
-                nextDateStr = `${d}/${m}`;
             }
 
             document.getElementById('next-sunday-date').innerText = nextDateStr;
@@ -1007,7 +986,7 @@
         }
 
         function generateRoomFilters(containerId, callback) {
-             const container = document.getElementById(containerId);
+            const container = document.getElementById(containerId);
             container.innerHTML = '';
             Object.keys(roomsData).forEach(key => {
                 const r = roomsData[key];
@@ -1057,6 +1036,7 @@
             parent.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
         }
+
         function selectRoomChamada(key) {
              selectedRoomKeyChamada = key;
             const grid = document.getElementById('kidsList');
@@ -1075,6 +1055,7 @@
             });
             checkCallFormValidity();
         }
+
         function addExtraKid() {
             const name = document.getElementById('extraKidName').value;
             if(!name) return;
@@ -1088,6 +1069,7 @@
             document.getElementById('extraKidName').value = '';
             checkCallFormValidity();
         }
+
         function checkCallFormValidity() {
             const tName = document.getElementById('teacherName').value;
             const dt = document.getElementById('dateInput').value;
@@ -1148,23 +1130,14 @@
             const container = document.getElementById(containerId);
             container.innerHTML = '';
             
-            // Botão "Todos" para resetar data específica
-            const btnAll = document.createElement('button'); 
-            btnAll.className = 'pill-btn active'; // Padrão ativo
-            btnAll.innerText = 'Todas as Datas';
-            btnAll.onclick = () => { 
-                selectedEscalaDate = null; // Reseta filtro de data
-                togglePill(btnAll); 
-                renderSchedules(); 
-            }; 
-            if(containerId.includes('escala')) container.appendChild(btnAll);
-
+            // Botões dinâmicos com base em allDates
             allDates.forEach(date => { 
                 const btn = document.createElement('button'); 
                 btn.className = 'pill-btn'; 
+                if (selectedEscalaDate === date) btn.classList.add('active');
                 btn.innerText = date.substr(0,5); 
                 btn.onclick = () => {
-                    selectedEscalaDate = date; // Seta data específica
+                    selectedEscalaDate = date; 
                     callback(date, btn); 
                 }; 
                 container.appendChild(btn); 
@@ -1175,14 +1148,11 @@
             const container = document.getElementById('scheduleGrid'); 
             container.innerHTML = '';
             if (isAdminMode) container.classList.add('admin-mode');
-            else container.classList.remove('admin-mode');
             
             let hasItems = false;
 
             Object.keys(scheduleData).forEach(roomKey => {
-                // Filtro de Sala
                 if (selectedRoomEscala && roomKey !== selectedRoomEscala) return;
-                
                 const room = scheduleData[roomKey];
                 
                 const sortedSchedules = [...room.schedules].sort((a,b) => {
@@ -1192,16 +1162,10 @@
                 });
 
                 sortedSchedules.forEach((sc, index) => {
-                    // LÓGICA SIMPLIFICADA:
-                    // Se houver uma data selecionada E a data da escala for diferente -> Esconde.
-                    // Caso contrário -> Mostra.
                     if (selectedEscalaDate !== null && sc.date !== selectedEscalaDate) return;
-
-                    // Filtro de busca por nome
                     if (searchTerm && !sc.teachers.some(t => t.toUpperCase().includes(searchTerm.toUpperCase()))) return;
                     
                     hasItems = true;
-
                     const div = document.createElement('div');
                     const isSantaCeia = isSantaCeiaDate(sc.date);
                     div.className = `schedule-item ${isSantaCeia ? 'santa-ceia' : ''}`;
@@ -1218,16 +1182,12 @@
             });
 
             if(!hasItems) {
-                container.innerHTML = '<div style="text-align:center; padding:30px; color:#aaa;">Nenhuma escala encontrada para os filtros atuais.</div>';
+                container.innerHTML = '<div style="text-align:center; padding:30px; color:#aaa;">Nenhuma escala encontrada.</div>';
             }
         }
-        function filterByTeacher(val) { searchTerm = val.trim(); document.querySelectorAll('#date-filters-escala .pill-btn').forEach(b => b.classList.remove('active')); renderSchedules(); }
-        
-        function filterSchedulesByDate(date, btn) { 
-            togglePill(btn); 
-            // A renderização já é chamada pelo clique que define selectedEscalaDate
-            renderSchedules(); 
-        }
+
+        function filterByTeacher(val) { searchTerm = val.trim(); renderSchedules(); }
+        function filterSchedulesByDate(date, btn) { togglePill(btn); renderSchedules(); }
         
         function copyScheduleToClipboard() {
             let text = "*📅 ESCALA KIDS*\n\n";
@@ -1235,25 +1195,21 @@
                 const room = scheduleData[key];
                 if (selectedRoomEscala && selectedRoomEscala !== key) return;
                 
-                const futureSchedules = room.schedules.filter(s => {
-                    const [d, m, y] = s.date.split('/');
-                    return new Date(y, m-1, d) >= new Date().setHours(0,0,0,0);
-                });
-
-                if(futureSchedules.length > 0) {
+                const currentSchedules = room.schedules.filter(s => s.date === selectedEscalaDate);
+                if(currentSchedules.length > 0) {
                     text += `*${room.icon} ${room.name.toUpperCase()}*\n`;
-                    futureSchedules.forEach(sc => {
+                    currentSchedules.forEach(sc => {
                         const obs = isSantaCeiaDate(sc.date) ? " (Santa Ceia 🍷)" : "";
                         text += `🗓️ ${sc.date}: ${sc.teachers.join(', ')}${obs}\n`;
                     });
                     text += "\n";
                 }
             });
-            navigator.clipboard.writeText(text).then(() => { alert("📋 Escala copiada com sucesso! Cole no WhatsApp."); });
+            navigator.clipboard.writeText(text).then(() => { alert("📋 Escala copiada com sucesso!"); });
         }
 
         function openPasswordModal() {
-            if (isAdminMode) { alert("🔓 Você já está com acesso liberado!"); return; }
+            if (isAdminMode) return;
             document.getElementById('passwordModal').classList.add('active');
             document.getElementById('adminPasswordInput').value = '';
         }
@@ -1272,7 +1228,6 @@
                 document.getElementById('adminSchedulePanel').classList.remove('hidden');
                 document.getElementById('adminLessonControls').classList.remove('hidden');
                 document.getElementById('lessonUnlockBtn').classList.add('hidden');
-                alert("🔓 Modo Líder Ativado!\n\nAgora você pode editar escalas e enviar lições.");
                 renderSchedules();
             } else { alert("❌ Senha incorreta!"); clearPass(); }
         }
@@ -1298,8 +1253,7 @@
             document.getElementById('editIndex').value = index;
             document.getElementById('modalDate').value = formatDateToInput(item.date);
             document.getElementById('modalLesson').value = item.lesson;
-            const roomName = roomsData[roomKey].name;
-            renderTeacherSelectionList(item.teachers, roomName); 
+            renderTeacherSelectionList(item.teachers, roomsData[roomKey].name); 
             document.getElementById('scheduleFormModal').classList.add('active');
         }
 
@@ -1307,211 +1261,120 @@
 
         function updateTeacherListByRoomSelect() {
             const roomKey = document.getElementById('modalRoomSelect').value;
-            if(!roomKey) { document.getElementById('teacherSelectionList').innerHTML = '<div style="padding:15px; text-align:center; color:#aaa;">Selecione uma sala.</div>'; return; }
-            const roomName = roomsData[roomKey].name;
-            renderTeacherSelectionList([], roomName);
+            if(!roomKey) return;
+            renderTeacherSelectionList([], roomsData[roomKey].name);
         }
 
         function renderTeacherSelectionList(selectedTeachers = [], filterRoomName = null) {
             const container = document.getElementById('teacherSelectionList');
             container.innerHTML = '';
-            
             const sortedTeachers = [...fixedTeachersData].sort((a,b) => a.name.localeCompare(b.name));
-            
-            let count = 0;
-
             sortedTeachers.forEach(t => {
-                if (filterRoomName && t.room !== filterRoomName && !selectedTeachers.includes(t.name)) {
-                    return; 
-                }
-
-                count++;
-                const isFromRoom = t.room === filterRoomName;
+                if (filterRoomName && t.room !== filterRoomName && !selectedTeachers.includes(t.name)) return;
                 const isChecked = selectedTeachers.includes(t.name) ? 'checked' : '';
-                const img = getTeacherPhotoUrl(t);
-                const bgStyle = 'background: #fff;'; 
                 const label = document.createElement('label');
                 label.className = 'teacher-select-item';
-                label.style = bgStyle;
-                const roomBadge = !isFromRoom ? `<small style="color:var(--secondary); font-weight:bold;">(${t.room})</small>` : `<small>${t.room || 'Geral'}</small>`;
-
-                label.innerHTML = `<input type="checkbox" class="chk-teacher" value="${t.name}" ${isChecked}><img src="${img}" onerror="this.src='https://ui-avatars.com/api/?name=${t.name}&background=random'"><span style="color:var(--text-main);">${t.name}</span>${roomBadge}`;
+                label.innerHTML = `<input type="checkbox" class="chk-teacher" value="${t.name}" ${isChecked}><img src="${getTeacherPhotoUrl(t)}" onerror="this.src='https://ui-avatars.com/api/?name=${t.name}&background=random'"><span style="color:var(--text-main);">${t.name}</span><small>${t.room || 'Geral'}</small>`;
                 container.appendChild(label);
             });
-
-            if (count === 0) {
-                container.innerHTML = '<div style="padding:20px; text-align:center; color:#9ca3af;">Nenhum professor encontrado nesta sala.</div>';
-            }
         }
 
         function saveScheduleForm() {
             const mode = document.getElementById('formMode').value;
             const roomKey = document.getElementById('modalRoomSelect').value;
             const rawDate = document.getElementById('modalDate').value;
-            const lesson = document.getElementById('modalLesson').value;
-            const checkboxes = document.querySelectorAll('.chk-teacher:checked');
-            const teachersArr = Array.from(checkboxes).map(cb => cb.value);
-
-            if (!roomKey) return alert("Selecione a sala!");
-            if (!rawDate) return alert("Selecione a data!");
-
+            const teachersArr = Array.from(document.querySelectorAll('.chk-teacher:checked')).map(cb => cb.value);
+            if (!roomKey || !rawDate) return alert("Preencha os campos!");
             const dateFormatted = formatDateFromInput(rawDate);
-            const scheduleItem = { date: dateFormatted, lesson: lesson || "LIVRE", teachers: teachersArr };
-            
+            const scheduleItem = { date: dateFormatted, lesson: document.getElementById('modalLesson').value || "LIVRE", teachers: teachersArr };
             let currentSchedules = scheduleData[roomKey].schedules || [];
-
-            if (mode === 'create') {
-                currentSchedules.push(scheduleItem);
-                alert("✅ Nova escala adicionada!");
-            } else {
-                const index = parseInt(document.getElementById('editIndex').value);
-                currentSchedules[index] = scheduleItem;
-                alert("✅ Escala atualizada!");
-            }
-
-            db.ref(`escalas/${roomKey}`).set(currentSchedules)
-              .then(() => closeScheduleFormModal())
-              .catch(e => alert("Erro ao salvar no banco: " + e.message));
+            if (mode === 'create') currentSchedules.push(scheduleItem);
+            else currentSchedules[parseInt(document.getElementById('editIndex').value)] = scheduleItem;
+            db.ref(`escalas/${roomKey}`).set(currentSchedules).then(() => closeScheduleFormModal()).catch(e => alert("Erro: " + e.message));
         }
 
         function deleteScheduleItem(roomKey, index) {
-            if(confirm("Tem certeza que deseja apagar este item da escala?")) {
+            if(confirm("Deseja apagar?")) {
                 let currentSchedules = scheduleData[roomKey].schedules || [];
                 currentSchedules.splice(index, 1);
-                db.ref(`escalas/${roomKey}`).set(currentSchedules)
-                .catch(e => alert("Erro ao apagar: " + e.message));
+                db.ref(`escalas/${roomKey}`).set(currentSchedules);
             }
         }
 
         function setHistoryType(type, btn) { selectedHistoryType = type; togglePill(btn); renderHistory(); }
-
         function renderHistory() {
             const container = document.getElementById('historyGrid');
             container.innerHTML = '';
             let allSchedules = [];
             Object.keys(scheduleData).forEach(key => {
-                const room = scheduleData[key];
-                if(room.schedules) {
-                    room.schedules.forEach(s => { allSchedules.push({ ...s, roomName: room.name, roomKey: key }); });
-                }
+                scheduleData[key].schedules.forEach(s => { allSchedules.push({ ...s, roomName: roomsData[key].name, roomKey: key }); });
             });
-            allSchedules.sort((a,b) => {
-                const da = a.date.split('/').reverse().join('');
-                const db = b.date.split('/').reverse().join('');
-                return db.localeCompare(da);
-            });
+            allSchedules.sort((a,b) => b.date.split('/').reverse().join('').localeCompare(a.date.split('/').reverse().join('')));
             allSchedules.forEach(item => {
-                const [day, month, year] = item.date.split('/');
-                const isCeia = isSantaCeiaDate(item.date);
-                
-                if (selectedHistoryType === 'ceia' && !isCeia) return;
+                const [d, m, y] = item.date.split('/');
+                if (selectedHistoryType === 'ceia' && !isSantaCeiaDate(item.date)) return;
                 if (selectedHistoryRoom && item.roomKey !== selectedHistoryRoom) return;
-                if (selectedHistoryMonth !== 'all' && month !== selectedHistoryMonth) return;
-                
+                if (selectedHistoryMonth !== 'all' && m !== selectedHistoryMonth) return;
                 const div = document.createElement('div');
-                div.className = `history-card ${isCeia ? 'ceia' : ''}`;
-                const teachersString = item.teachers.join(', ');
-                div.innerHTML = `<div class="history-header"><span class="history-date"><i class="far fa-calendar"></i> ${item.date}</span><span class="history-room">${item.roomName}</span></div><div style="font-size:0.85rem; color:var(--text-main); margin-bottom:5px;">${isCeia ? '<strong style="color:var(--santa-ceia);"><i class="fas fa-wine-glass"></i> Santa Ceia</strong> - ' : ''}Tema: ${item.lesson}</div><div style="font-size:0.8rem; color:var(--text-muted);"><i class="fas fa-users"></i> ${teachersString}</div>`;
+                div.className = `history-card ${isSantaCeiaDate(item.date) ? 'ceia' : ''}`;
+                div.innerHTML = `<div class="history-header"><span class="history-date">${item.date}</span><span class="history-room">${item.roomName}</span></div><div style="font-size:0.85rem;">Tema: ${item.lesson}</div><div style="font-size:0.8rem; color:var(--text-muted);">${item.teachers.join(', ')}</div>`;
                 container.appendChild(div);
             });
-            if(container.children.length === 0) container.innerHTML = '<div style="text-align:center; padding:20px; color:#aaa;">Nenhum histórico encontrado para este filtro.</div>';
         }
 
         function handleFileSelect() { 
-            const input = document.getElementById('pdfFile'); 
-            selectedFiles = Array.from(input.files); 
+            selectedFiles = Array.from(document.getElementById('pdfFile').files); 
             document.getElementById('fileInfo').textContent = selectedFiles.length > 0 ? `✅ ${selectedFiles.length} arquivo(s)` : ""; 
             checkLessonState(); 
         }
-        
         function checkLessonState() { 
             document.getElementById('btnUploadLesson').disabled = !(selectedRoomKeyLicoes && selectedDateLicoes && selectedFiles.length > 0); 
             document.getElementById('btnDownloadLesson').disabled = currentLessonFiles.length === 0; 
             document.getElementById('btnDeleteLesson').disabled = currentLessonFiles.length === 0; 
         }
-        
         async function reloadLessonView() {
             if(!selectedRoomKeyLicoes || !selectedDateLicoes) return;
-            document.getElementById('pdfViewerContent').innerHTML = '<span style="color:white;">⏳ Buscando...</span>';
-            const room = roomsData[selectedRoomKeyLicoes];
-            const url = new URL(SHEET_URL); url.searchParams.append('action', 'checkLesson'); url.searchParams.append('room_name', room.name); url.searchParams.append('lesson_date', selectedDateLicoes);
+            const url = new URL(SHEET_URL); url.searchParams.append('action', 'checkLesson'); url.searchParams.append('room_name', roomsData[selectedRoomKeyLicoes].name); url.searchParams.append('lesson_date', selectedDateLicoes);
             try { const response = await fetch(url.toString()); const data = await response.json();
-                if (data.status === 'found' && data.files.length > 0) {
+                if (data.status === 'found') {
                     currentLessonFiles = data.files; const f = currentLessonFiles[0];
                     let fileUrl = f.fileType === 'pdf' ? `https://drive.google.com/file/d/${f.fileId}/preview` : `https://drive.google.com/uc?id=${f.fileId}&export=view`;
-                    document.getElementById('pdfViewerContent').innerHTML = f.fileType === 'pdf' ? `<iframe src="${fileUrl}" style="width:100%; height:400px; border:none; border-radius:10px;"></iframe>` : `<img src="${fileUrl}" style="max-width:100%; max-height:400px; border-radius:10px;">`;
-                    document.getElementById('fileInfo').innerText = "Arquivo encontrado.";
-                } else { currentLessonFiles = []; document.getElementById('pdfViewerContent').innerHTML = '<span style="color:rgba(255,255,255,0.5);">Nenhum arquivo.</span>'; document.getElementById('fileInfo').innerText = ""; }
-            } catch(e) { document.getElementById('pdfViewerContent').innerHTML = '<span style="color:#ef4444;">Erro.</span>'; }
-            checkLessonState();
+                    document.getElementById('pdfViewerContent').innerHTML = f.fileType === 'pdf' ? `<iframe src="${fileUrl}" style="width:100%; height:400px; border:none; border-radius:10px;"></iframe>` : `<img src="${fileUrl}" style="max-width:100%; border-radius:10px;">`;
+                } else { currentLessonFiles = []; document.getElementById('pdfViewerContent').innerHTML = '<span>Nenhum arquivo.</span>'; }
+            } catch(e) { } checkLessonState();
         }
-        
         async function uploadLesson() {
-            const btn = document.getElementById('btnUploadLesson'); btn.innerText = '⏳'; btn.disabled = true;
-            const fileToBase64 = (file) => { return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = (event) => resolve({ file_name: file.name, file_type: file.type.includes('pdf') ? 'pdf' : 'jpg', file_base64: event.target.result.split(',')[1] }); reader.readAsDataURL(file); }); };
-            const filesToSend = []; for (const file of selectedFiles) { filesToSend.push(await fileToBase64(file)); }
-            try { await fetch(SHEET_URL, { method: 'POST', mode: 'cors', body: JSON.stringify({ action: 'uploadLessons', room_name: roomsData[selectedRoomKeyLicoes].name, lesson_date: selectedDateLicoes, files: filesToSend }) }); alert("Upload OK!"); selectedFiles = []; document.getElementById('pdfFile').value = ''; reloadLessonView(); } catch(e) { alert("Erro."); } btn.innerText = 'Enviar';
+            const filesToSend = []; 
+            for (const file of selectedFiles) { 
+                const base64 = await new Promise(r => { const rd = new FileReader(); rd.onload = e => r(e.target.result.split(',')[1]); rd.readAsDataURL(file); });
+                filesToSend.push({ file_name: file.name, file_type: file.type.includes('pdf') ? 'pdf' : 'jpg', file_base64: base64 });
+            }
+            try { await fetch(SHEET_URL, { method: 'POST', mode: 'cors', body: JSON.stringify({ action: 'uploadLessons', room_name: roomsData[selectedRoomKeyLicoes].name, lesson_date: selectedDateLicoes, files: filesToSend }) }); alert("OK!"); reloadLessonView(); } catch(e) { }
         }
-        
         function downloadLesson() { currentLessonFiles.forEach(f => window.open(`https://drive.google.com/uc?export=download&id=${f.fileId}`)); }
-        
-        async function deleteLesson() { if(!confirm("Apagar?")) return; await fetch(SHEET_URL, { method:'POST', mode:'cors', body: JSON.stringify({ action: 'deleteLesson', room_name: roomsData[selectedRoomKeyLicoes].name, lesson_date: selectedDateLicoes }) }); alert("Apagado."); reloadLessonView(); }
+        async function deleteLesson() { if(!confirm("Apagar?")) return; await fetch(SHEET_URL, { method:'POST', mode:'cors', body: JSON.stringify({ action: 'deleteLesson', room_name: roomsData[selectedRoomKeyLicoes].name, lesson_date: selectedDateLicoes }) }); reloadLessonView(); }
         
         function toggleAdminTab(tab, btn) { 
-            currentAdminTab = tab;
-            document.querySelectorAll('#cadastro .pill-btn').forEach(b => b.classList.remove('active'));
-            if(btn) btn.classList.add('active');
-            
-            if(tab === 'alunos') {
-                document.getElementById('studentFields').classList.remove('hidden');
-                document.getElementById('teacherFields').classList.add('hidden');
-                document.getElementById('adminTeacherRoomFilter').classList.add('hidden');
-                document.getElementById('adminStudentRoomFilter').classList.remove('hidden');
-            } else {
-                document.getElementById('studentFields').classList.add('hidden');
-                document.getElementById('teacherFields').classList.remove('hidden');
-                document.getElementById('adminTeacherRoomFilter').classList.remove('hidden');
-                document.getElementById('adminStudentRoomFilter').classList.add('hidden');
-            }
+            currentAdminTab = tab; togglePill(btn);
+            document.getElementById('studentFields').classList.toggle('hidden', tab !== 'alunos');
+            document.getElementById('teacherFields').classList.toggle('hidden', tab === 'alunos');
+            document.getElementById('adminTeacherRoomFilter').classList.toggle('hidden', tab === 'alunos');
+            document.getElementById('adminStudentRoomFilter').classList.toggle('hidden', tab !== 'alunos');
             renderAdminPeople(); 
         }
-        
         function toggleNewForm() { document.getElementById('adminFormContainer').classList.toggle('hidden'); }
-        
-        function filterAdminList() {
-            const term = document.getElementById('adminSearch').value.toLowerCase();
-            const cards = document.querySelectorAll('#adminListContainer .person-card');
-            cards.forEach(card => {
-                const name = card.dataset.name.toLowerCase();
-                card.style.display = name.includes(term) ? 'flex' : 'none';
-            });
-        }
-
+        function filterAdminList() { renderAdminPeople(); }
         function renderAdminPeople() {
             const container = document.getElementById('adminListContainer'); 
             container.innerHTML = '';
             const search = document.getElementById('adminSearch').value.toLowerCase();
-
-            const formatDisplayDate = (d) => {
-               if(!d) return 'N/I';
-               if(d.includes('/')) return d;
-               const [y, m, day] = d.split('-');
-               return `${day}/${m}/${y}`;
-            };
-
             if (currentAdminTab === 'alunos') {
-                Object.keys(kidsData).forEach(roomKey => {
-                    const roomArray = kidsData[roomKey];
-                    const roomName = roomsData[roomKey].name;
-
-                    if (selectedAdminStudentRoom && roomKey !== selectedAdminStudentRoom) return;
-
-                    roomArray.forEach(kid => {
-                        if (search && !kid.name.toLowerCase().includes(search)) return;
-                        const img = kid.photo.startsWith('http') ? kid.photo : `img/${kid.photo}`;
+                Object.keys(kidsData).forEach(rk => {
+                    if (selectedAdminStudentRoom && rk !== selectedAdminStudentRoom) return;
+                    kidsData[rk].forEach(k => {
+                        if (search && !k.name.toLowerCase().includes(search)) return;
                         const div = document.createElement('div'); div.className = 'person-card';
-                        div.dataset.name = kid.name;
-                        div.innerHTML = `<img src="${img}" class="person-img" onerror="this.src='https://ui-avatars.com/api/?name=${kid.name}&background=random'"><div class="person-info"><h4>${kid.name}</h4><p><i class="fas fa-user-shield"></i> Resp: ${kid.guardian || 'N/I'}</p><span class="room-tag" style="background:#e0e7ff; color:var(--primary);">${roomName}</span></div><div class="person-actions"><button class="btn-wa-mini" onclick="window.open('https://wa.me/55${kid.phone || ''}')"><i class="fab fa-whatsapp"></i></button></div>`;
+                        div.innerHTML = `<img src="${k.photo.startsWith('http')?k.photo:`img/${k.photo}`}" class="person-img" onerror="this.src='https://ui-avatars.com/api/?name=${k.name}&background=random'"><h4>${k.name}</h4><span class="room-tag">${roomsData[rk].name}</span>`;
                         container.appendChild(div);
                     });
                 });
@@ -1519,41 +1382,13 @@
                 fixedTeachersData.forEach(t => {
                     if (search && !t.name.toLowerCase().includes(search)) return;
                     if (selectedAdminTeacherRoom && roomsData[selectedAdminTeacherRoom].name !== t.room) return;
-
-                    const img = getTeacherPhotoUrl(t);
-                    const dob = formatDisplayDate(t.dob);
-                    
                     const div = document.createElement('div'); div.className = 'person-card';
-                    div.dataset.name = t.name;
-                    div.innerHTML = `<img src="${img}" class="person-img" onerror="this.src='https://ui-avatars.com/api/?name=${t.name}&background=random'"><div class="person-info"><h4>${t.name}</h4><p><i class="fas fa-birthday-cake"></i> ${dob}</p><span class="room-tag" style="background:#e0e7ff; color:var(--primary);">${t.room || 'Geral'}</span></div><div class="person-actions"><button class="btn-wa-mini" onclick="window.open('https://wa.me/55${t.phone || ''}')"><i class="fab fa-whatsapp"></i></button></div>`;
+                    div.innerHTML = `<img src="${getTeacherPhotoUrl(t)}" class="person-img"><h4>${t.name}</h4><span class="room-tag">${t.room || 'Geral'}</span>`;
                     container.appendChild(div);
                 });
             }
         }
-        
-        async function submitRegistration() { 
-            const name = document.getElementById('regName').value;
-            if(!name) return alert("Digite o nome.");
-            
-            if(currentAdminTab === 'professores') {
-                const room = document.getElementById('regTeacherRoom').value;
-                const phone = document.getElementById('regTeacherPhone').value;
-                const dob = document.getElementById('regDob').value;
-                
-                fixedTeachersData.push({
-                    name: name,
-                    room: room,
-                    phone: phone,
-                    dob: dob,
-                    photo: "" 
-                });
-            } else {
-                alert("Cadastro de aluno (salvo na memória local). Para salvar permanentemente, edite o código fonte.");
-            }
-            alert("✅ Cadastro realizado com sucesso! (Salvo na memória local)"); 
-            toggleNewForm(); 
-            renderAdminPeople();
-        }
+        async function submitRegistration() { alert("Cadastro realizado (Simulação)"); toggleNewForm(); }
     </script>
 </body>
 </html>
